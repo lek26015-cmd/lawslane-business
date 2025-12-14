@@ -101,6 +101,16 @@ export default function AdminLoginPage() {
 
     } catch (error: any) {
       console.error("Google Sign-In Error:", error);
+
+      // Check if user is actually signed in despite the error
+      if (auth?.currentUser) {
+        toast({
+          title: 'เข้าสู่ระบบสำเร็จ',
+          description: 'กำลังตรวจสอบสิทธิ์...',
+        });
+        return;
+      }
+
       toast({
         variant: 'destructive',
         title: 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ',

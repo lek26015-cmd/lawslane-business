@@ -20,6 +20,8 @@ service cloud.firestore {
       allow read: if isSignedIn();
       // Allow owner to write (create/update/delete) their own doc
       allow write: if isSignedIn() && request.auth.uid == userId;
+      // Allow specific super admin to write (bootstrapping)
+      allow write: if request.auth.uid == 'wS9w7ysNYUajNsBYZ6C7n2Afe9H3';
       // Allow admin to write any user doc
       allow write: if isAdmin();
       allow list: if isAdmin();
