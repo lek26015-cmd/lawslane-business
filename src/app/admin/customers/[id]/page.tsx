@@ -4,6 +4,8 @@
 import * as React from 'react'
 import {
   ChevronLeft,
+  Loader2,
+  AlertTriangle,
 } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -27,80 +29,116 @@ import {
 } from '@/components/ui/table'
 import { Textarea } from '@/components/ui/textarea'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useFirebase } from '@/firebase'
-import { doc, getDoc } from 'firebase/firestore'
-import type { UserProfile } from '@/lib/types'
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import type { UserProfile, Case } from '@/lib/types'
 import { format } from 'date-fns'
 import { th } from 'date-fns/locale'
-
-
-const mockCases = [
-  {
-    id: "case-001",
-    title: "ตรวจสอบสัญญาเช่าคอนโด",
-    lawyer: "นางสาวสมศรี ยุติธรรม",
-    fee: 3500,
-    status: "กำลังดำเนินการ",
-    createdAt: "2024-07-20"
-  },
-  {
-    id: "case-002",
-    title: "จดทะเบียนบริษัท",
-    lawyer: "นายวิชัย ชนะคดี",
-    fee: 5000,
-    status: "กำลังดำเนินการ",
-    createdAt: "2024-07-15"
-  },
-  {
-    id: "case-003",
-    title: "คดีมรดก",
-    lawyer: "นายสมชาย กฎหมายดี",
-    fee: 3500,
-    status: "เสร็จสิ้น",
-    createdAt: "2024-06-25"
-  }
-]
+import { getDashboardData } from '@/lib/data'
+import { useToast } from '@/hooks/use-toast'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function AdminCustomerDetailPage() {
   const params = useParams()
   const { id } = params
   const { firestore } = useFirebase();
+  const { toast } = useToast();
+  const router = useRouter();
 
   const [customer, setCustomer] = React.useState<UserProfile | null>(null);
+  const [cases, setCases] = React.useState<Case[]>([]);
   const [currentDate, setCurrentDate] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [isProcessing, setIsProcessing] = React.useState(false);
 
+  const fetchData = React.useCallback(async () => {
+    if (!firestore || !id) return;
+    setIsLoading(true);
+    try {
+      // Fetch User
+      const userRef = doc(firestore, 'users', id as string);
+      const docSnap = await getDoc(userRef);
+      if (docSnap.exists()) {
+        setCustomer({ uid: docSnap.id, ...docSnap.data() } as UserProfile);
+
+        // Fetch User Cases
+        const dashboardData = await getDashboardData(firestore, id as string);
+        setCases(dashboardData.cases);
+      }
+    } catch (error) {
+      console.error("Error fetching customer data:", error);
+      toast({
+        variant: "destructive",
+        title: "เกิดข้อผิดพลาด",
+        description: "ไม่สามารถโหลดข้อมูลลูกค้าได้",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [firestore, id, toast]);
 
   React.useEffect(() => {
     setCurrentDate(new Date().toISOString());
-    if (!firestore || !id) return;
+    fetchData();
+  }, [fetchData]);
 
-    const userRef = doc(firestore, 'users', id as string);
-    getDoc(userRef).then(docSnap => {
-      if (docSnap.exists()) {
-        setCustomer(docSnap.data() as UserProfile);
-      }
-      setIsLoading(false);
-    })
-  }, [firestore, id]);
+  const handleToggleStatus = async () => {
+    if (!firestore || !id || !customer) return;
+    setIsProcessing(true);
+    try {
+      const newStatus = customer.status === 'active' ? 'suspended' : 'active';
+      const userRef = doc(firestore, 'users', id as string);
+      await updateDoc(userRef, { status: newStatus });
 
+      setCustomer(prev => prev ? { ...prev, status: newStatus } : null);
+
+      toast({
+        title: newStatus === 'active' ? "เปิดการใช้งานบัญชีแล้ว" : "ระงับบัญชีเรียบร้อย",
+        description: `สถานะของลูกค้าถูกเปลี่ยนเป็น ${newStatus === 'active' ? 'Active' : 'Suspended'}`,
+      });
+    } catch (error) {
+      console.error("Error updating status:", error);
+      toast({
+        variant: "destructive",
+        title: "เกิดข้อผิดพลาด",
+        description: "ไม่สามารถอัปเดตสถานะได้",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   if (isLoading) {
-    return <div>กำลังโหลด...</div>
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    )
   }
 
   if (!customer) {
     return <div>ไม่พบข้อมูลลูกค้า</div>
   }
 
-  // Mock data for display
-  const displayData = {
-    totalSpent: 12000,
-    activeCases: 2,
-    completedCases: 3,
-  };
+  // Calculate stats from real data
+  // 'active' cases are active. 'closed' are completed.
+  const activeCasesCount = cases.filter(c => c.status === 'active').length;
+  const completedCasesCount = cases.filter(c => c.status === 'closed').length;
 
+  // Mock calculation for totalSpent (assuming 500 per chat/case for now, or fetch from payments collection later)
+  // For now, let's just count completed cases * 500 as a placeholder estimation or 0 if no data
+  const estimatedTotalSpent = completedCasesCount * 500; // This logic can be improved with real payment data
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
@@ -124,62 +162,97 @@ export default function AdminCustomerDetailPage() {
                 แก้ไขข้อมูล
               </Button>
             </Link>
-            <Button size="sm" variant="destructive">ระงับบัญชี (จำลอง)</Button>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button size="sm" variant={customer.status === 'active' ? "destructive" : "default"} disabled={isProcessing}>
+                  {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {customer.status === 'active' ? 'ระงับบัญชี' : 'ยกเลิกระงับบัญชี'}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>ยืนยันการดำเนินการ?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    คุณต้องการที่จะ {customer.status === 'active' ? 'ระงับการใช้งาน' : 'ยกเลิกการระงับ'} บัญชีของ {customer.name} ใช่หรือไม่?
+                    {customer.status === 'active' && " ผู้ใช้จะไม่สามารถเข้าสู่ระบบได้หลังจากนี้"}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleToggleStatus}
+                    className={customer.status === 'active' ? "bg-red-600 hover:bg-red-700" : ""}
+                  >
+                    ยืนยัน
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>เคสทั้งหมด</CardDescription>
-              <CardTitle className="text-4xl">{displayData.activeCases + displayData.completedCases}</CardTitle>
+              <CardTitle className="text-4xl">{cases.length}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xs text-muted-foreground">
-                {displayData.activeCases} เคสกำลังดำเนินการ
+                {activeCasesCount} เคสกำลังดำเนินการ
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardDescription>ยอดใช้จ่ายรวม (จำลอง)</CardDescription>
-              <CardTitle className="text-4xl">฿{displayData.totalSpent.toLocaleString()}</CardTitle>
+              <CardDescription>ยอดใช้จ่ายรวม (โดยประมาณ)</CardDescription>
+              <CardTitle className="text-4xl">฿{estimatedTotalSpent.toLocaleString()}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xs text-muted-foreground">
-                จาก {displayData.completedCases} เคสที่เสร็จสิ้น
+                จาก {completedCasesCount} เคสที่เสร็จสิ้น
               </div>
             </CardContent>
           </Card>
         </div>
         <Card>
           <CardHeader>
-            <CardTitle>ประวัติเคส (จำลอง)</CardTitle>
+            <CardTitle>ประวัติเคส</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>รหัสเคส</TableHead>
-                  <TableHead>หัวข้อ</TableHead>
-                  <TableHead>ทนายความ</TableHead>
-                  <TableHead>สถานะ</TableHead>
-                  <TableHead>ค่าบริการ</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {mockCases.map(c => (
-                  <TableRow key={c.id}>
-                    <TableCell>{c.id}</TableCell>
-                    <TableCell>{c.title}</TableCell>
-                    <TableCell>{c.lawyer}</TableCell>
-                    <TableCell>
-                      <Badge variant={c.status === 'เสร็จสิ้น' ? 'secondary' : 'default'}>{c.status}</Badge>
-                    </TableCell>
-                    <TableCell>฿{c.fee.toLocaleString()}</TableCell>
+            {cases.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>หัวข้อ</TableHead>
+                    <TableHead>ทนายความ</TableHead>
+                    <TableHead>สถานะ</TableHead>
+                    <TableHead>อัปเดตล่าสุด</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {cases.map(c => (
+                    <TableRow key={c.id}>
+                      <TableCell className="font-medium">
+                        <Link href={`/chat/${c.id}?view=admin`} className="hover:underline">
+                          {c.title}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{c.lawyer?.name || 'ไม่ระบุ'}</TableCell>
+                      <TableCell>
+                        <Badge variant={c.status === 'closed' ? 'secondary' : 'default'}>{c.status}</Badge>
+                      </TableCell>
+                      <TableCell>{c.lastMessageTimestamp || 'N/A'}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+                <AlertTriangle className="h-8 w-8 mb-2 opacity-50" />
+                <p>ยังไม่มีประวัติเคส</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -201,11 +274,12 @@ export default function AdminCustomerDetailPage() {
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16">
                   <AvatarImage src={customer.avatar} />
-                  <AvatarFallback>{customer.name.slice(0, 2)}</AvatarFallback>
+                  <AvatarFallback>{customer.name ? customer.name.slice(0, 2) : 'U'}</AvatarFallback>
                 </Avatar>
                 <div className="grid gap-1">
                   <p className="font-medium">{customer.name}</p>
                   <p className="text-muted-foreground">{customer.email}</p>
+                  <p className="text-xs text-muted-foreground">Role: {customer.role || 'user'}</p>
                 </div>
               </div>
               <div className="font-semibold">หมายเหตุสำหรับแอดมิน</div>
