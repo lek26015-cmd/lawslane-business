@@ -14,14 +14,29 @@ interface LawyerCardProps {
   lawyer: LawyerProfile;
 }
 
+import { useUser } from '@/firebase';
+
 export default function LawyerCard({ lawyer }: LawyerCardProps) {
   const router = useRouter();
+  const { user } = useUser();
   // Use real data if available, otherwise default to 0 (or hide)
   const rating = lawyer.averageRating || 0;
   const reviewCount = lawyer.reviewCount || 0;
 
   const handleStartChat = () => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
     router.push(`/payment?type=chat&lawyerId=${lawyer.id}`);
+  };
+
+  const handleViewProfile = () => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+    router.push(`/lawyers/${lawyer.id}`);
   };
 
   return (
@@ -56,11 +71,9 @@ export default function LawyerCard({ lawyer }: LawyerCardProps) {
       </div>
 
       <div className="flex-shrink-0 flex flex-col items-center justify-center gap-2 w-full md:w-36 mt-4 md:mt-0">
-        <Link href={`/lawyers/${lawyer.id}`} className="w-full">
-          <Button className="w-full bg-foreground text-background hover:bg-foreground/90">
-            ดูโปรไฟล์
-          </Button>
-        </Link>
+        <Button className="w-full bg-foreground text-background hover:bg-foreground/90" onClick={handleViewProfile}>
+          ดูโปรไฟล์
+        </Button>
         <Button variant="outline" className="w-full" onClick={handleStartChat}>
           <Mail className="mr-2 h-4 w-4" /> ส่งข้อความ
         </Button>
