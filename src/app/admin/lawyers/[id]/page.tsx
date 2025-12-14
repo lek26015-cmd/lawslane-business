@@ -71,6 +71,8 @@ export default function AdminLawyerDetailPage() {
   const { firestore } = useFirebase();
 
   const [cases, setCases] = React.useState<any[]>([]);
+  const [lawyer, setLawyer] = React.useState<LawyerProfile | null>(null);
+  const [currentDate, setCurrentDate] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     setCurrentDate(new Date().toISOString());
