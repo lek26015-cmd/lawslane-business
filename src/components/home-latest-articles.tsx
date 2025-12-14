@@ -22,7 +22,7 @@ export function HomeLatestArticles() {
             if (!firestore) return;
             try {
                 const fetchedArticles = await getAllArticles(firestore);
-                setArticles(fetchedArticles.slice(0, 5));
+                setArticles(fetchedArticles.slice(0, 4));
             } catch (error) {
                 console.error("Error fetching articles:", error);
             } finally {
@@ -48,11 +48,10 @@ export function HomeLatestArticles() {
         );
     }
 
-    const mainArticle = articles[0];
-    const otherArticles = articles.slice(1, 5);
+
 
     return (
-        <section id="articles" className="w-full py-12 md:py-24 lg:py-32 bg-white">
+        <section id="articles" className="w-full py-12 md:py-24 lg:py-32 bg-gray-50">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="flex justify-between items-center mb-12">
                     <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline text-foreground">
@@ -65,52 +64,41 @@ export function HomeLatestArticles() {
                     </Link>
                 </div>
 
-                {articles.length > 0 && mainArticle ? (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Main Article */}
-                        <Link href={`/articles/${mainArticle.slug}`} className="group block">
-                            <Card className="border-none shadow-none bg-transparent p-0">
-                                <CardContent className="p-0">
-                                    <div className="relative aspect-[4/3] mb-4 overflow-hidden rounded-lg">
-                                        <Image
-                                            src={mainArticle.imageUrl}
-                                            alt={mainArticle.title}
-                                            fill
-                                            className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                            data-ai-hint={mainArticle.imageHint}
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                                        <Badge variant="secondary" className="absolute top-4 left-4">{mainArticle.category}</Badge>
-                                    </div>
-                                    <h3 className="text-xl font-semibold text-foreground mt-4 leading-tight group-hover:text-primary">{mainArticle.title}</h3>
-                                    <p className="text-muted-foreground text-sm mt-2 line-clamp-2">{mainArticle.description}</p>
-                                </CardContent>
-                            </Card>
-                        </Link>
-
-                        {/* Other Articles */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {otherArticles.map((article) => (
-                                <Link key={article.id} href={`/articles/${article.slug}`} className="group block">
-                                    <Card className="border-none shadow-none bg-transparent p-0 h-full flex flex-col">
-                                        <CardContent className="p-0">
-                                            <div className="relative aspect-[16/10] mb-3 overflow-hidden rounded-lg">
-                                                <Image
-                                                    src={article.imageUrl}
-                                                    alt={article.title}
-                                                    fill
-                                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                                    data-ai-hint={article.imageHint}
-                                                />
-                                                <div className="absolute inset-0 bg-black/20"></div>
-                                                <Badge variant="secondary" className="absolute top-2 right-2 text-xs">{article.category}</Badge>
+                {articles.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {articles.map((article) => (
+                            <Link key={article.id} href={`/articles/${article.slug}`} className="group block h-full">
+                                <Card className="border-none shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl overflow-hidden h-full flex flex-col">
+                                    <CardContent className="p-0 flex-grow flex flex-col">
+                                        <div className="relative aspect-[16/10] overflow-hidden">
+                                            <Image
+                                                src={article.imageUrl}
+                                                alt={article.title}
+                                                fill
+                                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                                data-ai-hint={article.imageHint}
+                                            />
+                                            <div className="absolute top-3 left-3">
+                                                <Badge variant="secondary" className="bg-white/90 backdrop-blur-sm hover:bg-white text-xs font-medium shadow-sm">
+                                                    {article.category}
+                                                </Badge>
                                             </div>
-                                            <h4 className="font-semibold leading-snug group-hover:text-primary line-clamp-2">{article.title}</h4>
-                                        </CardContent>
-                                    </Card>
-                                </Link>
-                            ))}
-                        </div>
+                                        </div>
+                                        <div className="p-5 flex flex-col flex-grow">
+                                            <h3 className="font-bold text-lg leading-snug group-hover:text-primary transition-colors line-clamp-2 mb-2">
+                                                {article.title}
+                                            </h3>
+                                            <p className="text-muted-foreground text-sm line-clamp-3 mb-4 flex-grow">
+                                                {article.description}
+                                            </p>
+                                            <div className="flex items-center text-primary text-sm font-medium mt-auto">
+                                                อ่านเพิ่มเติม <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-1" />
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </Link>
+                        ))}
                     </div>
                 ) : (
                     <EmptyState
