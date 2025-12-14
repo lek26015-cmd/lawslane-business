@@ -325,7 +325,7 @@ export default function ForLawyersPage() {
 
           {/* Right Column: Signup Form */}
           <div>
-            <Card className="shadow-xl border-t-4 border-t-primary">
+            <Card className="shadow-xl border-t-4 border-t-primary rounded-3xl overflow-hidden">
               <CardHeader className="text-center space-y-2">
                 <CardTitle className="text-2xl font-bold font-headline">
                   ลงทะเบียนทนายความใหม่
@@ -347,7 +347,7 @@ export default function ForLawyersPage() {
                     <h3 className="text-lg font-semibold border-b pb-2">ข้อมูลส่วนตัว</h3>
                     <div className="grid grid-cols-1 gap-4">
                       <FormField control={form.control} name="name" render={({ field }) => (
-                        <FormItem><FormLabel>ชื่อ-นามสกุล (ตามบัตรประชาชน)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>ชื่อ-นามสกุล (ตามบัตรประชาชน)</FormLabel><FormControl><Input {...field} className="rounded-full px-4" /></FormControl><FormMessage /></FormItem>
                       )} />
                       <FormField control={form.control} name="phone" render={({ field }) => (
                         <FormItem>
@@ -361,6 +361,7 @@ export default function ForLawyersPage() {
                                 field.onChange(value);
                               }}
                               maxLength={10}
+                              className="rounded-full px-4"
                             />
                           </FormControl>
                           <CardDescription>กรอกเฉพาะตัวเลขเท่านั้น</CardDescription>
@@ -383,7 +384,7 @@ export default function ForLawyersPage() {
                               }}
                             >
                               <FormControl>
-                                <SelectTrigger className="w-[80px]">
+                                <SelectTrigger className="w-[80px] rounded-full">
                                   <SelectValue placeholder="วัน" />
                                 </SelectTrigger>
                               </FormControl>
@@ -404,7 +405,7 @@ export default function ForLawyersPage() {
                               }}
                             >
                               <FormControl>
-                                <SelectTrigger className="flex-1">
+                                <SelectTrigger className="flex-1 rounded-full">
                                   <SelectValue placeholder="เดือน" />
                                 </SelectTrigger>
                               </FormControl>
@@ -428,7 +429,7 @@ export default function ForLawyersPage() {
                               }}
                             >
                               <FormControl>
-                                <SelectTrigger className="w-[100px]">
+                                <SelectTrigger className="w-[100px] rounded-full">
                                   <SelectValue placeholder="ปี" />
                                 </SelectTrigger>
                               </FormControl>
@@ -445,7 +446,7 @@ export default function ForLawyersPage() {
                       <FormField control={form.control} name="gender" render={({ field }) => (
                         <FormItem><FormLabel>เพศ</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder="เลือกเพศ" /></SelectTrigger></FormControl>
+                            <FormControl><SelectTrigger className="rounded-full px-4"><SelectValue placeholder="เลือกเพศ" /></SelectTrigger></FormControl>
                             <SelectContent><SelectItem value="ชาย">ชาย</SelectItem><SelectItem value="หญิง">หญิง</SelectItem><SelectItem value="อื่นๆ">อื่นๆ</SelectItem></SelectContent>
                           </Select>
                           <FormMessage /></FormItem>
@@ -453,26 +454,26 @@ export default function ForLawyersPage() {
                     </div>
 
                     <FormField control={form.control} name="address" render={({ field }) => (
-                      <FormItem><FormLabel>ที่อยู่ (ตามบัตรประชาชน)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                      <FormItem><FormLabel>ที่อยู่ (ตามบัตรประชาชน)</FormLabel><FormControl><Input {...field} className="rounded-full px-4" /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="lineId" render={({ field }) => (
-                      <FormItem><FormLabel>Line ID (ถ้ามี)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                      <FormItem><FormLabel>Line ID (ถ้ามี)</FormLabel><FormControl><Input {...field} className="rounded-full px-4" /></FormControl><FormMessage /></FormItem>
                     )} />
 
                     <h3 className="text-lg font-semibold border-b pb-2 pt-4">ข้อมูลบัญชีผู้ใช้</h3>
                     <div className="grid grid-cols-1 gap-4">
                       <FormField control={form.control} name="email" render={({ field }) => (
-                        <FormItem><FormLabel>อีเมล (สำหรับเข้าสู่ระบบ)</FormLabel><FormControl><Input placeholder="name@example.com" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>อีเมล (สำหรับเข้าสู่ระบบ)</FormLabel><FormControl><Input placeholder="name@example.com" {...field} className="rounded-full px-4" /></FormControl><FormMessage /></FormItem>
                       )} />
                       <FormField control={form.control} name="password" render={({ field }) => (
-                        <FormItem><FormLabel>รหัสผ่าน</FormLabel><FormControl><Input type="password" placeholder="อย่างน้อย 6 ตัวอักษร" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>รหัสผ่าน</FormLabel><FormControl><Input type="password" placeholder="อย่างน้อย 6 ตัวอักษร" {...field} className="rounded-full px-4" /></FormControl><FormMessage /></FormItem>
                       )} />
                     </div>
 
                     <h3 className="text-lg font-semibold border-b pb-2 pt-4">ข้อมูลสำหรับวิชาชีพ</h3>
                     <div className="grid grid-cols-1 gap-4">
                       <FormField control={form.control} name="licenseNumber" render={({ field }) => (
-                        <FormItem><FormLabel>เลขที่ใบอนุญาตว่าความ</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>เลขที่ใบอนุญาตว่าความ</FormLabel><FormControl><Input {...field} className="rounded-full px-4" /></FormControl><FormMessage /></FormItem>
                       )} />
                       <FormField control={form.control} name="serviceProvinces" render={({ field }) => (
                         <FormItem>
@@ -488,7 +489,7 @@ export default function ForLawyersPage() {
                               }}
                             >
                               <FormControl>
-                                <SelectTrigger>
+                                <SelectTrigger className="rounded-full px-4">
                                   <SelectValue placeholder="เลือกจังหวัดที่ให้บริการ" />
                                 </SelectTrigger>
                               </FormControl>
@@ -542,7 +543,7 @@ export default function ForLawyersPage() {
                             {specialties.map((item) => (
                               <FormField key={item} control={form.control} name="specialties"
                                 render={({ field }) => (
-                                  <FormItem key={item} className="flex flex-row items-center space-x-3 space-y-0 p-3 bg-gray-100 rounded-md">
+                                  <FormItem key={item} className="flex flex-row items-center space-x-3 space-y-0 p-3 bg-gray-100 rounded-xl">
                                     <FormControl><Checkbox checked={field.value?.includes(item)} onCheckedChange={(checked) => {
                                       return checked ? field.onChange([...field.value, item]) : field.onChange(field.value?.filter((value) => value !== item))
                                     }} /></FormControl>
@@ -562,7 +563,7 @@ export default function ForLawyersPage() {
                       <FormField control={form.control} name="bankName" render={({ field }) => (
                         <FormItem><FormLabel>ธนาคาร</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder="เลือกธนาคาร" /></SelectTrigger></FormControl>
+                            <FormControl><SelectTrigger className="rounded-full px-4"><SelectValue placeholder="เลือกธนาคาร" /></SelectTrigger></FormControl>
                             <SelectContent>
                               {banks.map(bank => (
                                 <SelectItem key={bank.name} value={bank.name}>
@@ -584,13 +585,13 @@ export default function ForLawyersPage() {
                           <FormMessage /></FormItem>
                       )} />
                       <FormField control={form.control} name="bankAccountName" render={({ field }) => (
-                        <FormItem><FormLabel>ชื่อบัญชี (ต้องตรงกับชื่อผู้สมัคร)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>ชื่อบัญชี (ต้องตรงกับชื่อผู้สมัคร)</FormLabel><FormControl><Input {...field} className="rounded-full px-4" /></FormControl><FormMessage /></FormItem>
                       )} />
                       <FormField control={form.control} name="bankAccountNumber" render={({ field }) => (
                         <FormItem><FormLabel>เลขที่บัญชี</FormLabel><FormControl><Input {...field} onChange={(e) => {
                           const formatted = formatBankAccount(e.target.value);
                           field.onChange(formatted);
-                        }} maxLength={14} /></FormControl><FormMessage /></FormItem>
+                        }} maxLength={14} className="rounded-full px-4" /></FormControl><FormMessage /></FormItem>
                       )} />
                     </div>
 
@@ -598,25 +599,25 @@ export default function ForLawyersPage() {
                     <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
                         <Label>ไฟล์บัตรประชาชน</Label>
-                        <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
+                        <div className="flex items-center gap-2 p-2 border rounded-full bg-gray-50 px-4">
                           <FileText className="h-5 w-5 text-gray-500 flex-shrink-0" />
                           <span className="text-sm text-gray-600 truncate flex-grow">{idCardFile ? idCardFile.name : 'ยังไม่ได้เลือกไฟล์'}</span>
                           <Input id="id-card-upload" type="file" className="hidden" onChange={handleFileChange(setIdCardFile)} />
-                          <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('id-card-upload')?.click()}>เลือกไฟล์</Button>
+                          <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('id-card-upload')?.click()} className="rounded-full">เลือกไฟล์</Button>
                         </div>
                       </div>
                       <div className="space-y-2">
                         <Label>ไฟล์ใบอนุญาตทนายความ</Label>
-                        <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
+                        <div className="flex items-center gap-2 p-2 border rounded-full bg-gray-50 px-4">
                           <FileText className="h-5 w-5 text-gray-500 flex-shrink-0" />
                           <span className="text-sm text-gray-600 truncate flex-grow">{licenseFile ? licenseFile.name : 'ยังไม่ได้เลือกไฟล์'}</span>
                           <Input id="license-upload" type="file" className="hidden" onChange={handleFileChange(setLicenseFile)} />
-                          <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('license-upload')?.click()}>เลือกไฟล์</Button>
+                          <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('license-upload')?.click()} className="rounded-full">เลือกไฟล์</Button>
                         </div>
                       </div>
                     </div>
 
-                    <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                    <Button type="submit" className="w-full rounded-full" size="lg" disabled={isLoading}>
                       {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       ส่งใบสมัคร
                     </Button>
