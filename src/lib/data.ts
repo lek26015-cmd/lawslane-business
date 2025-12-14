@@ -216,49 +216,70 @@ export async function getDashboardData(db: Firestore, userId: string) {
 
 export async function getLawyerDashboardData(db: Firestore, lawyerId: string): Promise<{ newRequests: LawyerAppointmentRequest[], activeCases: LawyerCase[], completedCases: LawyerCase[] }> {
   if (!db) return { newRequests: [], activeCases: [], completedCases: [] };
-  // Fetch new appointment requests
-  const appointmentsRef = collection(db, 'appointments');
-  const requestsQuery = query(appointmentsRef, where('lawyerId', '==', lawyerId), where('status', '==', 'pending'));
-  const requestsSnapshot = await getDocs(requestsQuery);
-  const newRequests: LawyerAppointmentRequest[] = await Promise.all(requestsSnapshot.docs.map(async d => {
-    const data = d.data();
-    let clientName = 'ลูกค้า';
-    if (data.userId) {
-      const userDoc = await getDoc(doc(db, 'users', data.userId));
-      if (userDoc.exists()) clientName = userDoc.data().name;
-    }
-    return {
-      id: d.id,
-      clientName: clientName,
-      caseTitle: data.description,
-      description: data.description,
-      requestedAt: data.createdAt.toDate(),
-    }
-  }));
 
-  // Fetch cases (chats)
-  const chatsRef = collection(db, 'chats');
-  const casesQuery = query(chatsRef, where('participants', 'array-contains', lawyerId));
-  const casesSnapshot = await getDocs(casesQuery);
-  const lawyerCases: LawyerCase[] = await Promise.all(casesSnapshot.docs.map(async (d) => {
-    const chatData = d.data();
-    const clientParticipantId = chatData.participants.find((p: string) => p !== lawyerId);
+  let newRequests: LawyerAppointmentRequest[] = [];
+  let lawyerCases: LawyerCase[] = [];
 
-    let clientName = 'ลูกค้า';
-    if (clientParticipantId) {
-      const userDoc = await getDoc(doc(db, 'users', clientParticipantId));
-      if (userDoc.exists()) clientName = userDoc.data().name;
-    }
+  try {
+    // Fetch new appointment requests
+    const appointmentsRef = collection(db, 'appointments');
+    const requestsQuery = query(appointmentsRef, where('lawyerId', '==', lawyerId), where('status', '==', 'pending'));
+    const requestsSnapshot = await getDocs(requestsQuery);
+    newRequests = await Promise.all(requestsSnapshot.docs.map(async d => {
+      const data = d.data();
+      let clientName = 'ลูกค้า';
+      try {
+        if (data.userId) {
+          const userDoc = await getDoc(doc(db, 'users', data.userId));
+          if (userDoc.exists()) clientName = userDoc.data().name || 'ลูกค้า';
+        }
+      } catch (e) {
+        console.warn("Error fetching client details for request:", e);
+      }
+      return {
+        id: d.id,
+        clientName: clientName,
+        caseTitle: data.description,
+        description: data.description,
+        requestedAt: data.createdAt?.toDate() || new Date(),
+      }
+    }));
+  } catch (error) {
+    console.error("Error fetching lawyer requests:", error);
+    // Don't throw, just return empty for this part
+  }
 
-    return {
-      id: d.id,
-      title: chatData.caseTitle || 'Unknown Case',
-      clientName: clientName,
-      clientId: clientParticipantId,
-      status: chatData.status,
-      lastUpdate: chatData.lastMessageAt?.toDate().toLocaleDateString('th-TH') || 'N/A', // Assuming you add this field
-    };
-  }));
+  try {
+    // Fetch cases (chats)
+    const chatsRef = collection(db, 'chats');
+    const casesQuery = query(chatsRef, where('participants', 'array-contains', lawyerId));
+    const casesSnapshot = await getDocs(casesQuery);
+    lawyerCases = await Promise.all(casesSnapshot.docs.map(async (d) => {
+      const chatData = d.data();
+      const clientParticipantId = chatData.participants.find((p: string) => p !== lawyerId);
+
+      let clientName = 'ลูกค้า';
+      if (clientParticipantId) {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', clientParticipantId));
+          if (userDoc.exists()) clientName = userDoc.data().name || 'ลูกค้า';
+        } catch (e) {
+          console.warn("Error fetching client details for case:", e);
+        }
+      }
+
+      return {
+        id: d.id,
+        title: chatData.caseTitle || 'Unknown Case',
+        clientName: clientName,
+        clientId: clientParticipantId,
+        status: chatData.status,
+        lastUpdate: chatData.lastMessageAt?.toDate().toLocaleDateString('th-TH') || 'N/A',
+      };
+    }));
+  } catch (error) {
+    console.error("Error fetching lawyer cases:", error);
+  }
 
   return {
     newRequests,

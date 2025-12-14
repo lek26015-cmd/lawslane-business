@@ -330,7 +330,7 @@ export default function LawyerDashboardPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="font-bold text-base">สถิติอื่นๆ (จำลอง)</CardTitle>
+                <CardTitle className="font-bold text-base">สถิติ</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-3 gap-2">
                 {otherStats.map(stat => (
