@@ -34,7 +34,9 @@ export default async function RootLayout({
 
   const headersList = await headers();
   const domain = headersList.get('host') || "";
-  const isSubdomain = domain.startsWith('admin.') || domain.startsWith('lawyer.');
+  let domainType = 'main';
+  if (domain.startsWith('admin.')) domainType = 'admin';
+  if (domain.startsWith('lawyer.')) domainType = 'lawyer';
 
   return (
     <html lang="th" suppressHydrationWarning>
@@ -44,7 +46,7 @@ export default async function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <ClientProviders isSubdomain={isSubdomain}>
+        <ClientProviders domainType={domainType}>
           {children}
         </ClientProviders>
       </body>

@@ -11,15 +11,16 @@ import CookieBanner from '@/components/cookie-banner';
 
 export default function ClientLayout({
   children,
-  isSubdomain = false,
+  domainType = 'main',
 }: {
   children: React.ReactNode;
-  isSubdomain?: boolean;
+  domainType?: string;
 }) {
   const pathname = usePathname();
   const [userRole, setUserRole] = useState<string | null>(null);
 
-  const isAdminPage = pathname.startsWith('/admin') || isSubdomain;
+  // Hide header/footer ONLY for admin pages (lawyer pages should show header now)
+  const isAdminPage = pathname.startsWith('/admin') || domainType === 'admin';
 
   if (isAdminPage) {
     return <>{children}</>;
@@ -29,7 +30,7 @@ export default function ClientLayout({
   return (
     <>
       <div className="flex min-h-screen flex-col">
-        <Header setUserRole={setUserRole} />
+        <Header setUserRole={setUserRole} domainType={domainType} />
         <main className="flex-1 bg-gray-50/50">{children}</main>
         <Footer userRole={userRole} />
       </div>

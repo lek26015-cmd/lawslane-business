@@ -27,12 +27,21 @@ import profileLawyerImg from '@/pic/profile-lawyer.jpg';
 import { NotificationBell } from '@/components/admin/notification-bell';
 
 
-export default function Header({ setUserRole }: { setUserRole: (role: string | null) => void }) {
+export default function Header({ setUserRole, domainType = 'main' }: { setUserRole: (role: string | null) => void; domainType?: string }) {
   const pathname = usePathname();
-  const isHomePage = pathname === `/`;
+  const isHomePage = pathname === `/` && domainType === 'main';
 
   const [isScrolled, setIsScrolled] = useState(!isHomePage);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Helper to generate links back to main domain
+  const getMainLink = (path: string) => {
+    if (domainType === 'main') return path;
+    const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'lawslane.com';
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+    const host = process.env.NODE_ENV === 'development' ? 'localhost:3000' : rootDomain;
+    return `${protocol}://${host}${path}`;
+  };
 
   const { auth, firestore } = useFirebase();
   const { user, isUserLoading: isLoading } = useAuthUser();
@@ -119,6 +128,10 @@ export default function Header({ setUserRole }: { setUserRole: (role: string | n
         title: "ออกจากระบบแล้ว!",
         description: "คุณได้ออกจากระบบเรียบร้อยแล้ว",
       });
+      // Force redirect to login page after logout
+      if (domainType === 'lawyer') {
+        window.location.href = '/lawyer-login';
+      }
     }
   }
 
@@ -156,7 +169,7 @@ export default function Header({ setUserRole }: { setUserRole: (role: string | n
   return (
     <header className={headerClasses}>
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
-        <Logo href="/" variant={useTransparentHeader ? 'color' : 'white'} className={cn(useTransparentHeader ? '' : 'text-background')} />
+        <Logo href={getMainLink('/')} variant={useTransparentHeader ? 'color' : 'white'} className={cn(useTransparentHeader ? '' : 'text-background')} />
 
         <div className="hidden md:flex flex-1 justify-center px-8 lg:px-16">
           <div className="relative w-full max-w-lg">
@@ -186,16 +199,16 @@ export default function Header({ setUserRole }: { setUserRole: (role: string | n
         </div>
 
         <nav className="hidden items-center gap-4 text-sm font-medium md:flex whitespace-nowrap">
-          <Link href="/lawyers" className={pathname.startsWith(`/lawyers`) ? activeNavLinkClasses : navLinkClasses}>
+          <Link href={getMainLink('/lawyers')} className={pathname.startsWith(`/lawyers`) ? activeNavLinkClasses : navLinkClasses}>
             ค้นหาทนาย
           </Link>
-          <Link href="/verify-lawyer" className={pathname.startsWith(`/verify-lawyer`) ? activeNavLinkClasses : navLinkClasses}>
+          <Link href={getMainLink('/verify-lawyer')} className={pathname.startsWith(`/verify-lawyer`) ? activeNavLinkClasses : navLinkClasses}>
             ตรวจสอบทนาย
           </Link>
-          <Link href="/articles" className={pathname.startsWith(`/articles`) ? activeNavLinkClasses : navLinkClasses}>
+          <Link href={getMainLink('/articles')} className={pathname.startsWith(`/articles`) ? activeNavLinkClasses : navLinkClasses}>
             บทความ
           </Link>
-          <Link href="/for-lawyers" className={pathname.startsWith(`/for-lawyers`) ? activeNavLinkClasses : navLinkClasses}>
+          <Link href={getMainLink('/for-lawyers')} className={pathname.startsWith(`/for-lawyers`) ? activeNavLinkClasses : navLinkClasses}>
             สำหรับทนายความ
           </Link>
         </nav>
@@ -265,17 +278,19 @@ export default function Header({ setUserRole }: { setUserRole: (role: string | n
             </SheetTrigger>
             <SheetContent side="left" className="p-0">
               <SheetHeader className="p-6 pb-0">
-                <SheetTitle>
-                  <Logo href="/" variant="color" />
-                </SheetTitle>
+                <Link href={getMainLink('/')}>
+                  <SheetTitle>
+                    <Logo href={getMainLink('/')} variant="color" />
+                  </SheetTitle>
+                </Link>
               </SheetHeader>
               <div className="flex flex-col gap-6 p-6">
                 <nav className="flex flex-col gap-4 text-lg mt-6">
-                  <Link href="/" className="hover:text-primary">หน้าแรก</Link>
-                  <Link href="/articles" className="hover:text-primary">บทความ</Link>
-                  <Link href="/for-lawyers" className="hover:text-primary">สำหรับทนายความ</Link>
-                  <Link href="/lawyers" className="hover:text-primary">ค้นหาทนาย</Link>
-                  <Link href="/verify-lawyer" className="hover:text-primary">ตรวจสอบทนาย</Link>
+                  <Link href={getMainLink('/')} className="hover:text-primary">หน้าแรก</Link>
+                  <Link href={getMainLink('/articles')} className="hover:text-primary">บทความ</Link>
+                  <Link href={getMainLink('/for-lawyers')} className="hover:text-primary">สำหรับทนายความ</Link>
+                  <Link href={getMainLink('/lawyers')} className="hover:text-primary">ค้นหาทนาย</Link>
+                  <Link href={getMainLink('/verify-lawyer')} className="hover:text-primary">ตรวจสอบทนาย</Link>
                 </nav>
                 <div className="border-t pt-6">
                   {user ? (
