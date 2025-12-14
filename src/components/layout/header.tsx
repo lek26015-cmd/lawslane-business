@@ -131,6 +131,8 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
       // Force redirect to login page after logout
       if (domainType === 'lawyer') {
         window.location.href = '/lawyer-login';
+      } else {
+        window.location.href = '/';
       }
     }
   }
