@@ -85,7 +85,7 @@ export default function LawyerDashboardPage() {
     router.push(`/chat/${newChatId}?lawyerId=${user.uid}&clientId=...&view=lawyer`);
   };
 
-  const incomeStat = { icon: <DollarSign className="w-10 h-10" />, label: 'รายได้เดือนนี้', value: `฿${stats.incomeThisMonth.toLocaleString()}`, color: 'text-green-500', href: '/lawyer-dashboard/financials' };
+  const incomeStat = { icon: <DollarSign className="w-10 h-10" />, label: 'รายได้เดือนนี้', value: `฿${stats.incomeThisMonth.toLocaleString()}`, color: 'text-green-500', href: '/financials' };
   const otherStats = [
     { icon: <Star />, label: 'คะแนนเฉลี่ย', value: `${lawyerProfile?.averageRating ? lawyerProfile.averageRating.toFixed(1) : stats.rating}/5`, color: 'text-yellow-500', href: '#' },
     { icon: <Percent />, label: 'อัตราการตอบรับ', value: `${stats.responseRate}%`, color: 'text-blue-500', href: '#' },
@@ -132,7 +132,7 @@ export default function LawyerDashboardPage() {
                           </div>
                           <div className="flex gap-2 mt-3 sm:mt-0">
                             <Button size="sm" variant="outline" asChild>
-                              <Link href={`/lawyer-dashboard/request/${req.id}`}>ดูรายละเอียด</Link>
+                              <Link href={`/request/${req.id}`}>ดูรายละเอียด</Link>
                             </Button>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
@@ -264,7 +264,7 @@ export default function LawyerDashboardPage() {
                   <Link href={`/lawyers/${user.uid}`} passHref>
                     <Button variant="outline"><User className="mr-2" /> โปรไฟล์สาธารณะ</Button>
                   </Link>
-                  <Link href="/lawyer-schedule" passHref>
+                  <Link href="/schedule" passHref>
                     <Button variant="outline"><Settings className="mr-2" /> จัดการตาราง</Button>
                   </Link>
                 </div>
@@ -306,7 +306,7 @@ export default function LawyerDashboardPage() {
                 <CardTitle className="font-bold">เครื่องมือ</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <Link href="/lawyer-schedule" passHref>
+                <Link href="/schedule" passHref>
                   <Button variant="ghost" className="w-full justify-start"><CalendarPlus className="mr-2" /> จัดการตารางนัดหมาย</Button>
                 </Link>
                 <Button variant="ghost" className="w-full justify-start"><BarChart className="mr-2" /> ดูรายงานสรุป</Button>

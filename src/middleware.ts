@@ -6,67 +6,94 @@ export function middleware(request: NextRequest) {
     const hostname = request.headers.get('host') || '';
     const pathname = url.pathname;
 
-    // Optimised to skip static files and API requests matching certain patterns early
+    // 1. Skip static assets and API routes
     if (pathname.startsWith('/_next') || pathname.startsWith('/api') || pathname.includes('.')) {
         return NextResponse.next();
     }
 
-    // Check if it's the admin subdomain
-    // Matches admin.lawslane.com, admin.localhost:3000, etc.
+    // 2. Admin Subdomain (admin.lawslane.com)
     if (hostname.startsWith('admin.')) {
         // If the path is just '/', rewrite to '/admin' to show the dashboard
         if (pathname === '/') {
-            url.pathname = '/admin';
-            return NextResponse.rewrite(url);
+            return NextResponse.rewrite(new URL('/admin', request.url));
         }
 
-        // If the path is '/login', rewrite to '/admin/login' (optional convenience)
+        // Convenience: /login -> /admin/login
         if (pathname === '/login') {
-            url.pathname = '/admin/login';
-            return NextResponse.rewrite(url);
+            return NextResponse.rewrite(new URL('/admin/login', request.url));
         }
 
-        // Capture generic cases where user might type 'admin.lawslane.com/customers'
-        // but the actual page is at 'src/app/admin/customers' (route: /admin/customers)
-        // We only rewrite if it DOESN'T already start with /admin
+        // Generic rewrite: /some-page -> /admin/some-page
+        // But only if it doesn't already start with /admin
         if (!pathname.startsWith('/admin')) {
-            url.pathname = `/admin${pathname}`;
-            return NextResponse.rewrite(url);
+            return NextResponse.rewrite(new URL(`/admin${pathname}`, request.url));
         }
 
-        // If it already starts with /admin, we let it pass.
-        // e.g. admin.lawslane.com/admin/customers -> reads /admin/customers (correct)
-    } else {
-        // Logic for Main Domain (www.lawslane.com or lawslane.com)
+        return NextResponse.next();
+    }
 
-        // If user tries to access /admin path on main domain, redirect to admin subdomain
-        if (pathname.startsWith('/admin')) {
-            // Construct the new URL: protocol + // + admin. + domain + path
-            // Note: In local dev, this might be tricky if not set up, so we check for 'localhost'
-
-            let newHost = '';
-            if (hostname.includes('localhost')) {
-                newHost = 'admin.localhost:3000'; // For local testing
-            } else {
-                // Assumes the current host is 'lawslane.com' or 'www.lawslane.com'
-                // We want 'admin.lawslane.com'
-                // Simple replacement for now:
-                const domainParts = hostname.split('.');
-                // if www.lawslane.com -> remove www -> lawslane.com
-                const rootDomain = domainParts.length > 2 && domainParts[0] === 'www'
-                    ? domainParts.slice(1).join('.')
-                    : hostname;
-
-                newHost = `admin.${rootDomain}`;
-            }
-
-            const newUrl = new URL(url);
-            newUrl.host = newHost;
-            newUrl.pathname = pathname.replace(/^\/admin/, ''); // Remove /admin prefix because subdomain handles rewrites
-            if (newUrl.pathname === '') newUrl.pathname = '/'; // Ensure at least /
-
-            return NextResponse.redirect(newUrl);
+    // 3. Lawyer Subdomain (lawyer.lawslane.com)
+    if (hostname.startsWith('lawyer.')) {
+        // Special mappings
+        if (pathname === '/schedule') {
+            return NextResponse.rewrite(new URL('/lawyer-schedule', request.url));
         }
+
+        // Login mappings
+        // /login -> /lawyer-login
+        if (pathname === '/login') {
+            return NextResponse.rewrite(new URL('/lawyer-login', request.url));
+        }
+        // Allow /lawyer-login to pass through without being prefixed by /lawyer-dashboard
+        if (pathname.startsWith('/lawyer-login')) {
+            return NextResponse.rewrite(new URL(pathname, request.url));
+        }
+
+        // Default mapping: / -> /lawyer-dashboard
+        if (pathname === '/') {
+            return NextResponse.rewrite(new URL('/lawyer-dashboard', request.url));
+        }
+
+        // Generic rewrite: /request/123 -> /lawyer-dashboard/request/123
+        // Only if it doesn't match other known roots like /lawyer-schedule and isn't already prefixed
+        if (!pathname.startsWith('/lawyer-dashboard') && !pathname.startsWith('/lawyer-schedule') && !pathname.startsWith('/lawyer-login')) {
+            return NextResponse.rewrite(new URL(`/lawyer-dashboard${pathname}`, request.url));
+        }
+
+        return NextResponse.next();
+    }
+
+    // 4. Main Domain Redirects (Force traffic to subdomains)
+    const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'lawslane.com';
+
+    // Redirect /admin/* -> admin.lawslane.com/*
+    if (pathname.startsWith('/admin')) {
+        const newUrl = new URL(request.url);
+        let newHost = '';
+        if (hostname.includes('localhost')) {
+            newHost = 'admin.localhost:3000'; // For local testing
+        } else {
+            newHost = `admin.${rootDomain}`;
+        }
+        newUrl.host = newHost;
+        newUrl.pathname = pathname.replace(/^\/admin/, '');
+        if (newUrl.pathname === '') newUrl.pathname = '/'; // Ensure at least /
+        return NextResponse.redirect(newUrl);
+    }
+
+    // Redirect /lawyer-dashboard -> lawyer.lawslane.com
+    if (pathname.startsWith('/lawyer-dashboard')) {
+        const newUrl = new URL(request.url);
+        let newHost = '';
+        if (hostname.includes('localhost')) {
+            newHost = 'lawyer.localhost:3000'; // For local testing
+        } else {
+            newHost = `lawyer.${rootDomain}`;
+        }
+        newUrl.host = newHost;
+        newUrl.pathname = pathname.replace(/^\/lawyer-dashboard/, '');
+        if (newUrl.pathname === '') newUrl.pathname = '/'; // Ensure at least /
+        return NextResponse.redirect(newUrl);
     }
 
     return NextResponse.next();

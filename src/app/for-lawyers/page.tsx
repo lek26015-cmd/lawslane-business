@@ -350,10 +350,22 @@ export default function ForLawyersPage() {
                         <FormItem><FormLabel>ชื่อ-นามสกุล (ตามบัตรประชาชน)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                       )} />
                       <FormField control={form.control} name="phone" render={({ field }) => (
-                        <FormItem><FormLabel>เบอร์โทรศัพท์</FormLabel><FormControl><Input {...field} onChange={(e) => {
-                          const formatted = formatPhoneNumber(e.target.value);
-                          field.onChange(formatted);
-                        }} maxLength={12} /></FormControl><FormMessage /></FormItem>
+                        <FormItem>
+                          <FormLabel>เบอร์โทรศัพท์</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="0812345678"
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/[^0-9]/g, '');
+                                field.onChange(value);
+                              }}
+                              maxLength={10}
+                            />
+                          </FormControl>
+                          <CardDescription>กรอกเฉพาะตัวเลขเท่านั้น</CardDescription>
+                          <FormMessage />
+                        </FormItem>
                       )} />
                     </div>
 

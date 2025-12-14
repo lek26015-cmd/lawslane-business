@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import './globals.css';
 import React from 'react';
 import { ClientProviders } from './client-providers';
@@ -31,6 +32,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
+  const headersList = await headers();
+  const domain = headersList.get('host') || "";
+  const isSubdomain = domain.startsWith('admin.') || domain.startsWith('lawyer.');
+
   return (
     <html lang="th" suppressHydrationWarning>
       <head>
@@ -39,7 +44,7 @@ export default async function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <ClientProviders>
+        <ClientProviders isSubdomain={isSubdomain}>
           {children}
         </ClientProviders>
       </body>

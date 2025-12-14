@@ -11,13 +11,15 @@ import CookieBanner from '@/components/cookie-banner';
 
 export default function ClientLayout({
   children,
+  isSubdomain = false,
 }: {
   children: React.ReactNode;
+  isSubdomain?: boolean;
 }) {
   const pathname = usePathname();
   const [userRole, setUserRole] = useState<string | null>(null);
 
-  const isAdminPage = pathname.startsWith('/admin');
+  const isAdminPage = pathname.startsWith('/admin') || isSubdomain;
 
   if (isAdminPage) {
     return <>{children}</>;

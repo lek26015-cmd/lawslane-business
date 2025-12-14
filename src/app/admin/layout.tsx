@@ -186,15 +186,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     };
 
     const navItems = [
-        { href: "/admin", icon: <Home className="h-4 w-4" />, label: "แดชบอร์ด" },
-        { href: "/admin/customers", icon: <Users2 className="h-4 w-4" />, label: "ลูกค้า" },
-        { href: "/admin/lawyers", icon: <ShieldCheck className="h-4 w-4" />, label: "ทนายความ" },
-        { href: "/admin/financials", icon: <Landmark className="h-4 w-4" />, label: "การเงิน" },
-        { href: "/admin/tickets", icon: <Ticket className="h-4 w-4" />, label: "Ticket ช่วยเหลือ" },
-        { href: "/admin/ads", icon: <Megaphone className="h-4 w-4" />, label: "จัดการโฆษณา" },
-        { href: "/admin/email", icon: <Mail className="h-4 w-4" />, label: "ระบบอีเมล" },
-        { href: "/admin/content", icon: <FileText className="h-4 w-4" />, label: "จัดการเนื้อหา" },
-        { href: "/admin/knowledge", icon: <Landmark className="h-4 w-4" />, label: "คลังความรู้ AI" },
+        { href: "/", icon: <Home className="h-4 w-4" />, label: "แดชบอร์ด" },
+        { href: "/customers", icon: <Users2 className="h-4 w-4" />, label: "ลูกค้า" },
+        { href: "/lawyers", icon: <ShieldCheck className="h-4 w-4" />, label: "ทนายความ" },
+        { href: "/financials", icon: <Landmark className="h-4 w-4" />, label: "การเงิน" },
+        { href: "/tickets", icon: <Ticket className="h-4 w-4" />, label: "Ticket ช่วยเหลือ" },
+        { href: "/ads", icon: <Megaphone className="h-4 w-4" />, label: "จัดการโฆษณา" },
+        { href: "/email", icon: <Mail className="h-4 w-4" />, label: "ระบบอีเมล" },
+        { href: "/content", icon: <FileText className="h-4 w-4" />, label: "จัดการเนื้อหา" },
+        { href: "/knowledge", icon: <Landmark className="h-4 w-4" />, label: "คลังความรู้ AI" },
     ];
 
     const isActive = (href: string) => {
