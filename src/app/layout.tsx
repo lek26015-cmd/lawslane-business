@@ -6,8 +6,23 @@ import { ClientProviders } from './client-providers';
 
 
 export const metadata: Metadata = {
-  title: 'Lawslane AI Legal Advisor',
-  description: 'Preliminary legal assessments for SMEs in Thailand.',
+  title: 'Lawslane',
+  description: 'ปรึกษาปัญหากฎหมายกับทนายความมืออาชีพ',
+  icons: {
+    icon: '/icon.jpg',
+  },
+  openGraph: {
+    title: 'Lawslane',
+    description: 'ปรึกษาปัญหากฎหมายกับทนายความมืออาชีพ',
+    images: [
+      {
+        url: '/icon.jpg',
+        width: 800,
+        height: 600,
+        alt: 'Lawslane Logo',
+      },
+    ],
+  },
 };
 
 export default async function RootLayout({
