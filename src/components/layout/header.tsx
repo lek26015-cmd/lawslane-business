@@ -280,11 +280,9 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
             </SheetTrigger>
             <SheetContent side="left" className="p-0">
               <SheetHeader className="p-6 pb-0">
-                <Link href={getMainLink('/')}>
-                  <SheetTitle>
-                    <Logo href={getMainLink('/')} variant="color" />
-                  </SheetTitle>
-                </Link>
+                <SheetTitle>
+                  <Logo href={getMainLink('/')} variant="color" />
+                </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-6 p-6">
                 <nav className="flex flex-col gap-4 text-lg mt-6">

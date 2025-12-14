@@ -197,61 +197,69 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-[#F4F6F9]">
       <div className="container mx-auto flex justify-center p-4">
-        <Card className="w-full max-w-md shadow-xl">
-          <CardHeader className="text-center space-y-4">
-            <div className="flex justify-center">
+        <Card className="w-full max-w-[480px] shadow-2xl rounded-3xl border-none">
+          <CardHeader className="text-center space-y-6 pt-10 pb-0">
+            <div className="flex justify-center mb-2">
               <Logo href="/" variant="color" />
             </div>
-            <Tabs defaultValue="customer" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="customer" asChild>
-                  <Link href={`/login`}>ลูกค้า</Link>
-                </TabsTrigger>
-                <TabsTrigger value="lawyer" asChild>
-                  <Link href={`/lawyer-login`}>ทนายความ</Link>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <CardTitle className="text-2xl font-bold font-headline pt-4">
-              เข้าสู่ระบบ
-            </CardTitle>
-            <CardDescription>
-              ยินดีต้อนรับกลับสู่ Lawslane
-            </CardDescription>
+
+            <div className="px-6">
+              <Tabs defaultValue="customer" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 h-14 bg-slate-100 rounded-xl p-1">
+                  <TabsTrigger value="customer" asChild className="h-full rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm font-medium text-base transition-all">
+                    <Link href={`/login`}>ลูกค้า</Link>
+                  </TabsTrigger>
+                  <TabsTrigger value="lawyer" asChild className="h-full rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm font-medium text-base transition-all">
+                    <Link href={`/lawyer-login`}>ทนายความ</Link>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+
+            <div className="space-y-2">
+              <CardTitle className="text-3xl font-bold font-headline text-[#0B3979]">
+                เข้าสู่ระบบ
+              </CardTitle>
+              <CardDescription className="text-base text-slate-500">
+                ยินดีต้อนรับกลับสู่ Lawslane
+              </CardDescription>
+            </div>
           </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isGoogleLoading || isLoading}>
+          <CardContent className="p-8 pt-8 space-y-8">
+            <Button variant="outline" className="w-full h-12 rounded-full border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium text-base shadow-sm" onClick={handleGoogleSignIn} disabled={isGoogleLoading || isLoading}>
               {isGoogleLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               ) : (
-                <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                <svg className="mr-2 h-5 w-5" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
                   <path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512S0 403.3 0 261.8 106.5 11.8 244 11.8c67.7 0 130.4 27.2 175.2 73.4l-72.2 67.7C324.9 123.7 286.8 102 244 102c-88.6 0-160.2 72.3-160.2 161.8s71.6 161.8 160.2 161.8c94.9 0 133-66.3 137.4-101.4H244V261.8h244z"></path>
                 </svg>
               )}
               เข้าสู่ระบบด้วย Google
             </Button>
-            <div className="relative my-4">
+
+            <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+                <span className="w-full border-t border-slate-200" />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-white px-4 text-slate-400">
                   หรือเข้าสู่ระบบด้วยอีเมล
                 </span>
               </div>
             </div>
+
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                   control={form.control}
                   name="email"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>อีเมล</FormLabel>
+                    <FormItem className="space-y-3">
+                      <FormLabel className="text-base font-medium text-slate-700">อีเมล</FormLabel>
                       <FormControl>
-                        <Input placeholder="name@example.com" {...field} disabled={isLoading || isGoogleLoading} />
+                        <Input placeholder="name@example.com" {...field} disabled={isLoading || isGoogleLoading} className="h-12 rounded-xl bg-slate-50 border-slate-200 focus:bg-white transition-all text-base" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -261,26 +269,26 @@ export default function LoginPage() {
                   control={form.control}
                   name="password"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>รหัสผ่าน</FormLabel>
+                    <FormItem className="space-y-3">
+                      <FormLabel className="text-base font-medium text-slate-700">รหัสผ่าน</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="********" {...field} disabled={isLoading || isGoogleLoading} />
+                        <Input type="password" placeholder="********" {...field} disabled={isLoading || isGoogleLoading} className="h-12 rounded-xl bg-slate-50 border-slate-200 focus:bg-white transition-all text-base" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <TurnstileWidget onVerify={setTurnstileToken} />
-                <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button type="submit" className="w-full h-12 rounded-full text-lg font-semibold bg-[#0B3979] hover:bg-[#082a5a] shadow-lg shadow-blue-900/20" disabled={isLoading || isGoogleLoading}>
+                  {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
                   เข้าสู่ระบบ
                 </Button>
               </form>
             </Form>
-            <div className="mt-4 text-center text-sm">
-              <p>
+            <div className="text-center">
+              <p className="text-slate-500">
                 ยังไม่มีบัญชี?{' '}
-                <Link href={`/signup`} className="underline hover:text-primary">
+                <Link href={`/signup`} className="text-[#0B3979] font-semibold hover:underline decoration-2 underline-offset-4">
                   สมัครสมาชิกที่นี่
                 </Link>
               </p>

@@ -57,28 +57,15 @@ export function HomeRecommendedLawyers() {
             <div className="container mx-auto px-4 md:px-6 relative z-10">
                 {/* Header Section with Split Layout */}
                 <FadeIn direction="up">
-                    <div className="flex flex-col lg:flex-row items-center justify-between gap-10 mb-16">
-                        {/* Left: Text Content */}
-                        <div className="lg:w-1/2 text-center lg:text-left">
+                    <div className="flex flex-col items-center justify-center gap-6 mb-16 text-center">
+                        <div className="max-w-3xl">
                             <h2 className='text-3xl font-bold tracking-tight text-[#0B3979] font-headline sm:text-5xl drop-shadow-sm'>ทนายความแนะนำ</h2>
                             <p className="mt-4 text-slate-600 text-lg leading-relaxed">
                                 ทนายความที่มีประสบการณ์และความเชี่ยวชาญเฉพาะด้าน
                                 <br />
                                 พร้อมให้คำปรึกษาและดูแลคดีของคุณอย่างใกล้ชิด
                             </p>
-                            <div className="w-24 h-1.5 bg-[#0B3979] rounded-full mt-6 mx-auto lg:mx-0" />
-                        </div>
-
-                        {/* Right: Image */}
-                        <div className="lg:w-1/2 w-full">
-                            <div className="relative aspect-[16/9] lg:aspect-[2/1] rounded-3xl overflow-hidden shadow-lg transform hover:scale-[1.01] transition-transform duration-500">
-                                <img
-                                    src="/_next/image?url=%2Fpic%2Flawslane-environment.jpg&w=1920&q=75"
-                                    alt="Lawslane Environment"
-                                    className="w-full h-full object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#0B3979]/20 to-transparent" />
-                            </div>
+                            <div className="w-24 h-1.5 bg-[#0B3979] rounded-full mt-6 mx-auto" />
                         </div>
                     </div>
                 </FadeIn>
