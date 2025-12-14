@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Briefcase, CheckCircle, Clock, DollarSign, FileText, Inbox, Percent, Star, User, Settings, BarChart, CalendarPlus, FileUp, Loader2 } from 'lucide-react';
+import { Briefcase, CheckCircle, Clock, DollarSign, FileText, Inbox, Percent, Star, User, Settings, BarChart, CalendarPlus, FileUp, Loader2, ShieldX, AlertCircle } from 'lucide-react';
 import { getLawyerDashboardData, getLawyerStats, getLawyerById } from '@/lib/data';
 import type { LawyerCase, LawyerAppointmentRequest, LawyerProfile } from '@/lib/types';
 import { format } from 'date-fns';
@@ -29,6 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { useUser, useFirebase } from '@/firebase';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function LawyerDashboardPage() {
   const router = useRouter();
@@ -102,16 +101,44 @@ export default function LawyerDashboardPage() {
     { icon: <Briefcase />, label: 'เคสที่เสร็จสิ้น', value: `${stats.completedCases}`, color: 'text-purple-500', href: '#' },
   ];
 
-  const caseStatusBadge = {
-    'รอการตอบรับ': <Badge variant="destructive">ใหม่</Badge>,
-    'กำลังดำเนินการ': <Badge variant="secondary">กำลังดำเนินการ</Badge>,
-    'เสร็จสิ้น': <Badge className="bg-green-100 text-green-800">เสร็จสิ้น</Badge>,
-  };
-
-
   return (
     <div className="bg-gray-100/50 min-h-screen">
       <div className="container mx-auto px-4 md:px-6 py-8">
+
+        {/* Status Alerts */}
+        {lawyerProfile?.status === 'suspended' && (
+          <Alert variant="destructive" className="mb-6 bg-red-50 border-red-200 text-red-800">
+            <ShieldX className="h-5 w-5" />
+            <AlertTitle className="text-lg font-bold">บัญชีของคุณถูกระงับ</AlertTitle>
+            <AlertDescription>
+              กรุณาติดต่อผู้ดูแลระบบเพื่อสอบถามข้อมูลเพิ่มเติม หากคุณเชื่อว่านี่เป็นข้อผิดพลาด
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {lawyerProfile?.status === 'rejected' && (
+          <Alert variant="destructive" className="mb-6 bg-red-50 border-red-200 text-red-800">
+            <AlertCircle className="h-5 w-5" />
+            <AlertTitle className="text-lg font-bold">การสมัครของคุณไม่ผ่านการอนุมัติ</AlertTitle>
+            <AlertDescription className="mt-2 text-sm leading-relaxed">
+              <strong>เหตุผล:</strong> {lawyerProfile.rejectionReason || 'เอกสารไม่ครบถ้วนหรือไม่ถูกต้อง'}
+              <br />
+              กรุณาตรวจสอบเอกสารและทำการสมัครใหม่อีกครั้ง หรือติดต่อเจ้าหน้าที่
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {lawyerProfile?.status === 'pending' && (
+          <Alert className="mb-6 bg-yellow-50 border-yellow-200 text-yellow-800">
+            <Clock className="h-5 w-5 text-yellow-600" />
+            <AlertTitle className="text-lg font-bold text-yellow-800">อยู่ระหว่างการตรวจสอบ</AlertTitle>
+            <AlertDescription className="text-yellow-700">
+              เจ้าหน้าที่ได้รับข้อมูลของคุณแล้ว และกำลังอยู่ในขั้นตอนการตรวจสอบเอกสาร (ใช้เวลาประมาณ 24-48 ชั่วโมง)
+              <br />คุณจะได้รับอีเมลแจ้งผลการอนุมัติเมื่อดำเนินการเสร็จสิ้น
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="mb-6">
           <h1 className="text-3xl font-bold font-headline">แดชบอร์ดทนายความ</h1>
           <p className="text-muted-foreground">ภาพรวมการทำงานและจัดการเคสของคุณ</p>
@@ -269,9 +296,14 @@ export default function LawyerDashboardPage() {
                       <CheckCircle className="w-3 h-3 mr-1 rotate-45" /> ไม่ผ่านการอนุมัติ
                     </Badge>
                   )}
+                  {lawyerProfile?.status === 'suspended' && (
+                    <Badge variant="destructive">
+                      <ShieldX className="w-3 h-3 mr-1" /> ถูกระงับบัญชี
+                    </Badge>
+                  )}
                 </div>
                 <div className="flex mt-4 gap-2">
-                  <Link href={`/lawyers/${user.uid}`} passHref>
+                  <Link href={user.uid ? `/lawyers/${user.uid}` : '#'} passHref>
                     <Button variant="outline"><User className="mr-2" /> โปรไฟล์สาธารณะ</Button>
                   </Link>
                   <Link href="/schedule" passHref>

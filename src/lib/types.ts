@@ -30,7 +30,8 @@ export interface LawyerProfile {
   bankName: string;
   bankAccountNumber: string;
   lineId?: string;
-  status: 'approved' | 'pending' | 'rejected';
+  status: 'approved' | 'pending' | 'rejected' | 'suspended';
+  rejectionReason?: string;
   description: string;
   specialty: string[];
   imageUrl: string;

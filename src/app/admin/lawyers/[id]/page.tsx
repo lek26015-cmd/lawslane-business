@@ -145,6 +145,7 @@ export default function AdminLawyerDetailPage() {
     approved: <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200 gap-1"><ShieldCheck className="w-3 h-3" />อนุมัติแล้ว</Badge>,
     pending: <Badge variant="outline" className="border-yellow-600 text-yellow-700 bg-yellow-50 gap-1"><Clock className="w-3 h-3" />รอตรวจสอบ</Badge>,
     rejected: <Badge variant="destructive" className="bg-red-100/50 text-red-800 border-red-200/50 gap-1"><ShieldX className="w-3 h-3" />ถูกปฏิเสธ</Badge>,
+    suspended: <Badge variant="destructive" className="gap-1"><ShieldX className="w-3 h-3" />ถูกระงับ</Badge>,
   }
 
   // Use real documents if available, otherwise fallback to empty array
@@ -194,6 +195,9 @@ export default function AdminLawyerDetailPage() {
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleStatusChange('pending')} disabled={lawyer.status === 'pending'}>
                   ย้ายไปรอตรวจสอบ
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleStatusChange('suspended')} disabled={lawyer.status === 'suspended'} className="text-orange-600">
+                  ระงับการใช้งาน
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={(e) => { e.preventDefault(); setIsRejectDialogOpen(true); }}
