@@ -54,19 +54,29 @@ export default function LawyerDashboardPage() {
 
     async function fetchData() {
       setIsLoading(true);
-      const data = await getLawyerDashboardData(firestore!, user!.uid);
-      const statsData = await getLawyerStats(firestore!, user!.uid);
-      const profile = await getLawyerById(firestore!, user!.uid);
+      try {
+        const data = await getLawyerDashboardData(firestore!, user!.uid);
+        const statsData = await getLawyerStats(firestore!, user!.uid);
+        const profile = await getLawyerById(firestore!, user!.uid);
 
-      setRequests(data.newRequests);
-      setActiveCases(data.activeCases);
-      setCompletedCases(data.completedCases);
-      setStats(statsData);
-      setLawyerProfile(profile || null);
-      setIsLoading(false);
+        setRequests(data.newRequests);
+        setActiveCases(data.activeCases);
+        setCompletedCases(data.completedCases);
+        setStats(statsData);
+        setLawyerProfile(profile || null);
+      } catch (error) {
+        console.error("Error fetching lawyer dashboard data:", error);
+        toast({
+          variant: "destructive",
+          title: "เกิดข้อผิดพลาด",
+          description: "ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
     fetchData();
-  }, [isUserLoading, user, router, firestore]);
+  }, [isUserLoading, user, router, firestore, toast]);
 
   if (isUserLoading || isLoading || !user) {
     return (
