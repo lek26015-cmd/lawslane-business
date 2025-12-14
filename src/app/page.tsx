@@ -166,6 +166,31 @@ export default async function Home() {
           </div>
         </section>
 
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-slate-50">
+          <div className="container mx-auto px-4 md:px-6">
+            <FadeIn direction="up">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="p-3 bg-blue-100 rounded-full">
+                  <ShieldCheck className="w-8 h-8 text-blue-600" />
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground font-headline">
+                  ตรวจสอบสถานะทนายความได้จริง
+                </h2>
+                <p className="max-w-[700px] text-muted-foreground md:text-xl">
+                  เพื่อความมั่นใจสูงสุด คุณสามารถตรวจสอบใบอนุญาตว่าความของทนายความทุกคนในระบบได้ทันที ผ่านฐานข้อมูลสภาทนายความ
+                </p>
+                <div className="pt-4">
+                  <Link href="/verify-lawyer">
+                    <Button size="lg" className="text-lg">
+                      ตรวจสอบสถานะทนาย
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
         <section className="w-full py-12 md:py-24 lg:py-32">
           <div className="container mx-auto px-4 md:px-6">
             <div className="grid md:grid-cols-2 gap-12 items-center">
