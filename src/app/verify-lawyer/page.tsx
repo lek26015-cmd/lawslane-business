@@ -7,66 +7,53 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, Search, ShieldCheck, ShieldAlert, Loader2, FileCheck2, ArrowLeft } from 'lucide-react';
+import { Search, ShieldCheck, ShieldAlert, Loader2, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import { getLawyerById } from '@/lib/data';
 import type { LawyerProfile } from '@/lib/types';
 import React from 'react';
 import Link from 'next/link';
 import { useFirebase } from '@/firebase';
-import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB } from '@/lib/constants';
-import { useToast } from '@/hooks/use-toast';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
 function VerifyLawyerContent() {
   const searchParams = useSearchParams();
   const licenseNumberFromQuery = searchParams.get('licenseNumber');
   const { firestore } = useFirebase();
-  const { toast } = useToast();
 
   const [licenseNumber, setLicenseNumber] = useState(licenseNumberFromQuery || '');
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [lawyerName, setLawyerName] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState<'found' | 'not_found' | 'error' | null>(null);
   const [verifiedLawyer, setVerifiedLawyer] = useState<LawyerProfile | null>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > MAX_FILE_SIZE_BYTES) {
-        toast({
-          variant: "destructive",
-          title: "ไฟล์มีขนาดใหญ่เกินไป",
-          description: `กรุณาอัปโหลดไฟล์ขนาดไม่เกิน ${MAX_FILE_SIZE_MB}MB`
-        });
-        event.target.value = ''; // Reset input
-        return;
-      }
-      setUploadedFile(file);
-      setLicenseNumber(''); // Clear license number if a file is uploaded
-    }
-  };
-
   useEffect(() => {
     if (licenseNumberFromQuery) {
-      handleVerify(licenseNumberFromQuery);
+      handleVerify();
     }
   }, [licenseNumberFromQuery]);
 
-  const handleVerify = async (numberToVerify?: string) => {
+  const handleVerify = async () => {
     if (!firestore) return;
-    const targetLicenseNumber = numberToVerify || licenseNumber;
-    if (!targetLicenseNumber && !uploadedFile) return;
+    if (!licenseNumber && !lawyerName) return;
 
     setIsVerifying(true);
     setVerificationResult(null);
     setVerifiedLawyer(null);
 
     try {
-      if (targetLicenseNumber) {
-        // Query Firestore for lawyer with this license number
-        const lawyersRef = collection(firestore, 'lawyerProfiles');
-        const q = query(lawyersRef, where('licenseNumber', '==', targetLicenseNumber), where('status', '==', 'approved'));
+      const lawyersRef = collection(firestore, 'lawyerProfiles');
+      let q;
+
+      if (licenseNumber) {
+        q = query(lawyersRef, where('licenseNumber', '==', licenseNumber), where('status', '==', 'approved'));
+      } else if (lawyerName) {
+        // Note: This is an exact match. For partial match, we'd need a different approach (e.g. Algolia or client-side filter if small dataset)
+        // For now, assuming exact name match for simplicity and performance
+        q = query(lawyersRef, where('name', '==', lawyerName), where('status', '==', 'approved'));
+      }
+
+      if (q) {
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
@@ -76,19 +63,6 @@ function VerifyLawyerContent() {
         } else {
           setVerificationResult('not_found');
         }
-      } else if (uploadedFile) {
-        // For file upload, we can't easily "verify" against a DB without OCR or manual review.
-        // For now, we'll show a message that it's sent for manual verification, or just keep it as a "search by ID" if we had OCR.
-        // Since the user asked for "Real Data", and we don't have OCR, we should probably inform them.
-        // However, to keep the flow working as a "Request", we might want to just say "Not Found" or handle it differently.
-        // Let's assume for this feature, we only support Real Verification via License Number for now.
-        // Or we can simulate a "Pending Manual Review" state.
-        // Let's stick to License Number for real-time verification.
-        toast({
-          title: "ระบบตรวจสอบรูปภาพยังไม่เปิดให้บริการ",
-          description: "กรุณาระบุเลขใบอนุญาตว่าความเพื่อตรวจสอบทันที",
-        });
-        setVerificationResult(null);
       }
     } catch (error) {
       console.error("Verification error:", error);
@@ -165,71 +139,52 @@ function VerifyLawyerContent() {
           <Card>
             <CardHeader>
               <CardTitle>ระบุข้อมูลเพื่อตรวจสอบ</CardTitle>
-              <CardDescription>กรอกเลขใบอนุญาตว่าความ หรืออัปโหลดรูปภาพบัตรทนายความ</CardDescription>
+              <CardDescription>กรอกเลขใบอนุญาตว่าความ หรือชื่อ-นามสกุลทนายความ</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <form
-                className="space-y-2"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleVerify();
-                }}
-              >
-                <Label htmlFor="license-number">เลขใบอนุญาตว่าความ</Label>
-                <Input
-                  id="license-number"
-                  placeholder="เช่น 12345/2550"
-                  value={licenseNumber}
-                  onChange={(e) => {
-                    setLicenseNumber(e.target.value);
-                    if (uploadedFile) setUploadedFile(null);
-                  }}
-                  disabled={isVerifying || !!uploadedFile}
-                />
-              </form>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="license-number">เลขใบอนุญาตว่าความ</Label>
+                  <Input
+                    id="license-number"
+                    placeholder="เช่น 12345/2550"
+                    value={licenseNumber}
+                    onChange={(e) => setLicenseNumber(e.target.value)}
+                    disabled={isVerifying}
+                  />
                 </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">
-                    หรือ
-                  </span>
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label>อัปโหลดรูปภาพบัตรทนายความ</Label>
-                <div
-                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-                  onClick={() => document.getElementById('file-upload')?.click()}
-                >
-                  {uploadedFile ? (
-                    <div className="text-center text-green-600 font-medium">
-                      <FileCheck2 className="w-8 h-8 mx-auto mb-2" />
-                      <p>{uploadedFile.name}</p>
-                      <p className="text-xs text-muted-foreground">คลิกเพื่อเลือกไฟล์อื่น</p>
-                    </div>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-card px-2 text-muted-foreground">
+                      หรือ
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="lawyer-name">ชื่อ-นามสกุลทนายความ</Label>
+                  <Input
+                    id="lawyer-name"
+                    placeholder="ระบุชื่อ-นามสกุล"
+                    value={lawyerName}
+                    onChange={(e) => setLawyerName(e.target.value)}
+                    disabled={isVerifying}
+                  />
+                </div>
+
+                <Button onClick={handleVerify} className="w-full" size="lg" disabled={isVerifying || (!licenseNumber && !lawyerName)}>
+                  {isVerifying ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
-                    <div className="text-center text-muted-foreground">
-                      <Upload className="w-8 h-8 mx-auto mb-2" />
-                      <p>คลิกเพื่ออัปโหลด</p>
-                      <p className="text-xs">PNG, JPG, JPEG</p>
-                    </div>
+                    <Search className="mr-2 h-4 w-4" />
                   )}
-                  <Input id="file-upload" type="file" className="hidden" onChange={handleFileChange} accept="image/png, image/jpeg" />
-                </div>
+                  ตรวจสอบข้อมูล
+                </Button>
               </div>
-
-              <Button onClick={() => handleVerify()} className="w-full" size="lg" disabled={isVerifying || (!licenseNumber && !uploadedFile)}>
-                {isVerifying ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Search className="mr-2 h-4 w-4" />
-                )}
-                ตรวจสอบข้อมูล
-              </Button>
             </CardContent>
           </Card>
 
