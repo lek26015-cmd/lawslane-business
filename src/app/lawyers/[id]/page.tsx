@@ -100,6 +100,10 @@ export default function LawyerProfilePage() {
 
     const handleStartChat = () => {
         if (lawyer) {
+            if (!user) {
+                router.push('/login');
+                return;
+            }
             router.push(`/payment?type=chat&lawyerId=${lawyer.id}`);
         }
     };
