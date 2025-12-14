@@ -166,22 +166,22 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-slate-50">
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-r from-blue-900 to-cyan-600 text-white">
           <div className="container mx-auto px-4 md:px-6">
             <FadeIn direction="up">
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className="p-3 bg-blue-100 rounded-full">
-                  <ShieldCheck className="w-8 h-8 text-blue-600" />
+                <div className="p-4 bg-white/10 rounded-full backdrop-blur-sm">
+                  <ShieldCheck className="w-10 h-10 text-white" />
                 </div>
-                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground font-headline">
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white font-headline">
                   ตรวจสอบสถานะทนายความได้จริง
                 </h2>
-                <p className="max-w-[700px] text-muted-foreground md:text-xl">
+                <p className="max-w-[700px] text-blue-100 md:text-xl">
                   เพื่อความมั่นใจสูงสุด คุณสามารถตรวจสอบใบอนุญาตว่าความของทนายความทุกคนในระบบได้ทันที ผ่านฐานข้อมูลสภาทนายความ
                 </p>
                 <div className="pt-4">
                   <Link href="/verify-lawyer">
-                    <Button size="lg" className="text-lg">
+                    <Button size="lg" variant="secondary" className="text-lg font-semibold text-blue-900 hover:bg-white/90">
                       ตรวจสอบสถานะทนาย
                     </Button>
                   </Link>
@@ -193,44 +193,46 @@ export default async function Home() {
 
         <section className="w-full py-12 md:py-24 lg:py-32">
           <div className="container mx-auto px-4 md:px-6">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <FadeIn direction="right">
-                <div className="space-y-4">
-                  <p className="text-sm font-semibold text-primary uppercase">สำหรับธุรกิจ SME</p>
-                  <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground font-headline">
-                    โซลูชันกฎหมายเพื่อธุรกิจ SME
-                  </h2>
-                  <p className="text-muted-foreground text-lg">
-                    ลดความเสี่ยงทางกฎหมาย ช่วยให้ธุรกิจของคุณเติบโตได้อย่างมั่นคง ด้วยบริการที่ปรึกษากฎหมายมืออาชีพ
-                  </p>
-                  <div className="flex items-center gap-4 text-muted-foreground">
-                    <ShieldCheck className="w-6 h-6 text-primary" />
-                    <span>ร่างและตรวจสัญญาธุรกิจ</span>
+            <div className="bg-white rounded-[3rem] shadow-2xl p-8 md:p-12 lg:p-16 overflow-hidden">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <FadeIn direction="right">
+                  <div className="space-y-4">
+                    <p className="text-sm font-semibold text-primary uppercase">สำหรับธุรกิจ SME</p>
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground font-headline">
+                      โซลูชันกฎหมายเพื่อธุรกิจ SME
+                    </h2>
+                    <p className="text-muted-foreground text-lg">
+                      ลดความเสี่ยงทางกฎหมาย ช่วยให้ธุรกิจของคุณเติบโตได้อย่างมั่นคง ด้วยบริการที่ปรึกษากฎหมายมืออาชีพ
+                    </p>
+                    <div className="flex items-center gap-4 text-muted-foreground">
+                      <ShieldCheck className="w-6 h-6 text-primary" />
+                      <span>ร่างและตรวจสัญญาธุรกิจ</span>
+                    </div>
+                    <div className="flex items-center gap-4 text-muted-foreground">
+                      <FileText className="w-6 h-6 text-primary" />
+                      <span>ที่ปรึกษากฎหมายประจำบริษัท</span>
+                    </div>
+                    <div className="pt-4">
+                      <Button size="lg" asChild>
+                        <Link href={`/sme`}>ดูบริการสำหรับ SME</Link>
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-4 text-muted-foreground">
-                    <FileText className="w-6 h-6 text-primary" />
-                    <span>ที่ปรึกษากฎหมายประจำบริษัท</span>
+                </FadeIn>
+                <FadeIn direction="left">
+                  <div className="relative">
+                    <div className="aspect-video overflow-hidden rounded-2xl shadow-lg">
+                      <Image
+                        src={getImageUrl('lawyer-team-working')}
+                        alt="Man in a suit holding a gavel"
+                        fill
+                        className="object-cover"
+                        data-ai-hint={getImageHint('lawyer-team-working')}
+                      />
+                    </div>
                   </div>
-                  <div className="pt-4">
-                    <Button size="lg" asChild>
-                      <Link href={`/sme`}>ดูบริการสำหรับ SME</Link>
-                    </Button>
-                  </div>
-                </div>
-              </FadeIn>
-              <FadeIn direction="left">
-                <div className="relative">
-                  <div className="aspect-video overflow-hidden rounded-2xl shadow-2xl">
-                    <Image
-                      src={getImageUrl('lawyer-team-working')}
-                      alt="Man in a suit holding a gavel"
-                      fill
-                      className="object-cover"
-                      data-ai-hint={getImageHint('lawyer-team-working')}
-                    />
-                  </div>
-                </div>
-              </FadeIn>
+                </FadeIn>
+              </div>
             </div>
           </div>
         </section>

@@ -186,6 +186,12 @@ export default function Header({ setUserRole }: { setUserRole: (role: string | n
         </div>
 
         <nav className="hidden items-center gap-4 text-sm font-medium md:flex whitespace-nowrap">
+          <Link href="/lawyers" className={pathname.startsWith(`/lawyers`) ? activeNavLinkClasses : navLinkClasses}>
+            ค้นหาทนาย
+          </Link>
+          <Link href="/verify-lawyer" className={pathname.startsWith(`/verify-lawyer`) ? activeNavLinkClasses : navLinkClasses}>
+            ตรวจสอบทนาย
+          </Link>
           <Link href="/articles" className={pathname.startsWith(`/articles`) ? activeNavLinkClasses : navLinkClasses}>
             บทความ
           </Link>
@@ -269,6 +275,7 @@ export default function Header({ setUserRole }: { setUserRole: (role: string | n
                   <Link href="/articles" className="hover:text-primary">บทความ</Link>
                   <Link href="/for-lawyers" className="hover:text-primary">สำหรับทนายความ</Link>
                   <Link href="/lawyers" className="hover:text-primary">ค้นหาทนาย</Link>
+                  <Link href="/verify-lawyer" className="hover:text-primary">ตรวจสอบทนาย</Link>
                 </nav>
                 <div className="border-t pt-6">
                   {user ? (
