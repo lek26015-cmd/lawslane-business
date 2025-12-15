@@ -174,3 +174,35 @@ export interface AdminNotification {
   link: string; // URL to navigate to
   relatedId?: string; // ID of the ticket/lawyer/withdrawal
 }
+
+export interface LandingPage {
+  id: string;
+  slug: string;
+  title: string;
+  heroImage: string;
+  logo?: string;
+  themeColor: string;
+  content: string; // Rich text or simplified HTML
+  contactInfo: {
+    phone?: string;
+    email?: string;
+    website?: string;
+    address?: string;
+    lineId?: string;
+    facebook?: string;
+  };
+  status: 'published' | 'draft';
+  createdAt: any;
+  updatedAt: any;
+}
+
+export interface VerifiedLawyer {
+  id: string; // Usually the license number or auto-generated
+  licenseNumber: string;
+  firstName: string;
+  lastName: string;
+  status: 'active' | 'suspended' | 'struck_off' | 'pending';
+  registeredDate: string; // ISO date string or just year
+  province: string;
+  updatedAt: any;
+}

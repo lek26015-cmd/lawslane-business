@@ -248,6 +248,24 @@ export default function ForLawyersPage() {
 
       await setDoc(lawyerProfileRef, lawyerProfileData);
 
+      // 6. Add to Verified Lawyers Registry (Auto-add)
+      try {
+        const verifiedLawyerRef = doc(firestore, 'verifiedLawyers', values.licenseNumber);
+        const verifiedLawyerData = {
+          licenseNumber: values.licenseNumber,
+          firstName: values.name.split(' ')[0],
+          lastName: values.name.split(' ').slice(1).join(' ') || '',
+          status: 'pending',
+          registeredDate: new Date().toISOString(),
+          province: values.serviceProvinces.split(',')[0]?.trim() || values.address,
+          updatedAt: serverTimestamp()
+        };
+        await setDoc(verifiedLawyerRef, verifiedLawyerData);
+      } catch (err) {
+        console.error("Error adding to verified registry:", err);
+        // Don't fail the whole registration if this optional step fails
+      }
+
       // Create Admin Notification
       try {
         await addDoc(collection(firestore, 'notifications'), {

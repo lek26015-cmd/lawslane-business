@@ -113,5 +113,15 @@ service cloud.firestore {
         // Allow updating (marking as read) own notifications
         allow update: if isSignedIn() && (resource.data.recipient == request.auth.uid || resource.data.recipient == 'admin' && isAdmin());
     }
+    match /landingPages/{pageId} {
+        allow read: if true; // Public access for landing pages
+        allow create: if isSignedIn(); // Temporarily allow signed in users to create (for testing)
+        allow update, delete: if isAdmin();
+    }
+    
+    match /verifiedLawyers/{lawyerId} {
+        allow read: if true; // Public access for verification
+        allow write: if isAdmin();
+    }
   }
 }

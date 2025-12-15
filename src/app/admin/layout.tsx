@@ -16,7 +16,8 @@ import {
     LogOut,
     ChevronDown,
     Menu,
-    Mail
+    Mail,
+    LayoutTemplate
 } from 'lucide-react';
 import React, { useState, useEffect, useContext } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -204,6 +205,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { href: "/financials", icon: <Landmark className="h-4 w-4" />, label: "การเงิน" },
         { href: "/tickets", icon: <Ticket className="h-4 w-4" />, label: "Ticket ช่วยเหลือ" },
         { href: "/ads", icon: <Megaphone className="h-4 w-4" />, label: "จัดการโฆษณา" },
+        { href: "/landing-pages", icon: <LayoutTemplate className="h-4 w-4" />, label: "Landing Pages" },
+        { href: "/lawyer-registry", icon: <FileText className="h-4 w-4" />, label: "ฐานข้อมูลทนาย" },
         { href: "/email", icon: <Mail className="h-4 w-4" />, label: "ระบบอีเมล" },
         { href: "/content", icon: <FileText className="h-4 w-4" />, label: "จัดการเนื้อหา" },
         { href: "/knowledge", icon: <Landmark className="h-4 w-4" />, label: "คลังความรู้ AI" },
