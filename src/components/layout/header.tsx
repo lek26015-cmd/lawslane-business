@@ -39,7 +39,17 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
     if (domainType === 'main') return path;
     const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'lawslane.com';
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-    const host = process.env.NODE_ENV === 'development' ? 'localhost:3000' : rootDomain;
+
+    // In development, try to use the current window location if available to preserve port
+    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+      const currentHost = window.location.host;
+      // If we are on a subdomain (e.g. lawyer.localhost:9002), strip it to get back to main
+      // This is a simple heuristic; might need adjustment if complex subdomains exist
+      const mainHost = currentHost.replace('lawyer.', '').replace('admin.', '');
+      return `${window.location.protocol}//${mainHost}${path}`;
+    }
+
+    const host = process.env.NODE_ENV === 'development' ? 'localhost:9002' : rootDomain;
     return `${protocol}://${host}${path}`;
   };
 

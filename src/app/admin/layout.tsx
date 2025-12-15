@@ -217,7 +217,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const getMainLink = () => {
         const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'lawslane.com';
         const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-        const host = process.env.NODE_ENV === 'development' ? 'localhost:3000' : rootDomain;
+        // In development, try to use the current window location if available to preserve port
+        if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+            return `${window.location.protocol}//${window.location.host.replace('admin.', '')}`;
+        }
+        const host = process.env.NODE_ENV === 'development' ? 'localhost:9002' : rootDomain;
         return `${protocol}://${host}`;
     };
 

@@ -71,7 +71,8 @@ export function middleware(request: NextRequest) {
         const newUrl = new URL(request.url);
         let newHost = '';
         if (hostname.includes('localhost')) {
-            newHost = 'admin.localhost:3000'; // For local testing
+            // Preserve the current localhost port (e.g. localhost:9002)
+            newHost = `admin.${hostname}`;
         } else {
             newHost = `admin.${rootDomain}`;
         }
@@ -86,7 +87,8 @@ export function middleware(request: NextRequest) {
         const newUrl = new URL(request.url);
         let newHost = '';
         if (hostname.includes('localhost')) {
-            newHost = 'lawyer.localhost:3000'; // For local testing
+            // Preserve the current localhost port (e.g. localhost:9002)
+            newHost = `lawyer.${hostname}`;
         } else {
             newHost = `lawyer.${rootDomain}`;
         }
