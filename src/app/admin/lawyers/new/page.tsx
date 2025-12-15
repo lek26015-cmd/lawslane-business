@@ -47,6 +47,11 @@ export default function AdminLawyerCreatePage() {
       return;
     }
 
+    if (!firestore) {
+      toast({ variant: "destructive", title: "Error", description: "Database connection failed" });
+      return;
+    }
+
     setIsLoading(true);
     try {
       // 1. Create Auth User (Optional: Admin creating user might be tricky without cloud functions, 
@@ -127,7 +132,7 @@ export default function AdminLawyerCreatePage() {
             </Button>
           </div>
         </div>
-        <Card>
+        <Card className="rounded-xl">
           <CardHeader>
             <CardTitle>ข้อมูลโปรไฟล์</CardTitle>
             <CardDescription>กรอกข้อมูลและสถานะของทนายความใหม่</CardDescription>

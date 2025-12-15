@@ -82,9 +82,7 @@ export default function ArticlesPage() {
           <h1 className="text-3xl md:text-5xl font-bold tracking-tight font-headline text-white mb-4">
             คลังความรู้กฎหมายสำหรับธุรกิจ
           </h1>
-          <p className="max-w-2xl mx-auto text-slate-300 text-lg md:text-xl leading-relaxed mb-8">
-            รวมบทความและสาระน่ารู้ด้านกฎหมายที่ผ่านการคัดกรองจากทนายความผู้เชี่ยวชาญ<br className="hidden md:inline" /> เพื่อช่วยให้ธุรกิจของคุณเติบโตได้อย่างมั่นคง
-          </p>
+
 
           <div className="max-w-md mx-auto mb-8">
             <div className="relative">

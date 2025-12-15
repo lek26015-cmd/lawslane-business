@@ -64,7 +64,7 @@ export default function KnowledgeBasePage() {
                 <p className="text-muted-foreground">จัดการข้อมูลเอกสารกฎหมายสำหรับ AI Legal Advisor</p>
             </div>
 
-            <Card>
+            <Card className="rounded-xl">
                 <CardHeader>
                     <CardTitle>อัปโหลดเอกสารใหม่</CardTitle>
                     <CardDescription>

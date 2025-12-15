@@ -202,7 +202,7 @@ export default function AdminEditAdministratorPage() {
           </div>
         </div>
         <div className="grid gap-6">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
               <CardTitle>ข้อมูลผู้ใช้</CardTitle>
             </CardHeader>
@@ -221,7 +221,7 @@ export default function AdminEditAdministratorPage() {
           </Card>
 
           {/* Super Admin Toggle Card */}
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
               <CardTitle>สิทธิ์ขั้นสูง</CardTitle>
               <CardDescription>การตั้งค่าสิทธิ์ระดับผู้ดูแลระบบสูงสุด</CardDescription>
@@ -240,7 +240,7 @@ export default function AdminEditAdministratorPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
               <CardTitle>กำหนดสิทธิ์การเข้าถึง</CardTitle>
               <CardDescription>

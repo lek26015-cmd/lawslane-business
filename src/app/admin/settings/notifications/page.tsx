@@ -33,7 +33,7 @@ export default function AdminSettingsNotificationsPage() {
                     <Link href="/admin/settings/notifications" className="font-semibold text-primary">การแจ้งเตือน</Link>
                 </nav>
                 <div className="grid gap-6">
-                    <Card>
+                    <Card className="rounded-xl">
                         <CardHeader>
                             <CardTitle>การแจ้งเตือนทางอีเมล</CardTitle>
                             <CardDescription>

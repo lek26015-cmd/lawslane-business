@@ -38,7 +38,7 @@ export default function AdminSettingsPage() {
           <Link href="/admin/settings/notifications">การแจ้งเตือน</Link>
         </nav>
         <div className="grid gap-6">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
               <CardTitle>การตั้งค่าทั่วไป</CardTitle>
               <CardDescription>
@@ -61,7 +61,7 @@ export default function AdminSettingsPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
               <CardTitle>การบำรุงรักษาระบบ</CardTitle>
               <CardDescription>เปิดโหมดบำรุงรักษาเพื่อปิดการเข้าถึงเว็บไซต์ชั่วคราว</CardDescription>

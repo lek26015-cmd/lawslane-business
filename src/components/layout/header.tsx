@@ -211,6 +211,25 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
         </div>
 
         <nav className="hidden items-center gap-4 text-sm font-medium md:flex whitespace-nowrap">
+          <DropdownMenu>
+            <DropdownMenuTrigger className={cn("flex items-center gap-1 font-medium focus:outline-none", navLinkClasses)}>
+              สำหรับ SME <ChevronDown className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem asChild>
+                <Link href="/services/contracts">ร่างและตรวจสัญญาธุรกิจ</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/sme#contact">ที่ปรึกษากฎหมายประจำบริษัท</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/services/registration">จดทะเบียนและใบอนุญาต</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/sme#contact">ระงับข้อพิพาททางธุรกิจ</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Link href={getMainLink('/lawyers')} className={pathname.startsWith(`/lawyers`) ? activeNavLinkClasses : navLinkClasses}>
             ค้นหาทนาย
           </Link>
@@ -255,7 +274,14 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
             </DropdownMenu>
           ) : (
             <Link href="/login">
-              <Button variant="ghost" className={loginButtonClasses}>เข้าสู่ระบบ</Button>
+              <Button className={cn(
+                "rounded-full px-8 h-10 font-bold shadow-lg transition-all transform hover:scale-105",
+                useTransparentHeader
+                  ? "bg-[#0B3979] text-white border-2 border-white/20 hover:bg-[#082a5a]"
+                  : "bg-[#0B3979] text-white hover:bg-[#082a5a]"
+              )}>
+                เข้าสู่ระบบ
+              </Button>
             </Link>
           )}
           {user && (
@@ -297,6 +323,15 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
               <div className="flex flex-col gap-6 p-6">
                 <nav className="flex flex-col gap-4 text-lg mt-6">
                   <Link href={getMainLink('/')} className="hover:text-primary">หน้าแรก</Link>
+
+                  <div className="flex flex-col gap-2 py-2">
+                    <span className="font-semibold">สำหรับ SME</span>
+                    <Link href="/services/contracts" className="pl-4 text-base hover:text-primary text-muted-foreground">ร่างและตรวจสัญญาธุรกิจ</Link>
+                    <Link href="/sme#contact" className="pl-4 text-base hover:text-primary text-muted-foreground">ที่ปรึกษากฎหมายประจำบริษัท</Link>
+                    <Link href="/services/registration" className="pl-4 text-base hover:text-primary text-muted-foreground">จดทะเบียนและใบอนุญาต</Link>
+                    <Link href="/sme#contact" className="pl-4 text-base hover:text-primary text-muted-foreground">ระงับข้อพิพาททางธุรกิจ</Link>
+                  </div>
+
                   <Link href={getMainLink('/articles')} className="hover:text-primary">บทความ</Link>
                   <Link href={getMainLink('/for-lawyers')} className="hover:text-primary">สำหรับทนายความ</Link>
                   <Link href={getMainLink('/lawyers')} className="hover:text-primary">ค้นหาทนาย</Link>
@@ -327,7 +362,7 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
                     </div>
                   ) : (
                     <Link href="/login">
-                      <Button className="w-full">เข้าสู่ระบบ</Button>
+                      <Button className="w-full rounded-xl bg-[#0B3979] hover:bg-[#082a5a] text-white font-semibold">เข้าสู่ระบบ</Button>
                     </Link>
                   )}
                 </div>
@@ -337,6 +372,6 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
         </div>
 
       </div>
-    </header>
+    </header >
   );
 }

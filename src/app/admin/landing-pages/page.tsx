@@ -156,7 +156,7 @@ export default function AdminLandingPagesList() {
                 </Link>
             </div>
 
-            <div className="bg-white rounded-md border">
+            <div className="bg-white rounded-xl border overflow-hidden">
                 <Table>
                     <TableHeader>
                         <TableRow>

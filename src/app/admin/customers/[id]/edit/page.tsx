@@ -163,7 +163,7 @@ export default function AdminCustomerEditPage() {
             </Button>
           </div>
         </div>
-        <Card>
+        <Card className="rounded-xl">
           <CardHeader>
             <CardTitle>ข้อมูลโปรไฟล์</CardTitle>
             <CardDescription>

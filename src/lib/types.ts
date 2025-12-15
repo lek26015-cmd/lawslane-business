@@ -207,3 +207,42 @@ export interface VerifiedLawyer {
   province: string;
   updatedAt: any;
 }
+
+export interface ContractRequest {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  serviceType: string;
+  details: string;
+  fileUrl?: string;
+  fileName?: string;
+  status: 'pending' | 'quoted' | 'completed' | 'cancelled';
+  createdAt: any;
+  updatedAt: any;
+}
+
+export interface RegistrationRequest {
+  id: string;
+  contactName: string;
+  companyName: string;
+  phone: string;
+  email: string;
+  registrationType: string;
+  details: string;
+  status: 'pending' | 'processing' | 'completed' | 'cancelled';
+  createdAt: any;
+  updatedAt: any;
+}
+
+export interface SmeRequest {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  serviceType: string;
+  fileUrl?: string;
+  fileName?: string;
+  status: 'new' | 'contacted' | 'completed';
+  createdAt: any;
+}

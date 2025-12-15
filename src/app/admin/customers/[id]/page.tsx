@@ -192,7 +192,7 @@ export default function AdminCustomerDetailPage() {
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader className="pb-2">
               <CardDescription>เคสทั้งหมด</CardDescription>
               <CardTitle className="text-4xl">{cases.length}</CardTitle>
@@ -203,7 +203,7 @@ export default function AdminCustomerDetailPage() {
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader className="pb-2">
               <CardDescription>ยอดใช้จ่ายรวม (โดยประมาณ)</CardDescription>
               <CardTitle className="text-4xl">฿{estimatedTotalSpent.toLocaleString()}</CardTitle>
@@ -215,7 +215,7 @@ export default function AdminCustomerDetailPage() {
             </CardContent>
           </Card>
         </div>
-        <Card>
+        <Card className="rounded-xl">
           <CardHeader>
             <CardTitle>ประวัติเคส</CardTitle>
           </CardHeader>
@@ -257,7 +257,7 @@ export default function AdminCustomerDetailPage() {
         </Card>
       </div>
       <div>
-        <Card className="overflow-hidden">
+        <Card className="rounded-xl overflow-hidden">
           <CardHeader className="flex flex-row items-start bg-muted/50">
             <div className="grid gap-0.5">
               <CardTitle className="group flex items-center gap-2 text-lg">

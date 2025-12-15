@@ -185,7 +185,7 @@ export default function NewAdminPage() {
         </div>
       </div>
       <div className="mx-auto grid w-full max-w-2xl">
-        <Card>
+        <Card className="rounded-xl">
           <CardHeader>
             <CardTitle>ข้อมูลผู้ดูแลระบบใหม่</CardTitle>
             <CardDescription>

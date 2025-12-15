@@ -16,6 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { initializeFirebase } from '@/firebase';
 
 import { HomeRecommendedLawyers } from '@/components/home-recommended-lawyers';
+import { HomeServicesSection } from '@/components/home-services-section';
 import { FadeIn } from '@/components/fade-in';
 
 export const dynamic = 'force-dynamic';
@@ -239,6 +240,9 @@ export default async function Home() {
 
         {/* Recommended Lawyers - Client Side Fetching */}
         <HomeRecommendedLawyers />
+
+        {/* Services Section */}
+        <HomeServicesSection />
 
         <section className="w-full bg-gray-50 pb-12">
           <div className="container mx-auto px-4 md:px-6">

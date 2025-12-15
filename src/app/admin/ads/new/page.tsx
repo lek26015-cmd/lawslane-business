@@ -246,7 +246,7 @@ export default function AdminAdCreatePage() {
             </Button>
           </div>
         </div>
-        <Card>
+        <Card className="rounded-xl">
           <CardHeader>
             <CardTitle>รายละเอียดโฆษณา</CardTitle>
             <CardDescription>

@@ -337,7 +337,7 @@ export default function LawyerRegistryPage() {
 
             <div className="grid gap-8 md:grid-cols-3">
                 {/* Upload Section */}
-                <Card className="md:col-span-1 h-fit">
+                <Card className="md:col-span-1 h-fit rounded-xl">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Upload className="w-5 h-5" />
@@ -397,7 +397,7 @@ export default function LawyerRegistryPage() {
                 </Card>
 
                 {/* List Section */}
-                <Card className="md:col-span-2">
+                <Card className="md:col-span-2 rounded-xl">
                     <CardHeader>
                         <CardTitle>รายชื่อทนายที่ตรวจสอบแล้ว</CardTitle>
                         <CardDescription>รายการอัปเดตล่าสุดในระบบ</CardDescription>

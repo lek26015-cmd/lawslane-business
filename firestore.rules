@@ -128,5 +128,25 @@ service cloud.firestore {
         allow read: if true; // Public access for verification
         allow write: if isAdmin();
     }
+
+    match /siteContent/{docId} {
+        allow read: if true;
+        allow write: if isAdmin();
+    }
+
+    match /contractRequests/{requestId} {
+        allow create: if true;
+        allow read, update, delete: if isAdmin();
+    }
+
+    match /registrationRequests/{requestId} {
+        allow create: if true;
+        allow read, update, delete: if isAdmin();
+    }
+
+    match /smeRequests/{requestId} {
+        allow create: if true;
+        allow read, update, delete: if isAdmin();
+    }
   }
 }

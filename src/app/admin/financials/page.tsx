@@ -462,7 +462,7 @@ export default function AdminFinancialsPage() {
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-      <Card>
+      <Card className="rounded-xl">
         <CardHeader>
           <CardTitle>ภาพรวมการเงิน</CardTitle>
           <CardDescription>
@@ -491,7 +491,7 @@ export default function AdminFinancialsPage() {
 
             <TabsContent value="overview">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <Card>
+                <Card className="rounded-xl">
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium">
                       ยอดค่าบริการรวม
@@ -508,7 +508,7 @@ export default function AdminFinancialsPage() {
                     <CardDescription>มูลค่าธุรกรรมทั้งหมดในระบบ</CardDescription>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className="rounded-xl">
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium">
                       รายได้แพลตฟอร์ม (เดือนนี้)
@@ -527,7 +527,7 @@ export default function AdminFinancialsPage() {
                     </CardDescription>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className="rounded-xl">
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium">
                       รายได้แพลตฟอร์ม (ทั้งหมด)
@@ -548,7 +548,7 @@ export default function AdminFinancialsPage() {
                 </Card>
               </div>
 
-              <Card>
+              <Card className="rounded-xl">
                 <CardHeader>
                   <CardTitle>สถิติรายได้แพลตฟอร์มรายเดือน</CardTitle>
                 </CardHeader>
@@ -601,7 +601,7 @@ export default function AdminFinancialsPage() {
             </TabsContent>
 
             <TabsContent value="verification">
-              <Card>
+              <Card className="rounded-xl">
                 <CardHeader>
                   <CardTitle>รายการรอตรวจสอบสลิป</CardTitle>
                   <CardDescription>
@@ -669,7 +669,7 @@ export default function AdminFinancialsPage() {
             </TabsContent>
 
             <TabsContent value="transactions">
-              <Card>
+              <Card className="rounded-xl">
                 <CardHeader>
                   <CardTitle>รายการธุรกรรมทั้งหมด</CardTitle>
                   <CardDescription>
@@ -724,7 +724,7 @@ export default function AdminFinancialsPage() {
             </TabsContent>
 
             <TabsContent value="withdrawals">
-              <Card>
+              <Card className="rounded-xl">
                 <CardHeader>
                   <CardTitle>คำร้องขอถอนเงิน</CardTitle>
                   <CardDescription>รายการที่ทนายความแจ้งขอถอนเงิน</CardDescription>

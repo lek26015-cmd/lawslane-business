@@ -118,7 +118,7 @@ export default function AdminAdministratorsPage() {
           <Link href="/admin/settings/notifications">การแจ้งเตือน</Link>
         </nav>
         <div className="grid gap-6">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>

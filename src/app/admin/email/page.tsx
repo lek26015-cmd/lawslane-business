@@ -200,7 +200,7 @@ export default function AdminEmailPage() {
                     </TabsList>
 
                     <TabsContent value="inbox">
-                        <Card>
+                        <Card className="rounded-xl">
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle>ข้อความจากแบบฟอร์มติดต่อ</CardTitle>
@@ -238,7 +238,7 @@ export default function AdminEmailPage() {
                     </TabsContent>
 
                     <TabsContent value="compose">
-                        <Card>
+                        <Card className="rounded-xl">
                             <CardHeader>
                                 <CardTitle>เขียนอีเมลใหม่</CardTitle>
                                 <CardDescription>
@@ -328,7 +328,7 @@ export default function AdminEmailPage() {
                     </TabsContent>
 
                     <TabsContent value="sent">
-                        <Card>
+                        <Card className="rounded-xl">
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle>ประวัติการส่งอีเมล</CardTitle>

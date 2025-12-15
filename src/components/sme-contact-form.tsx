@@ -1,61 +1,87 @@
+
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { useFirebase } from '@/firebase';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { initializeFirebase } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
-import { TurnstileWidget } from '@/components/turnstile-widget';
-import { validateTurnstile } from '@/app/actions/turnstile';
+import { Loader2, CheckCircle2, AlertCircle, Upload, FileText, X } from 'lucide-react';
+import { uploadToR2 } from '@/app/actions/upload-r2';
+import { useToast } from '@/hooks/use-toast';
 
 export function SmeContactForm() {
-    const { firestore } = useFirebase();
+    const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [file, setFile] = useState<File | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     const [formData, setFormData] = useState({
         name: '',
-        company: '',
+        phone: '',
         email: '',
-        tel: '',
-        message: ''
+        serviceType: ''
     });
-    const [turnstileToken, setTurnstileToken] = useState<string>('');
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
         setFormData(prev => ({ ...prev, [id]: value }));
     };
 
+    const handleSelectChange = (value: string) => {
+        setFormData(prev => ({ ...prev, serviceType: value }));
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setFile(e.target.files[0]);
+        }
+    };
+
+    const removeFile = () => {
+        setFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!firestore) return;
-
         setIsLoading(true);
-        setError(null);
+
         try {
-            if (!turnstileToken) {
-                throw new Error('กรุณายืนยันตัวตนผ่าน Cloudflare Turnstile');
+            let fileUrl = '';
+            if (file) {
+                const data = new FormData();
+                data.set('file', file);
+                fileUrl = await uploadToR2(data, 'sme-requests');
             }
 
-            const validation = await validateTurnstile(turnstileToken);
-            if (!validation.success) {
-                throw new Error('การยืนยันตัวตนล้มเหลว กรุณาลองใหม่');
-            }
-
-            await addDoc(collection(firestore, 'sme_inquiries'), {
+            const { firestore: db } = initializeFirebase();
+            await addDoc(collection(db, 'smeRequests'), {
                 ...formData,
+                fileUrl,
+                fileName: file ? file.name : '',
                 status: 'new',
                 createdAt: serverTimestamp(),
             });
+
             setIsSuccess(true);
+            toast({
+                title: "ส่งข้อมูลเรียบร้อยแล้ว",
+                description: "เจ้าหน้าที่จะติดต่อกลับโดยเร็วที่สุด",
+            });
         } catch (error) {
             console.error("Error submitting form:", error);
-            setError(error instanceof Error ? error.message : 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+            toast({
+                title: "เกิดข้อผิดพลาด",
+                description: "ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
+                variant: "destructive"
+            });
         } finally {
             setIsLoading(false);
         }
@@ -63,7 +89,7 @@ export function SmeContactForm() {
 
     if (isSuccess) {
         return (
-            <Card className="shadow-xl border-none h-full flex items-center justify-center bg-green-50">
+            <Card className="shadow-xl border-none h-full flex items-center justify-center bg-green-50 rounded-3xl">
                 <CardContent className="text-center py-12 space-y-4">
                     <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
                         <CheckCircle2 className="w-8 h-8 text-green-600" />
@@ -72,7 +98,11 @@ export function SmeContactForm() {
                     <p className="text-green-700 max-w-xs mx-auto">
                         ขอบคุณที่สนใจบริการของเรา ทีมงาน Lawslane จะติดต่อกลับไปยังคุณ {formData.name} โดยเร็วที่สุดครับ
                     </p>
-                    <Button variant="outline" onClick={() => setIsSuccess(false)} className="mt-4">
+                    <Button variant="outline" onClick={() => {
+                        setIsSuccess(false);
+                        setFormData({ name: '', phone: '', email: '', serviceType: '' });
+                        setFile(null);
+                    }} className="mt-4">
                         ส่งข้อความเพิ่ม
                     </Button>
                 </CardContent>
@@ -81,79 +111,115 @@ export function SmeContactForm() {
     }
 
     return (
-        <Card className="shadow-xl border-none">
-            <CardHeader>
-                <CardTitle className="text-2xl">แบบฟอร์มติดต่อสอบถาม</CardTitle>
+        <Card className="shadow-xl border-none rounded-3xl">
+            <CardHeader className="pb-2">
+                <CardTitle className="text-2xl flex items-center gap-2 text-[#0B3979]">
+                    <FileText className="w-6 h-6" />
+                    แบบฟอร์มขอรับบริการ
+                </CardTitle>
             </CardHeader>
-            <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {error && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-md flex items-center gap-2 text-sm">
-                            <AlertCircle className="w-4 h-4" />
-                            {error}
-                        </div>
-                    )}
-                    <div className="grid grid-cols-2 gap-4">
+            <CardContent className="pt-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <Label htmlFor="name">ชื่อผู้ติดต่อ <span className="text-red-500">*</span></Label>
+                            <Label htmlFor="name" className="text-base font-medium">ชื่อ-นามสกุล / ชื่อบริษัท</Label>
                             <Input
                                 id="name"
-                                placeholder="ชื่อ-นามสกุล"
+                                placeholder="ระบุชื่อของคุณ"
                                 required
                                 value={formData.name}
                                 onChange={handleChange}
+                                className="h-12"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="company">ชื่อบริษัท</Label>
+                            <Label htmlFor="phone" className="text-base font-medium">เบอร์โทรศัพท์</Label>
                             <Input
-                                id="company"
-                                placeholder="ชื่อบริษัทของคุณ"
-                                value={formData.company}
+                                id="phone"
+                                placeholder="08x-xxx-xxxx"
+                                required
+                                value={formData.phone}
                                 onChange={handleChange}
+                                className="h-12"
                             />
                         </div>
                     </div>
+
                     <div className="space-y-2">
-                        <Label htmlFor="email">อีเมล <span className="text-red-500">*</span></Label>
+                        <Label htmlFor="email" className="text-base font-medium">อีเมล (สำหรับรับใบเสนอราคา)</Label>
                         <Input
                             id="email"
                             type="email"
-                            placeholder="name@company.com"
+                            placeholder="name@example.com"
                             required
                             value={formData.email}
                             onChange={handleChange}
+                            className="h-12"
                         />
                     </div>
+
                     <div className="space-y-2">
-                        <Label htmlFor="tel">เบอร์โทรศัพท์ <span className="text-red-500">*</span></Label>
-                        <Input
-                            id="tel"
-                            type="tel"
-                            placeholder="08x-xxx-xxxx"
-                            required
-                            value={formData.tel}
-                            onChange={handleChange}
-                        />
+                        <Label htmlFor="serviceType" className="text-base font-medium">ประเภทบริการที่ต้องการ</Label>
+                        <Select onValueChange={handleSelectChange} value={formData.serviceType}>
+                            <SelectTrigger className="h-12">
+                                <SelectValue placeholder="เลือกประเภทบริการ" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="contract">ร่างและตรวจสัญญาธุรกิจ</SelectItem>
+                                <SelectItem value="advisor">ที่ปรึกษากฎหมายประจำบริษัท</SelectItem>
+                                <SelectItem value="registration">จดทะเบียนและใบอนุญาต</SelectItem>
+                                <SelectItem value="dispute">ระงับข้อพิพาททางธุรกิจ</SelectItem>
+                                <SelectItem value="other">อื่นๆ</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
+
                     <div className="space-y-2">
-                        <Label htmlFor="message">รายละเอียดที่ต้องการปรึกษา</Label>
-                        <Textarea
-                            id="message"
-                            placeholder="เล่าปัญหาหรือบริการที่ต้องการ..."
-                            className="min-h-[120px]"
-                            value={formData.message}
-                            onChange={handleChange}
-                        />
+                        <Label className="text-base font-medium">อัปโหลดเอกสาร (ถ้ามี)</Label>
+                        <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                            <input
+                                type="file"
+                                className="hidden"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                accept=".pdf,.doc,.docx,.jpg,.png"
+                            />
+                            {file ? (
+                                <div className="flex items-center justify-center gap-2 text-primary font-medium">
+                                    <FileText className="w-5 h-5" />
+                                    {file.name}
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-6 w-6 ml-2 hover:bg-red-100 hover:text-red-600 rounded-full"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeFile();
+                                        }}
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center gap-2 text-slate-500">
+                                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mb-1">
+                                        <Upload className="w-5 h-5" />
+                                    </div>
+                                    <p>คลิกเพื่ออัปโหลดเอกสาร</p>
+                                    <p className="text-xs text-slate-400">รองรับ PDF, Word, JPG, PNG (ไม่เกิน 10MB)</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                    <TurnstileWidget onVerify={setTurnstileToken} />
-                    <Button type="submit" className="w-full text-lg h-12" disabled={isLoading}>
+
+                    <Button type="submit" className="w-full text-lg h-12 rounded-xl" disabled={isLoading}>
                         {isLoading ? (
                             <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> กำลังส่งข้อมูล...
+                                <Loader2 className="mr-2 h-5 w-5 animate-spin" /> กำลังส่งข้อมูล...
                             </>
                         ) : (
-                            'ส่งข้อความ'
+                            'ส่งข้อมูล'
                         )}
                     </Button>
                 </form>

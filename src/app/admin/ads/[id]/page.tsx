@@ -93,7 +93,7 @@ export default function AdminAdDetailsPage() {
           </div>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">จำนวนคลิกทั้งหมด</CardTitle>
               <Eye className="h-4 w-4 text-muted-foreground" />
@@ -105,7 +105,7 @@ export default function AdminAdDetailsPage() {
           </Card>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="lg:col-span-4">
+          <Card className="lg:col-span-4 rounded-xl">
             <CardHeader>
               <CardTitle>ภาพรวมโฆษณา</CardTitle>
             </CardHeader>
@@ -133,7 +133,7 @@ export default function AdminAdDetailsPage() {
               </div>
             </CardContent>
           </Card>
-          <Card className="lg:col-span-3">
+          <Card className="lg:col-span-3 rounded-xl">
             <CardHeader>
               <CardTitle>สถิติผู้เข้าชม</CardTitle>
               <CardDescription>

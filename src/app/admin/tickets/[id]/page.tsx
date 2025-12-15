@@ -181,7 +181,7 @@ function AdminTicketDetailPageContent() {
             </div>
 
             <div className="space-y-6">
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>สรุปข้อมูล</CardTitle>
                     </CardHeader>
@@ -205,7 +205,7 @@ function AdminTicketDetailPageContent() {
                         </div>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>การดำเนินการ</CardTitle>
                     </CardHeader>

@@ -157,7 +157,7 @@ export default function AdminAdEditPage() {
             </Button>
           </div>
         </div>
-        <Card>
+        <Card className="rounded-xl">
           <CardHeader>
             <CardTitle>รายละเอียดโฆษณา</CardTitle>
             <CardDescription>

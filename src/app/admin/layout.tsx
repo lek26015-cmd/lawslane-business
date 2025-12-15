@@ -1,10 +1,14 @@
-
 'use client';
 
 import Link from 'next/link';
 import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
     Gavel,
-    Home,
+    LayoutDashboard,
     Landmark,
     Settings,
     ShieldCheck,
@@ -17,7 +21,17 @@ import {
     ChevronDown,
     Menu,
     Mail,
-    LayoutTemplate
+    LayoutTemplate,
+    Database,
+    FileSignature,
+    Building2,
+    Briefcase,
+    FileEdit,
+    Scale,
+    BrainCircuit,
+    Library,
+    UserCheck,
+    ChevronRight // Added ChevronRight
 } from 'lucide-react';
 import React, { useState, useEffect, useContext } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -51,6 +65,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [userRole, setUserRole] = useState<string | null>(null);
+
+    // State for collapsible sections, default "ภาพรวม" open
+    const [openSection, setOpenSection] = useState<string | null>("ภาพรวม");
+
+    const toggleSection = (title: string) => {
+        setOpenSection(prev => prev === title ? null : title);
+    };
 
     useEffect(() => {
         if (!areServicesAvailable || !auth || !firestore) {
@@ -198,18 +219,52 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }
     };
 
-    const navItems = [
-        { href: "/", icon: <Home className="h-4 w-4" />, label: "แดชบอร์ด" },
-        { href: "/customers", icon: <Users2 className="h-4 w-4" />, label: "ลูกค้า" },
-        { href: "/lawyers", icon: <ShieldCheck className="h-4 w-4" />, label: "ทนายความ" },
-        { href: "/financials", icon: <Landmark className="h-4 w-4" />, label: "การเงิน" },
-        { href: "/tickets", icon: <Ticket className="h-4 w-4" />, label: "Ticket ช่วยเหลือ" },
-        { href: "/ads", icon: <Megaphone className="h-4 w-4" />, label: "จัดการโฆษณา" },
-        { href: "/landing-pages", icon: <LayoutTemplate className="h-4 w-4" />, label: "Landing Pages" },
-        { href: "/lawyer-registry", icon: <FileText className="h-4 w-4" />, label: "ฐานข้อมูลทนาย" },
-        { href: "/email", icon: <Mail className="h-4 w-4" />, label: "ระบบอีเมล" },
-        { href: "/content", icon: <FileText className="h-4 w-4" />, label: "จัดการเนื้อหา" },
-        { href: "/knowledge", icon: <Landmark className="h-4 w-4" />, label: "คลังความรู้ AI" },
+    type NavItem = {
+        href: string;
+        icon: React.ReactNode;
+        label: string;
+    };
+
+    type NavSection = {
+        title: string; // Made required for key
+        items: NavItem[];
+    };
+
+    const navSections: NavSection[] = [
+        {
+            title: "จัดการผู้ใช้งาน",
+            items: [
+                { href: "/customers", icon: <Users2 className="h-4 w-4" />, label: "ลูกค้า" },
+                { href: "/lawyers", icon: <UserCheck className="h-4 w-4" />, label: "ทนายความ" },
+                { href: "/lawyer-registry", icon: <Database className="h-4 w-4" />, label: "ฐานข้อมูลทนาย" },
+            ]
+        },
+        {
+            title: "คำขอใช้บริการ",
+            items: [
+                { href: "/admin/contract-requests", icon: <FileSignature className="h-4 w-4" />, label: "คำขอร่างสัญญา" },
+                { href: "/admin/registration-requests", icon: <Building2 className="h-4 w-4" />, label: "คำขอจดทะเบียน" },
+                { href: "/admin/sme-requests", icon: <Briefcase className="h-4 w-4" />, label: "คำขอ SME" },
+            ]
+        },
+        {
+            title: "เนื้อหาและการตลาด",
+            items: [
+                { href: "/landing-pages", icon: <LayoutTemplate className="h-4 w-4" />, label: "Landing Pages" },
+                { href: "/ads", icon: <Megaphone className="h-4 w-4" />, label: "จัดการโฆษณา" },
+                { href: "/content", icon: <FileEdit className="h-4 w-4" />, label: "จัดการเนื้อหา" },
+                { href: "/admin/legal", icon: <Scale className="h-4 w-4" />, label: "เอกสารทางกฎหมาย" },
+                { href: "/knowledge", icon: <BrainCircuit className="h-4 w-4" />, label: "คลังความรู้ AI" },
+            ]
+        },
+        {
+            title: "ระบบและสนับสนุน",
+            items: [
+                { href: "/financials", icon: <Landmark className="h-4 w-4" />, label: "การเงิน" },
+                { href: "/tickets", icon: <Ticket className="h-4 w-4" />, label: "Ticket ช่วยเหลือ" },
+                { href: "/email", icon: <Mail className="h-4 w-4" />, label: "ระบบอีเมล" },
+            ]
+        }
     ];
 
     const isActive = (href: string) => {
@@ -238,10 +293,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     return (
         <div className="grid h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-            <div className="hidden border-r bg-muted/40 md:block">
+            <div className="hidden border-r border-slate-700 bg-[#0f172a] text-slate-100 md:block">
                 <div className="flex h-full max-h-screen flex-col gap-2">
-                    <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-                        <Link href="/admin" className="flex items-center gap-2 font-semibold">
+                    <div className="flex h-14 items-center border-b border-slate-700 px-4 lg:h-[60px] lg:px-6">
+                        <Link href="/admin" className="flex items-center gap-2 font-semibold text-white">
                             <Gavel className="h-6 w-6" />
                             <span className="">Lawslane Admin</span>
                         </Link>
@@ -251,23 +306,48 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </div>
                     <div className="flex-1 overflow-auto py-2">
                         <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.label}
-                                    href={item.href}
-                                    className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                                        isActive(item.href) && "bg-muted text-primary"
-                                    )}
+                            <Link
+                                href="/admin"
+                                className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-slate-100 transition-all hover:bg-slate-800 hover:text-white mb-2",
+                                    pathname === "/admin" && "bg-slate-800 text-white"
+                                )}
+                            >
+                                <LayoutDashboard className="h-4 w-4" />
+                                แดชบอร์ด
+                            </Link>
+
+                            {navSections.map((section, index) => (
+                                <Collapsible
+                                    key={section.title}
+                                    open={openSection === section.title}
+                                    onOpenChange={() => toggleSection(section.title)}
+                                    className="mb-2"
                                 >
-                                    {item.icon}
-                                    {item.label}
-                                </Link>
+                                    <CollapsibleTrigger className="flex w-full items-center justify-between px-2 py-2 text-xs font-semibold text-slate-400 tracking-wider uppercase hover:text-white transition-colors">
+                                        {section.title}
+                                        <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", openSection !== section.title && "-rotate-90")} />
+                                    </CollapsibleTrigger>
+                                    <CollapsibleContent className="space-y-1 overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+                                        {section.items.map((item) => (
+                                            <Link
+                                                key={item.label}
+                                                href={item.href}
+                                                className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-sky-300 transition-all hover:bg-slate-800 hover:text-white",
+                                                    isActive(item.href) && "bg-slate-800 text-white"
+                                                )}
+                                            >
+                                                {item.icon}
+                                                {item.label}
+                                            </Link>
+                                        ))}
+                                    </CollapsibleContent>
+                                </Collapsible>
                             ))}
 
-                            <div className="my-2 border-t border-border/50" />
+                            <div className="my-2 border-t border-slate-700" />
                             <Link
                                 href={getMainLink()}
-                                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                                className="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
                             >
                                 <ArrowLeftCircle className="h-4 w-4" />
                                 กลับไปหน้าเว็บไซต์
@@ -275,23 +355,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         </nav>
                     </div>
                     <div className="mt-auto p-4 space-y-4">
-                        <div className="border-t pt-4">
+                        <div className="border-t border-slate-700 pt-4">
                             <div className="flex justify-end mb-2 px-2 md:hidden">
                                 <NotificationBell />
                             </div>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="w-full justify-start px-2 h-auto">
+                                    <Button variant="ghost" className="w-full justify-start px-2 h-auto hover:bg-slate-800 hover:text-white text-slate-200">
                                         <div className="flex items-center gap-3">
-                                            <Avatar className="h-9 w-9">
+                                            <Avatar className="h-9 w-9 border border-slate-600">
                                                 <AvatarImage src={currentUser?.photoURL || ''} />
-                                                <AvatarFallback>{currentUser?.displayName?.charAt(0) || currentUser?.email?.charAt(0)}</AvatarFallback>
+                                                <AvatarFallback className="bg-slate-700 text-white">{currentUser?.displayName?.charAt(0) || currentUser?.email?.charAt(0)}</AvatarFallback>
                                             </Avatar>
                                             <div className="flex-1 text-left">
                                                 <p className="text-sm font-semibold">{currentUser?.displayName || currentUser?.email}</p>
-                                                <p className="text-xs text-muted-foreground">{userRole}</p>
+                                                <p className="text-xs text-slate-400">{userRole}</p>
                                             </div>
-                                            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                                            <ChevronDown className="h-4 w-4 text-slate-400" />
                                         </div>
                                     </Button>
                                 </DropdownMenuTrigger>
@@ -344,17 +424,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                     <Gavel className="h-6 w-6" />
                                     <span className="sr-only">Lawslane Admin</span>
                                 </Link>
-                                {navItems.map((item) => (
-                                    <Link
-                                        key={item.label}
-                                        href={item.href}
-                                        className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground",
-                                            isActive(item.href) && "bg-muted text-foreground"
-                                        )}
+                                {navSections.map((section, index) => (
+                                    <Collapsible
+                                        key={section.title}
+                                        open={openSection === section.title}
+                                        onOpenChange={() => toggleSection(section.title)}
+                                        className="mb-2"
                                     >
-                                        {item.icon}
-                                        {item.label}
-                                    </Link>
+                                        <CollapsibleTrigger className="flex w-full items-center justify-between px-2 py-2 text-sm font-semibold text-muted-foreground tracking-wider uppercase hover:text-foreground transition-colors">
+                                            {section.title}
+                                            <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", openSection !== section.title && "-rotate-90")} />
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent className="space-y-1 pt-1 overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+                                            {section.items.map((item) => (
+                                                <Link
+                                                    key={item.label}
+                                                    href={item.href}
+                                                    className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground",
+                                                        isActive(item.href) && "bg-muted text-foreground"
+                                                    )}
+                                                >
+                                                    {item.icon}
+                                                    {item.label}
+                                                </Link>
+                                            ))}
+                                        </CollapsibleContent>
+                                    </Collapsible>
                                 ))}
 
                                 <div className="my-2 border-t border-border/50" />
@@ -373,7 +468,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </div>
                     <NotificationBell />
                 </header>
-                {React.isValidElement(children) ? React.cloneElement(children as any, { userRole }) : children}
+                <main className="flex flex-1 flex-col gap-4 p-8 lg:gap-6 lg:p-12">
+                    {React.isValidElement(children) ? React.cloneElement(children as any, { userRole }) : children}
+                </main>
             </div>
         </div >
     );

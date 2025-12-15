@@ -38,7 +38,7 @@ export default function AdminFinancialSettingsPage() {
           <Link href="/admin/settings/notifications">การแจ้งเตือน</Link>
         </nav>
         <div className="grid gap-6">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
               <CardTitle>ค่าธรรมเนียมแพลตฟอร์ม</CardTitle>
               <CardDescription>
@@ -55,7 +55,7 @@ export default function AdminFinancialSettingsPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
               <CardTitle>รอบการจ่ายเงิน</CardTitle>
               <CardDescription>ตั้งค่ารอบการจ่ายเงินส่วนแบ่งให้ทนายความ</CardDescription>

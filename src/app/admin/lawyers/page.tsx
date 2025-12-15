@@ -144,11 +144,12 @@ export default function AdminLawyersPage() {
         approved: <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">อนุมัติแล้ว</Badge>,
         pending: <Badge variant="outline" className="border-yellow-600 text-yellow-700 bg-yellow-50">รอตรวจสอบ</Badge>,
         rejected: <Badge variant="destructive" className="bg-red-100/50 text-red-800 border-red-200/50">ถูกปฏิเสธ</Badge>,
+        suspended: <Badge variant="destructive">ระงับการใช้งาน</Badge>,
     }
 
     return (
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-            <Card>
+            <Card className="rounded-xl">
                 <CardHeader>
                     <CardTitle>จัดการข้อมูลทนายความ</CardTitle>
                     <CardDescription>ตรวจสอบ, อนุมัติ, และจัดการโปรไฟล์ทนายความในระบบ</CardDescription>

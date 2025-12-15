@@ -236,7 +236,7 @@ export default function NewLandingPage() {
 
             <div className="grid gap-6">
                 {/* Basic Info */}
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>ข้อมูลทั่วไป</CardTitle>
                     </CardHeader>
@@ -275,7 +275,7 @@ export default function NewLandingPage() {
                 </Card>
 
                 {/* Images */}
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>รูปภาพ</CardTitle>
                     </CardHeader>
@@ -316,7 +316,7 @@ export default function NewLandingPage() {
                 </Card>
 
                 {/* Content */}
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>เนื้อหา (Content)</CardTitle>
                     </CardHeader>
@@ -335,7 +335,7 @@ export default function NewLandingPage() {
                 </Card>
 
                 {/* Contact Info */}
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>ข้อมูลติดต่อ</CardTitle>
                     </CardHeader>

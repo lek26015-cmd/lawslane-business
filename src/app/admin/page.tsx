@@ -94,7 +94,7 @@ export default function AdminDashboard() {
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
         {userRole === 'Super Admin' && (
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 รายได้รวม (จำลอง)
@@ -109,7 +109,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         )}
-        <Card>
+        <Card className="rounded-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               ผู้ใช้งานทั้งหมด
@@ -123,7 +123,7 @@ export default function AdminDashboard() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ticket ที่เปิดอยู่</CardTitle>
             <Ticket className="h-4 w-4 text-muted-foreground" />
@@ -135,7 +135,7 @@ export default function AdminDashboard() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               ทนายรออนุมัติ
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
         </Card>
       </div>
       <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-        <Card className="xl:col-span-2">
+        <Card className="xl:col-span-2 rounded-xl overflow-hidden">
           <CardHeader className="flex flex-row items-center">
             <div className="grid gap-2">
               <CardTitle>ทนายความรอการอนุมัติ</CardTitle>
@@ -229,7 +229,7 @@ export default function AdminDashboard() {
             </Table>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-xl">
           <CardHeader>
             <CardTitle>Ticket ช่วยเหลือล่าสุด</CardTitle>
             <CardDescription>
