@@ -61,7 +61,9 @@ export default function AdminAdministratorsPage() {
         if (userDoc.exists()) {
           const userData = userDoc.data();
           // Check for 'Super Admin' role or superAdmin boolean flag
-          const role = userData.role === 'Super Admin' || userData.superAdmin === true ? 'Super Admin' : userData.role;
+          // Hardcode check for specific email/UID to bootstrap super admin
+          const isSuperAdmin = userData.uid === 'wS9w7ysNYUajNsBYZ6C7n2Afe9H3' || userDoc.id === 'wS9w7ysNYUajNsBYZ6C7n2Afe9H3' || userData.email === 'lek26015@gmail.com' || userData.email === 'lek.26015@gmail.com' || userData.role === 'Super Admin' || userData.superAdmin === true;
+          const role = isSuperAdmin ? 'Super Admin' : userData.role;
           setCurrentUserRole(role);
         }
       } catch (error) {
@@ -171,7 +173,9 @@ export default function AdminAdministratorsPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary">{admin.role}</Badge>
+                          <Badge variant="secondary">
+                            {admin.uid === 'wS9w7ysNYUajNsBYZ6C7n2Afe9H3' || admin.id === 'wS9w7ysNYUajNsBYZ6C7n2Afe9H3' || admin.email === 'lek26015@gmail.com' || admin.email === 'lek.26015@gmail.com' || (admin.role as any) === 'Super Admin' || admin.superAdmin ? 'Super Admin' : admin.role}
+                          </Badge>
                         </TableCell>
                         <TableCell>
                           {isSuperAdmin && (

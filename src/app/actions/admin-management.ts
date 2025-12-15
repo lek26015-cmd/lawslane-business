@@ -49,12 +49,15 @@ export async function createAdminUser(prevState: any, formData: FormData) {
         });
 
         // 4. Create User Document in Firestore
+        const permissions = formData.get('permissions') ? JSON.parse(formData.get('permissions') as string) : {};
+
         await firestore.collection('users').doc(userRecord.uid).set({
             uid: userRecord.uid,
             name: name,
             email: email,
             role: 'admin',
             superAdmin: role === 'super_admin',
+            permissions: permissions, // Save permissions directly
             createdAt: new Date(),
             avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`
         });

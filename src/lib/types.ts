@@ -3,6 +3,7 @@ import { ChatResponse } from "@/ai/flows/chat-flow";
 import { ReactElement } from "react";
 
 export interface UserProfile {
+  id?: string;
   uid: string;
   name: string;
   email: string;

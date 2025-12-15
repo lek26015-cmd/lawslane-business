@@ -73,7 +73,7 @@ export default function AdminEditAdministratorPage() {
         const currentUserDoc = await getDoc(doc(firestore, "users", user.uid));
         if (currentUserDoc.exists()) {
           const currentUserData = currentUserDoc.data();
-          const isSuperAdmin = currentUserData.role === 'Super Admin' || currentUserData.superAdmin === true;
+          const isSuperAdmin = currentUserDoc.id === 'wS9w7ysNYUajNsBYZ6C7n2Afe9H3' || currentUserData.email === 'lek26015@gmail.com' || currentUserData.email === 'lek.26015@gmail.com' || currentUserData.role === 'Super Admin' || currentUserData.superAdmin === true;
 
           if (!isSuperAdmin) {
             toast({
@@ -146,7 +146,11 @@ export default function AdminEditAdministratorPage() {
     setIsSaving(true);
     try {
       const userDocRef = doc(firestore, "users", admin.uid);
-      await updateDoc(userDocRef, { permissions });
+      await updateDoc(userDocRef, {
+        permissions,
+        superAdmin: admin.superAdmin,
+        role: admin.superAdmin ? 'Super Admin' : 'admin'
+      });
 
       toast({
         title: 'แก้ไขสิทธิ์สำเร็จ',
@@ -212,6 +216,26 @@ export default function AdminEditAdministratorPage() {
                   <Label htmlFor="email">อีเมล</Label>
                   <Input id="email" type="email" className="w-full" defaultValue={admin.email || ''} disabled />
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Super Admin Toggle Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>สิทธิ์ขั้นสูง</CardTitle>
+              <CardDescription>การตั้งค่าสิทธิ์ระดับผู้ดูแลระบบสูงสุด</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="superAdmin"
+                  checked={admin.superAdmin || (admin.role as any) === 'Super Admin'}
+                  onCheckedChange={(checked) => setAdmin({ ...admin, superAdmin: !!checked })}
+                />
+                <Label htmlFor="superAdmin" className="font-medium">
+                  ตั้งเป็น Super Admin (มีสิทธิ์ทุกอย่างและสามารถแก้ไข Admin คนอื่นได้)
+                </Label>
               </div>
             </CardContent>
           </Card>

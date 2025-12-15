@@ -32,6 +32,8 @@ import { useFirebase } from '@/firebase'
 import type { LawyerProfile } from '@/lib/types';
 import { Checkbox } from '@/components/ui/checkbox'
 
+import { doc, updateDoc } from 'firebase/firestore';
+
 export default function AdminLawyerEditPage() {
   const params = useParams()
   const router = useRouter()
@@ -46,12 +48,30 @@ export default function AdminLawyerEditPage() {
     getLawyerById(firestore, id as string).then(l => setLawyer(l || null));
   }, [id, firestore]);
 
-  const handleSaveChanges = () => {
-    toast({
-      title: "บันทึกข้อมูลสำเร็จ",
-      description: `ข้อมูลของทนาย ${lawyer?.name} ได้รับการอัปเดตแล้ว`,
-    })
-    router.push(`/admin/lawyers/${id}`);
+  const handleSaveChanges = async () => {
+    if (!lawyer || !firestore || !id) return;
+
+    try {
+      const lawyerRef = doc(firestore, 'lawyerProfiles', id as string);
+      await updateDoc(lawyerRef, {
+        name: lawyer.name,
+        status: lawyer.status,
+        specialty: lawyer.specialty
+      });
+
+      toast({
+        title: "บันทึกข้อมูลสำเร็จ",
+        description: `ข้อมูลของทนาย ${lawyer.name} ได้รับการอัปเดตแล้ว`,
+      })
+      router.push(`/admin/lawyers/${id}`);
+    } catch (error) {
+      console.error("Error updating lawyer:", error);
+      toast({
+        title: "เกิดข้อผิดพลาด",
+        description: "ไม่สามารถบันทึกข้อมูลได้",
+        variant: "destructive"
+      });
+    }
   }
 
   if (!lawyer) {
@@ -113,12 +133,16 @@ export default function AdminLawyerEditPage() {
                   id="name"
                   type="text"
                   className="w-full"
-                  defaultValue={lawyer.name}
+                  value={lawyer.name}
+                  onChange={(e) => setLawyer({ ...lawyer, name: e.target.value })}
                 />
               </div>
               <div className="grid gap-3">
                 <Label htmlFor="status">สถานะ</Label>
-                <Select defaultValue={lawyer.status}>
+                <Select
+                  value={lawyer.status}
+                  onValueChange={(val: any) => setLawyer({ ...lawyer, status: val })}
+                >
                   <SelectTrigger id="status">
                     <SelectValue placeholder="เลือกสถานะ" />
                   </SelectTrigger>
@@ -126,6 +150,7 @@ export default function AdminLawyerEditPage() {
                     <SelectItem value="approved">อนุมัติแล้ว</SelectItem>
                     <SelectItem value="pending">รอตรวจสอบ</SelectItem>
                     <SelectItem value="rejected">ถูกปฏิเสธ</SelectItem>
+                    <SelectItem value="suspended">ถูกระงับ</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -136,7 +161,14 @@ export default function AdminLawyerEditPage() {
                     <div key={spec} className="flex items-center space-x-2 p-2 rounded-md bg-secondary/50">
                       <Checkbox
                         id={`spec-${spec}`}
-                        defaultChecked={lawyer.specialty.includes(spec)}
+                        checked={lawyer.specialty.includes(spec)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setLawyer({ ...lawyer, specialty: [...lawyer.specialty, spec] });
+                          } else {
+                            setLawyer({ ...lawyer, specialty: lawyer.specialty.filter(s => s !== spec) });
+                          }
+                        }}
                       />
                       <Label htmlFor={`spec-${spec}`} className="text-sm font-normal">{spec}</Label>
                     </div>

@@ -99,6 +99,7 @@ export default function NewAdminPage() {
     if (!firestore) return;
     setIsLoading(true);
     formData.append('role', role);
+    formData.append('permissions', JSON.stringify(permissions));
 
     try {
       // 1. Create the user via server action

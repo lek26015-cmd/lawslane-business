@@ -13,13 +13,45 @@ import type { LawyerProfile } from '@/lib/types';
 import React from 'react';
 import Link from 'next/link';
 import { useFirebase } from '@/firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
+
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 function VerifyLawyerContent() {
   const searchParams = useSearchParams();
   const licenseNumberFromQuery = searchParams.get('licenseNumber');
   const { firestore } = useFirebase();
+
+  const [lastUpdated, setLastUpdated] = useState<string>('');
+
+  useEffect(() => {
+    const fetchLastUpdated = async () => {
+      if (!firestore) return;
+      try {
+        const q = query(collection(firestore, 'verifiedLawyers'), orderBy('updatedAt', 'desc'), limit(1));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+          const data = snapshot.docs[0].data();
+          // Handle Firestore Timestamp or Date string/object
+          const date = data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(data.updatedAt);
+          const formattedDate = date.toLocaleDateString('th-TH', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+          setLastUpdated(`อัปเดตข้อมูลเมื่อ ${formattedDate}`);
+        } else {
+          setLastUpdated('อัปเดตล่าสุด: วันนี้');
+        }
+      } catch (error) {
+        console.error("Error fetching last updated:", error);
+        setLastUpdated('อัปเดตล่าสุด: วันนี้');
+      }
+    };
+    fetchLastUpdated();
+  }, [firestore]);
 
   const [licenseNumber, setLicenseNumber] = useState(licenseNumberFromQuery || '');
   const [lawyerName, setLawyerName] = useState('');
@@ -174,10 +206,10 @@ function VerifyLawyerContent() {
               <div className="flex items-center space-x-4 text-slate-400 text-sm">
                 <div className="flex items-center">
                   <ShieldCheck className="w-4 h-4 mr-2" />
-                  ข้อมูลจากสภาทนายความ
+                  ข้อมูลนี้มาจากฐานข้อมูลของ lawslane เท่านั้น
                 </div>
                 <div className="w-1 h-1 bg-slate-300 rounded-full" />
-                <div>อัปเดตล่าสุด: วันนี้</div>
+                <div>{lastUpdated || 'กำลังโหลด...'}</div>
               </div>
             </div>
           </div>
