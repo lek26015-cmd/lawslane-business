@@ -11,6 +11,9 @@ import { doc, setDoc, serverTimestamp, addDoc, collection } from 'firebase/fires
 import { useFirebase } from '@/firebase';
 import { uploadToR2 } from '../actions/upload-r2';
 
+import { TurnstileWidget } from '@/components/turnstile-widget';
+import { validateTurnstile } from '@/app/actions/turnstile';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -91,6 +94,9 @@ const formSchema = z.object({
   specialties: z.array(z.string()).refine(value => value.some(item => item), {
     message: 'กรุณาเลือกความเชี่ยวชาญอย่างน้อย 1 อย่าง',
   }),
+  terms: z.boolean().refine(val => val === true, {
+    message: 'กรุณายอมรับนโยบายความเป็นส่วนตัว',
+  }),
 }).refine((data) => data.bankAccountName === data.name, {
   message: "ชื่อบัญชีธนาคารต้องตรงกับชื่อ-นามสกุลผู้สมัคร",
   path: ["bankAccountName"],
@@ -103,6 +109,7 @@ export default function ForLawyersPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [idCardFile, setIdCardFile] = useState<File | null>(null);
   const [licenseFile, setLicenseFile] = useState<File | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
 
   const benefits = [
     {
@@ -139,6 +146,7 @@ export default function ForLawyersPage() {
       bankAccountNumber: '',
       lineId: '',
       specialties: [],
+      terms: false,
     },
   });
 
@@ -183,6 +191,15 @@ export default function ForLawyersPage() {
     setIsLoading(true);
 
     try {
+      if (!turnstileToken) {
+        throw new Error('กรุณายืนยันตัวตนผ่าน Cloudflare Turnstile');
+      }
+
+      const validation = await validateTurnstile(turnstileToken);
+      if (!validation.success) {
+        throw new Error('การยืนยันตัวตนล้มเหลว กรุณาลองใหม่');
+      }
+
       // 1. Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
@@ -216,6 +233,8 @@ export default function ForLawyersPage() {
         registeredAt: serverTimestamp(),
         status: 'active',
         avatar: '',
+        termsAccepted: true,
+        termsAcceptedAt: serverTimestamp(),
       };
 
       await setDoc(userDocRef, userProfileData);
@@ -649,6 +668,29 @@ export default function ForLawyersPage() {
                         </div>
                       </div>
                     </div>
+
+                    <FormField
+                      control={form.control}
+                      name="terms"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>
+                              ฉันยอมรับ <Link href="/privacy" className="text-primary hover:underline">นโยบายความเป็นส่วนตัว</Link> และ <Link href="/terms" className="text-primary hover:underline">ข้อกำหนดการใช้งาน</Link>
+                            </FormLabel>
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    <TurnstileWidget onVerify={setTurnstileToken} />
 
                     <Button type="submit" className="w-full rounded-full" size="lg" disabled={isLoading}>
                       {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

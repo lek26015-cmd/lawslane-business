@@ -32,6 +32,8 @@ import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
 import logoLawslane from '@/pic/logo-lawslane.jpg';
 import Logo from '@/components/logo';
+import { TurnstileWidget } from '@/components/turnstile-widget';
+import { validateTurnstile } from '@/app/actions/turnstile';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'รูปแบบอีเมลไม่ถูกต้อง' }),
@@ -43,6 +45,7 @@ export default function AdminLoginPage() {
   const { auth, firestore } = useFirebase();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,6 +66,15 @@ export default function AdminLoginPage() {
     }
     setIsLoading(true);
     try {
+      if (!turnstileToken) {
+        throw new Error('กรุณายืนยันตัวตนผ่าน Cloudflare Turnstile');
+      }
+
+      const validation = await validateTurnstile(turnstileToken);
+      if (!validation.success) {
+        throw new Error('การยืนยันตัวตนล้มเหลว กรุณาลองใหม่');
+      }
+
       // In a real app, you should also verify the user's role (admin) after login.
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
@@ -150,6 +162,7 @@ export default function AdminLoginPage() {
                     </FormItem>
                   )}
                 />
+                <TurnstileWidget onVerify={setTurnstileToken} />
                 <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   เข้าสู่ระบบ

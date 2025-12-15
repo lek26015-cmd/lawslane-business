@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { useFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 
 import { Button } from '@/components/ui/button';
@@ -22,11 +22,15 @@ import { Separator } from '@/components/ui/separator';
 import { TurnstileWidget } from '@/components/turnstile-widget';
 import { validateTurnstile } from '@/app/actions/turnstile';
 // import { Locale } from '@/../i18n.config';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'ชื่อต้องมีอย่างน้อย 2 ตัวอักษร' }),
   email: z.string().email({ message: 'รูปแบบอีเมลไม่ถูกต้อง' }),
   password: z.string().min(6, { message: 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร' }),
+  terms: z.boolean().refine(val => val === true, {
+    message: 'กรุณายอมรับนโยบายความเป็นส่วนตัว',
+  }),
 });
 
 export default function SignupPage() {
@@ -45,6 +49,7 @@ export default function SignupPage() {
       name: '',
       email: '',
       password: '',
+      terms: false,
     },
   });
 
@@ -75,6 +80,8 @@ export default function SignupPage() {
         name: values.name,
         email: values.email,
         role: 'customer', // Default role for general signup
+        termsAccepted: true,
+        termsAcceptedAt: serverTimestamp(),
       };
 
       setDoc(userRef, userProfileData)
@@ -239,6 +246,26 @@ export default function SignupPage() {
                         <Input type="password" placeholder="อย่างน้อย 6 ตัวอักษร" {...field} disabled={isLoading || isGoogleLoading} className="h-12 rounded-xl bg-slate-50 border-slate-200 focus:bg-white transition-all text-base" />
                       </FormControl>
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="terms"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>
+                          ฉันยอมรับ <Link href="/privacy" className="text-primary hover:underline">นโยบายความเป็นส่วนตัว</Link> และ <Link href="/terms" className="text-primary hover:underline">ข้อกำหนดการใช้งาน</Link>
+                        </FormLabel>
+                        <FormMessage />
+                      </div>
                     </FormItem>
                   )}
                 />
