@@ -48,25 +48,32 @@ async function tryOcrFallback(buffer: Buffer): Promise<string> {
 
 export async function parsePdfFromBuffer(buffer: Buffer): Promise<string> {
     try {
-        let pdf = require('pdf-parse');
+        const pdfModule = require('pdf-parse');
 
-        // Debug logging to understand what we are getting
-        console.log("PDF-Parse Import Type:", typeof pdf);
+        // Debug logging
+        console.log("PDF-Parse Import Keys:", Object.keys(pdfModule));
 
-        // Handle CJS/ESM interop issues where the module might be inside .default
-        if (typeof pdf !== 'function' && typeof pdf.default === 'function') {
-            console.log("Using pdf.default as the function");
-            pdf = pdf.default;
+        let PDFParseClass = pdfModule.PDFParse;
+
+        // Handle case where it might be nested in default
+        if (!PDFParseClass && pdfModule.default && pdfModule.default.PDFParse) {
+            PDFParseClass = pdfModule.default.PDFParse;
         }
 
-        if (typeof pdf !== 'function') {
-            console.error("PDF-Parse is not a function:", pdf);
-            throw new Error(`pdf-parse import is not a function. It is: ${typeof pdf}`);
+        if (!PDFParseClass) {
+            // Fallback: maybe the module itself is the class? (Unlikely based on logs, but good to be safe)
+            if (typeof pdfModule === 'function') {
+                PDFParseClass = pdfModule;
+            } else {
+                throw new Error("Could not find PDFParse class in import");
+            }
         }
 
-        // Use standard API
-        const data = await pdf(buffer);
-        let text = data.text || '';
+        // @ts-ignore
+        const parser = new PDFParseClass(new Uint8Array(buffer));
+        // @ts-ignore
+        const data = await parser.getText();
+        let text = data?.text || '';
 
         // Check for "Mojibake" (garbled text) or empty content
         const totalChars = text.length;
