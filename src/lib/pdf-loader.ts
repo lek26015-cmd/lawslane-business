@@ -5,6 +5,29 @@ import { callTyphoonOCR } from './typhoon';
 
 const require = createRequire(import.meta.url);
 
+// Polyfills for PDF.js in serverless environment (Vercel)
+// This prevents "ReferenceError: DOMMatrix is not defined"
+if (!global.DOMMatrix) {
+    // @ts-ignore
+    global.DOMMatrix = class DOMMatrix {
+        a = 1; b = 0; c = 0; d = 1; e = 0; f = 0;
+        constructor() { }
+    };
+}
+if (!global.ImageData) {
+    // @ts-ignore
+    global.ImageData = class ImageData {
+        width = 0; height = 0; data = null;
+        constructor() { }
+    };
+}
+if (!global.Path2D) {
+    // @ts-ignore
+    global.Path2D = class Path2D {
+        constructor() { }
+    };
+}
+
 async function tryOcrFallback(buffer: Buffer): Promise<string> {
     try {
         console.log("OCR Fallback: Starting PDF image extraction...");
