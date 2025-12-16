@@ -7,6 +7,7 @@ const require = createRequire(import.meta.url);
 
 async function tryOcrFallback(buffer: Buffer): Promise<string> {
     try {
+        console.log("OCR Fallback: Starting PDF image extraction...");
         const pdfRequire = require('pdf-parse');
         // @ts-ignore
         const parser = new pdfRequire.PDFParse(new Uint8Array(buffer));
@@ -19,33 +20,38 @@ async function tryOcrFallback(buffer: Buffer): Promise<string> {
         let imagesFound = 0;
 
         if (imageResult && imageResult.pages) {
+            console.log(`OCR Fallback: Found ${imageResult.pages.length} pages.`);
             for (const page of imageResult.pages) {
                 if (page.images) {
+                    console.log(`OCR Fallback: Page has ${page.images.length} images.`);
                     for (const img of page.images) {
                         if (img.data) {
                             imagesFound++;
-                            console.log(`OCR: Processing image ${img.name} (${img.width}x${img.height})...`);
-                            // Assuming callTyphoonOCR is defined elsewhere or imported
+                            console.log(`OCR: Processing image ${imagesFound} (${img.width}x${img.height})...`);
                             const imgBuffer = Buffer.from(img.data);
                             const text = await callTyphoonOCR(imgBuffer);
                             if (text) {
                                 ocrText += `\n\n--- [OCR Image ${imagesFound}] ---\n${text}`;
+                            } else {
+                                console.warn(`OCR: Failed to extract text from image ${imagesFound}`);
                             }
                         }
                     }
                 }
             }
+        } else {
+            console.warn("OCR Fallback: No pages found in imageResult.");
         }
 
         if (imagesFound === 0) {
-            console.warn("OCR Fallback: No embedded images found in PDF.");
+            console.warn("OCR Fallback: No embedded images found in PDF (imagesFound=0).");
             return "";
         }
 
         return ocrText;
 
     } catch (e) {
-        console.error("OCR Fallback failed:", e);
+        console.error("OCR Fallback failed with exception:", e);
         return "";
     }
 }

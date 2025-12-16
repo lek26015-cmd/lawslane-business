@@ -53,12 +53,12 @@ export async function callTyphoonOCR(fileBuffer: Buffer): Promise<string> {
     const apiKey = process.env.TYPHOON_API_KEY;
 
     if (!apiKey) {
-        console.warn("Typhoon API Key is missing.");
+        console.error("Typhoon OCR Error: API Key is missing in environment variables.");
         return "";
     }
 
     try {
-        console.log("Calling Typhoon OCR...");
+        console.log(`Calling Typhoon OCR with buffer size: ${fileBuffer.length} bytes`);
         const base64File = fileBuffer.toString('base64');
 
         const response = await fetch(TYPHOON_OCR_URL, {
@@ -84,21 +84,23 @@ export async function callTyphoonOCR(fileBuffer: Buffer): Promise<string> {
                     }
                 ],
                 max_tokens: 2048,
-                temperature: 0.1, // Low temperature for OCR accuracy
+                temperature: 0.1,
             })
         });
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error(`Typhoon OCR API Error: ${response.status} - ${errorText}`);
+            console.error(`Typhoon OCR API Failed: Status ${response.status} - ${errorText}`);
             return "";
         }
 
         const data = await response.json() as any;
-        return data.choices?.[0]?.message?.content || "";
+        const content = data.choices?.[0]?.message?.content || "";
+        console.log(`Typhoon OCR Success: Extracted ${content.length} characters.`);
+        return content;
 
     } catch (error) {
-        console.error("Error calling Typhoon OCR:", error);
+        console.error("Typhoon OCR Exception:", error);
         return "";
     }
 }

@@ -277,7 +277,9 @@ export default function ForLawyersPage() {
 
       // 6. Add to Verified Lawyers Registry (Auto-add)
       try {
-        const verifiedLawyerRef = doc(firestore, 'verifiedLawyers', values.licenseNumber);
+        // Sanitize license number for use as document ID (replace / with -)
+        const docId = values.licenseNumber.replace(/\//g, '-');
+        const verifiedLawyerRef = doc(firestore, 'verifiedLawyers', docId);
         const verifiedLawyerData = {
           licenseNumber: values.licenseNumber,
           firstName: values.name.split(' ')[0],

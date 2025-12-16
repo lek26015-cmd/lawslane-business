@@ -156,7 +156,9 @@ export default function LawyerRegistryPage() {
                             };
 
                             // Use license number as document ID for easy lookup and deduplication
-                            const docRef = doc(firestore, 'verifiedLawyers', lawyerData.licenseNumber);
+                            // Sanitize ID by replacing / with -
+                            const docId = String(lawyerData.licenseNumber).replace(/\//g, '-');
+                            const docRef = doc(firestore, 'verifiedLawyers', docId);
                             batch.set(docRef, lawyerData);
                             successCount++;
                         } else {
@@ -216,7 +218,9 @@ export default function LawyerRegistryPage() {
                 updatedAt: new Date().toISOString()
             };
 
-            await setDoc(doc(firestore, 'verifiedLawyers', lawyerData.licenseNumber), lawyerData);
+            // Sanitize license number for use as document ID (replace / with -)
+            const docId = lawyerData.licenseNumber.replace(/\//g, '-');
+            await setDoc(doc(firestore, 'verifiedLawyers', docId), lawyerData);
 
             toast({
                 title: "บันทึกสำเร็จ",
