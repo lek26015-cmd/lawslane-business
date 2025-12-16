@@ -30,48 +30,15 @@ if (!global.Path2D) {
 
 async function tryOcrFallback(buffer: Buffer): Promise<string> {
     try {
-        console.log("OCR Fallback: Starting PDF image extraction...");
-        const pdfRequire = require('pdf-parse');
-        // @ts-ignore
-        const parser = new pdfRequire.PDFParse(new Uint8Array(buffer));
+        console.log("OCR Fallback: Image extraction via pdf-parse internals is unstable in Vercel.");
+        console.log("OCR Fallback: Skipping image extraction to prevent worker errors.");
 
-        // Extract images
-        // @ts-ignore
-        const imageResult = await parser.getImage({ imageBuffer: true, imageThreshold: 50 });
+        // NOTE: The previous implementation used undocumented internals of pdf-parse (new PDFParse)
+        // which causes "fake worker" errors in serverless environments.
+        // For now, we return empty to avoid crashing. 
+        // TODO: Implement a robust server-side PDF-to-Image solution (e.g. using a dedicated API or stable library).
 
-        let ocrText = "";
-        let imagesFound = 0;
-
-        if (imageResult && imageResult.pages) {
-            console.log(`OCR Fallback: Found ${imageResult.pages.length} pages.`);
-            for (const page of imageResult.pages) {
-                if (page.images) {
-                    console.log(`OCR Fallback: Page has ${page.images.length} images.`);
-                    for (const img of page.images) {
-                        if (img.data) {
-                            imagesFound++;
-                            console.log(`OCR: Processing image ${imagesFound} (${img.width}x${img.height})...`);
-                            const imgBuffer = Buffer.from(img.data);
-                            const text = await callTyphoonOCR(imgBuffer);
-                            if (text) {
-                                ocrText += `\n\n--- [OCR Image ${imagesFound}] ---\n${text}`;
-                            } else {
-                                console.warn(`OCR: Failed to extract text from image ${imagesFound}`);
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            console.warn("OCR Fallback: No pages found in imageResult.");
-        }
-
-        if (imagesFound === 0) {
-            console.warn("OCR Fallback: No embedded images found in PDF (imagesFound=0).");
-            return "";
-        }
-
-        return ocrText;
+        return "";
 
     } catch (e) {
         console.error("OCR Fallback failed with exception:", e);
@@ -81,12 +48,10 @@ async function tryOcrFallback(buffer: Buffer): Promise<string> {
 
 export async function parsePdfFromBuffer(buffer: Buffer): Promise<string> {
     try {
-        const pdfRequire = require('pdf-parse');
-        // @ts-ignore
-        const parser = new pdfRequire.PDFParse(new Uint8Array(buffer));
-        // @ts-ignore
-        const data = await parser.getText();
-        let text = data?.text || '';
+        const pdf = require('pdf-parse');
+        // Use standard API
+        const data = await pdf(buffer);
+        let text = data.text || '';
 
         // Check for "Mojibake" (garbled text) or empty content
         const totalChars = text.length;
@@ -107,7 +72,7 @@ export async function parsePdfFromBuffer(buffer: Buffer): Promise<string> {
             } else {
                 console.warn("Typhoon OCR failed or returned empty.");
                 // If OCR also fails, we return empty so the API can show the explicit error message about scanned docs
-                text = "";
+                if (isGarbage) text = ""; // If garbage, better to return empty than garbage
             }
         }
 
