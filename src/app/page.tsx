@@ -84,7 +84,7 @@ export default async function Home() {
   return (
     <>
       <div className="flex flex-col">
-        <section className="relative w-full py-20 md:py-32 lg:py-40 bg-slate-900 text-white">
+        <section className="relative w-full py-20 md:py-32 lg:py-40 bg-slate-900 text-white rounded-b-[80px] overflow-hidden">
           <div className="absolute inset-0 z-0 opacity-40">
             <Image
               src={getImageUrl('hero-main')}
