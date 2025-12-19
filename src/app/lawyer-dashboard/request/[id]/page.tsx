@@ -32,6 +32,7 @@ import { th } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
 import { useFirebase } from '@/firebase';
+import { doc, updateDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,7 +52,7 @@ function RequestDetailPageContent() {
   const { toast } = useToast();
   const id = params.id as string;
 
-  const { firestore } = useFirebase();
+  const { firestore, user } = useFirebase();
   const [request, setRequest] = useState<LawyerAppointmentRequest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -71,25 +72,69 @@ function RequestDetailPageContent() {
     fetchRequestData();
   }, [id, firestore]);
 
-  const handleAcceptCase = () => {
-    // In a real app, this would update the case status, create a chat, etc.
-    const newChatId = uuidv4();
-    toast({
-      title: 'รับเคสสำเร็จ!',
-      description: `เคส "${request?.caseTitle}" ได้ถูกเพิ่มในรายการเคสที่กำลังดำเนินการ`,
-    });
-    // Redirect to the newly created chat room
-    router.push(`/chat/${newChatId}?lawyerId=1&clientId=...&view=lawyer`);
+  const handleAcceptCase = async () => {
+    if (!request || !firestore) return;
+
+    try {
+      // 1. Update appointment status to 'confirmed'
+      const appointmentRef = doc(firestore, 'appointments', id);
+      await updateDoc(appointmentRef, {
+        status: 'confirmed',
+        updatedAt: serverTimestamp()
+      });
+
+      // 2. Create a new chat room
+      const chatsCollection = collection(firestore, 'chats');
+
+      const newChatRef = await addDoc(chatsCollection, {
+        participants: [user?.uid, request.userId],
+        caseTitle: request.caseTitle,
+        status: 'active',
+        createdAt: serverTimestamp(),
+        lastMessageAt: serverTimestamp(),
+        lastMessage: 'Case accepted'
+      });
+
+      toast({
+        title: 'รับเคสสำเร็จ!',
+        description: `เคส "${request.caseTitle}" ได้ถูกเพิ่มในรายการเคสที่กำลังดำเนินการ`,
+      });
+
+      router.push(`/chat/${newChatRef.id}`);
+    } catch (error) {
+      console.error("Error accepting case:", error);
+      toast({
+        variant: "destructive",
+        title: "เกิดข้อผิดพลาด",
+        description: "ไม่สามารถรับเคสได้ กรุณาลองใหม่อีกครั้ง"
+      });
+    }
   };
 
-  const handleRejectCase = () => {
-    // In a real app, this would update the request status to 'rejected'.
-    toast({
-      title: 'ปฏิเสธเคสสำเร็จ',
-      description: `คุณได้ปฏิเสธคำขอปรึกษาจาก ${request?.clientName}`,
-      variant: 'destructive'
-    });
-    router.push('/lawyer-dashboard');
+  const handleRejectCase = async () => {
+    if (!request || !firestore) return;
+
+    try {
+      const appointmentRef = doc(firestore, 'appointments', id);
+      await updateDoc(appointmentRef, {
+        status: 'cancelled', // or 'rejected'
+        updatedAt: serverTimestamp()
+      });
+
+      toast({
+        title: 'ปฏิเสธเคสสำเร็จ',
+        description: `คุณได้ปฏิเสธคำขอปรึกษาจาก ${request.clientName}`,
+        variant: 'destructive' // Keep destructive for visual feedback of rejection
+      });
+      router.push('/lawyer-dashboard');
+    } catch (error) {
+      console.error("Error rejecting case:", error);
+      toast({
+        variant: "destructive",
+        title: "เกิดข้อผิดพลาด",
+        description: "ไม่สามารถปฏิเสธเคสได้"
+      });
+    }
   };
 
   if (isLoading) {

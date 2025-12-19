@@ -20,7 +20,19 @@ export function TurnstileWidget({ onVerify }: TurnstileWidgetProps) {
     }, []);
 
     if (!siteKey) {
-        return null; // Or a placeholder/warning in dev
+        // Development bypass
+        if (process.env.NODE_ENV === 'development') {
+            useEffect(() => {
+                onVerify('dev-bypass-token');
+            }, [onVerify]);
+
+            return (
+                <div className="flex justify-center my-4 p-4 bg-yellow-100 text-yellow-800 rounded-md border border-yellow-200">
+                    <p className="text-sm font-medium">Development Mode: Turnstile Bypassed</p>
+                </div>
+            );
+        }
+        return null;
     }
 
     return (

@@ -115,6 +115,7 @@ export interface ReportedTicket {
 export interface LawyerAppointmentRequest {
   id: string;
   clientName: string;
+  userId: string; // Added userId
   caseTitle: string;
   description: string;
   requestedAt: Date;

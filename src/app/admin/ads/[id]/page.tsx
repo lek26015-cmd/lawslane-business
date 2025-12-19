@@ -44,29 +44,19 @@ export default function AdminAdDetailsPage() {
     return <div>Loading...</div>
   }
 
-  if (!ad.analytics) {
-    return (
-      <main className="grid flex-1 items-start gap-4 p-4">
-        <div className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4">
-          <p>No analytics data for this ad.</p>
-        </div>
-      </main>
-    )
-  }
-
-  const genderData = [
+  const genderData = ad.analytics ? [
     { name: 'ชาย', value: ad.analytics.gender.male, fill: 'var(--chart-1)' },
     { name: 'หญิง', value: ad.analytics.gender.female, fill: 'var(--chart-2)' },
     { name: 'อื่นๆ', value: ad.analytics.gender.other, fill: 'var(--chart-3)' },
-  ]
+  ] : [];
 
-  const ageData = [
+  const ageData = ad.analytics ? [
     { name: '18-24', value: ad.analytics.age['18-24'], fill: 'var(--chart-1)' },
     { name: '25-34', value: ad.analytics.age['25-34'], fill: 'var(--chart-2)' },
     { name: '35-44', value: ad.analytics.age['35-44'], fill: 'var(--chart-3)' },
     { name: '45-54', value: ad.analytics.age['45-54'], fill: 'var(--chart-4)' },
     { name: '55+', value: ad.analytics.age['55+'], fill: 'var(--chart-5)' },
-  ]
+  ] : [];
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4">
@@ -99,7 +89,7 @@ export default function AdminAdDetailsPage() {
               <Eye className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{ad.analytics.clicks.toLocaleString()}</div>
+              <div className="text-2xl font-bold">{ad.analytics?.clicks.toLocaleString() || 0}</div>
               <p className="text-xs text-muted-foreground">ในช่วง 30 วันที่ผ่านมา</p>
             </CardContent>
           </Card>
@@ -141,36 +131,44 @@ export default function AdminAdDetailsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
-              <div>
-                <h3 className="text-sm font-medium mb-2">แบ่งตามเพศ</h3>
-                <ResponsiveContainer width="100%" height={150}>
-                  <BarChart data={genderData} layout="vertical" margin={{ left: -10 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                    <XAxis type="number" hide />
-                    <YAxis type="category" dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} width={50} />
-                    <Tooltip cursor={{ fill: 'hsl(var(--accent))' }} />
-                    <Bar dataKey="value" layout="vertical" radius={[0, 4, 4, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium mb-2">แบ่งตามอายุ</h3>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={ageData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis
-                      dataKey="name"
-                      stroke="#888888"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                    />
-                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                    <Tooltip cursor={{ fill: 'hsl(var(--accent))' }} />
-                    <Bar dataKey="value" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              {ad.analytics ? (
+                <>
+                  <div>
+                    <h3 className="text-sm font-medium mb-2">แบ่งตามเพศ</h3>
+                    <ResponsiveContainer width="100%" height={150}>
+                      <BarChart data={genderData} layout="vertical" margin={{ left: -10 }}>
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                        <XAxis type="number" hide />
+                        <YAxis type="category" dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} width={50} />
+                        <Tooltip cursor={{ fill: 'hsl(var(--accent))' }} />
+                        <Bar dataKey="value" layout="vertical" radius={[0, 4, 4, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium mb-2">แบ่งตามอายุ</h3>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <BarChart data={ageData}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis
+                          dataKey="name"
+                          stroke="#888888"
+                          fontSize={12}
+                          tickLine={false}
+                          axisLine={false}
+                        />
+                        <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                        <Tooltip cursor={{ fill: 'hsl(var(--accent))' }} />
+                        <Bar dataKey="value" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center justify-center h-[350px] text-muted-foreground">
+                  ยังไม่มีข้อมูลสถิติสำหรับโฆษณานี้
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

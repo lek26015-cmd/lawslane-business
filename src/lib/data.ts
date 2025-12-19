@@ -239,6 +239,7 @@ export async function getLawyerDashboardData(db: Firestore, lawyerId: string): P
       return {
         id: d.id,
         clientName: clientName,
+        userId: data.userId || '', // Include userId
         caseTitle: data.description,
         description: data.description,
         requestedAt: data.createdAt?.toDate() || new Date(),
@@ -303,6 +304,7 @@ export async function getLawyerAppointmentRequestById(db: Firestore, id: string)
     return {
       id: docSnap.id,
       clientName: clientName,
+      userId: data.userId || '', // Include userId
       caseTitle: data.description,
       description: data.description,
       requestedAt: data.createdAt.toDate(),

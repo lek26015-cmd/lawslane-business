@@ -33,6 +33,8 @@ import type { LawyerProfile } from '@/lib/types';
 import { Checkbox } from '@/components/ui/checkbox'
 
 import { doc, updateDoc } from 'firebase/firestore';
+import { uploadToR2 } from '@/app/actions/upload-r2';
+import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB } from '@/lib/constants';
 
 export default function AdminLawyerEditPage() {
   const params = useParams()
@@ -42,6 +44,36 @@ export default function AdminLawyerEditPage() {
   const { firestore } = useFirebase();
 
   const [lawyer, setLawyer] = React.useState<LawyerProfile | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        toast({
+          variant: "destructive",
+          title: "ไฟล์มีขนาดใหญ่เกินไป",
+          description: `กรุณาอัปโหลดไฟล์ขนาดไม่เกิน ${MAX_FILE_SIZE_MB}MB`,
+        });
+        e.target.value = '';
+        return;
+      }
+
+      try {
+        toast({ title: "กำลังอัปโหลดรูปภาพ...", description: "Uploading to R2..." });
+
+        const formData = new FormData();
+        formData.append('file', file);
+        const url = await uploadToR2(formData, 'lawyers');
+
+        setLawyer(prev => prev ? { ...prev, imageUrl: url } : null);
+        toast({ title: "รูปภาพพร้อมแล้ว", description: "กดบันทึกเพื่อยืนยันการเปลี่ยนแปลง" });
+      } catch (error) {
+        console.error("Upload failed:", error);
+        toast({ variant: "destructive", title: "เกิดข้อผิดพลาด", description: "ไม่สามารถอัปโหลดรูปภาพได้" });
+      }
+    }
+  };
 
   React.useEffect(() => {
     if (!firestore || !id) return;
@@ -56,7 +88,8 @@ export default function AdminLawyerEditPage() {
       await updateDoc(lawyerRef, {
         name: lawyer.name,
         status: lawyer.status,
-        specialty: lawyer.specialty
+        specialty: lawyer.specialty,
+        imageUrl: lawyer.imageUrl // Add imageUrl to update
       });
 
       toast({
@@ -121,7 +154,14 @@ export default function AdminLawyerEditPage() {
                     <AvatarImage src={lawyer.imageUrl} />
                     <AvatarFallback>{lawyer.name.slice(0, 2)}</AvatarFallback>
                   </Avatar>
-                  <Button variant="outline">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
                     <Upload className="h-4 w-4 mr-2" />
                     เปลี่ยนรูป
                   </Button>

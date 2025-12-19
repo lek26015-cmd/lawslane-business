@@ -4,10 +4,12 @@ export async function validateTurnstile(token: string) {
     const secretKey = process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY;
 
     if (!secretKey) {
+        // Check for bypass token in development
+        if (token === 'dev-bypass-token' && process.env.NODE_ENV === 'development') {
+            return { success: true };
+        }
+
         console.error('CLOUDFLARE_TURNSTILE_SECRET_KEY is not set');
-        // In development/test without keys, you might want to bypass or fail.
-        // For security, failing is safer, but for dev experience, maybe bypass if explicitly allowed.
-        // Here we fail to ensure keys are set up.
         return { success: false, message: 'Server configuration error' };
     }
 

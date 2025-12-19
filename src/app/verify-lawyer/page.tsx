@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { useFirebase } from '@/firebase';
 import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 function VerifyLawyerContent() {
   const searchParams = useSearchParams();
@@ -118,7 +118,7 @@ function VerifyLawyerContent() {
                 <ShieldCheck className="w-10 h-10" />
               </div>
 
-              <h2 className="text-2xl font-bold text-green-800 mb-2">ตรวจสอบพบข้อมูล</h2>
+              <DialogTitle className="text-2xl font-bold text-green-800 mb-2">ตรวจสอบพบข้อมูล</DialogTitle>
               <p className="text-green-600/80 mb-8">ทนายความนี้ได้รับการยืนยันในระบบ Lawslane</p>
 
               <div className="relative mb-6">
@@ -161,7 +161,7 @@ function VerifyLawyerContent() {
             <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
               <ShieldAlert className="w-10 h-10" />
             </div>
-            <h2 className="text-2xl font-bold text-red-800 mb-2">ไม่พบข้อมูล</h2>
+            <DialogTitle className="text-2xl font-bold text-red-800 mb-2">ไม่พบข้อมูล</DialogTitle>
             <p className="text-slate-500 mb-6">
               ไม่พบข้อมูลทนายความตามข้อมูลที่ระบุ<br />กรุณาตรวจสอบความถูกต้อง หรือติดต่อเจ้าหน้าที่
             </p>

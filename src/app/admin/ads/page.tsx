@@ -67,6 +67,8 @@ export default function AdminAdsPage() {
     const [allAds, setAllAds] = React.useState<Ad[]>([]);
     const [filteredAds, setFilteredAds] = React.useState<Ad[]>([]);
     const [activeTab, setActiveTab] = React.useState('all');
+    const [deletingAd, setDeletingAd] = React.useState<{ id: string, title: string } | null>(null);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
     const { toast } = useToast();
     const { firestore } = useFirebase();
 
@@ -86,22 +88,26 @@ export default function AdminAdsPage() {
         }
     }, [activeTab, allAds]);
 
-    const handleDeleteAd = (adId: string, adName: string) => {
-        if (!firestore) return;
-        const adRef = doc(firestore, 'ads', adId);
+    const confirmDeleteAd = () => {
+        if (!firestore || !deletingAd) return;
+
+        const adRef = doc(firestore, 'ads', deletingAd.id);
         deleteDoc(adRef).then(() => {
             toast({
                 title: "ลบโฆษณาสำเร็จ",
-                description: `โฆษณา "${adName}" ได้ถูกลบออกจากระบบแล้ว`,
+                description: `โฆษณา "${deletingAd.title}" ได้ถูกลบออกจากระบบแล้ว`,
                 variant: "destructive"
             });
-            setAllAds(prev => prev.filter(ad => ad.id !== adId));
+            setAllAds(prev => prev.filter(ad => ad.id !== deletingAd.id));
+            setIsDeleteDialogOpen(false);
+            setDeletingAd(null);
         }).catch(error => {
             const permissionError = new FirestorePermissionError({
                 path: adRef.path,
                 operation: 'delete'
             });
             errorEmitter.emit('permission-error', permissionError);
+            setIsDeleteDialogOpen(false);
         });
     }
 
@@ -134,96 +140,89 @@ export default function AdminAdsPage() {
                             </div>
                         </div>
                         <TabsContent value={activeTab}>
-                            <AlertDialog>
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="hidden w-[100px] sm:table-cell">
-                                                รูปภาพ
-                                            </TableHead>
-                                            <TableHead>หัวข้อ</TableHead>
-                                            <TableHead>ตำแหน่ง</TableHead>
-                                            <TableHead>สถานะ</TableHead>
-                                            <TableHead className="text-right">จำนวนคลิก</TableHead>
-                                            <TableHead>
-                                                <span className="sr-only">Actions</span>
-                                            </TableHead>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="hidden w-[100px] sm:table-cell">
+                                            รูปภาพ
+                                        </TableHead>
+                                        <TableHead>หัวข้อ</TableHead>
+                                        <TableHead>ตำแหน่ง</TableHead>
+                                        <TableHead>สถานะ</TableHead>
+                                        <TableHead className="text-right">จำนวนคลิก</TableHead>
+                                        <TableHead>
+                                            <span className="sr-only">Actions</span>
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredAds.map((ad) => (
+                                        <TableRow
+                                            key={ad.id}
+                                            className="cursor-pointer hover:bg-muted/50"
+                                            onClick={() => router.push(`/admin/ads/${ad.id}`)}
+                                        >
+                                            <TableCell className="hidden sm:table-cell">
+                                                <Image
+                                                    alt={ad.title}
+                                                    className="aspect-square rounded-md object-contain bg-white p-1"
+                                                    height="64"
+                                                    src={ad.imageUrl}
+                                                    width="64"
+                                                />
+                                            </TableCell>
+                                            <TableCell className="font-medium">
+                                                <Link href={`/admin/ads/${ad.id}`} className="hover:underline">
+                                                    {ad.title}
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant="outline">{ad.placement}</Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant={ad.status === 'active' ? 'secondary' : 'outline'}>{ad.status}</Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                {ad.analytics?.clicks.toLocaleString() || 0}
+                                            </TableCell>
+                                            <TableCell>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button
+                                                            aria-haspopup="true"
+                                                            size="icon"
+                                                            variant="ghost"
+                                                        >
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                            <span className="sr-only">Toggle menu</span>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={`/admin/ads/${ad.id}`}>ดูสถิติ</Link>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={`/admin/ads/${ad.id}/edit`}>แก้ไข</Link>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem
+                                                            className="text-destructive"
+                                                            onSelect={(e) => {
+                                                                e.preventDefault();
+                                                                setDeletingAd({ id: ad.id, title: ad.title });
+                                                                setIsDeleteDialogOpen(true);
+                                                            }}
+                                                        >
+                                                            ลบ
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
                                         </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {filteredAds.map((ad) => (
-                                            <TableRow
-                                                key={ad.id}
-                                                className="cursor-pointer hover:bg-muted/50"
-                                                onClick={() => router.push(`/admin/ads/${ad.id}`)}
-                                            >
-                                                <TableCell className="hidden sm:table-cell">
-                                                    <Image
-                                                        alt={ad.title}
-                                                        className="aspect-square rounded-md object-contain bg-white p-1"
-                                                        height="64"
-                                                        src={ad.imageUrl}
-                                                        width="64"
-                                                    />
-                                                </TableCell>
-                                                <TableCell className="font-medium">
-                                                    <Link href={`/admin/ads/${ad.id}`} className="hover:underline">
-                                                        {ad.title}
-                                                    </Link>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge variant="outline">{ad.placement}</Badge>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge variant={ad.status === 'active' ? 'secondary' : 'outline'}>{ad.status}</Badge>
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    {ad.analytics?.clicks.toLocaleString() || 0}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button
-                                                                aria-haspopup="true"
-                                                                size="icon"
-                                                                variant="ghost"
-                                                            >
-                                                                <MoreHorizontal className="h-4 w-4" />
-                                                                <span className="sr-only">Toggle menu</span>
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end">
-                                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                            <DropdownMenuItem asChild>
-                                                                <Link href={`/admin/ads/${ad.id}`}>ดูสถิติ</Link>
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem asChild>
-                                                                <Link href={`/admin/ads/${ad.id}/edit`}>แก้ไข</Link>
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuSeparator />
-                                                            <AlertDialogTrigger asChild>
-                                                                <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>ลบ</DropdownMenuItem>
-                                                            </AlertDialogTrigger>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle>คุณแน่ใจหรือไม่?</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                การกระทำนี้ไม่สามารถย้อนกลับได้ คุณกำลังจะลบโฆษณา "{ad.title}" ออกจากระบบอย่างถาวร
-                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
-                                                            <AlertDialogAction onClick={() => handleDeleteAd(ad.id, ad.title)} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">ยืนยันการลบ</AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </AlertDialog>
+                                    ))}
+                                </TableBody>
+                            </Table>
                         </TabsContent>
                     </Tabs>
                 </CardContent>
@@ -233,6 +232,21 @@ export default function AdminAdsPage() {
                     </div>
                 </CardFooter>
             </Card>
+
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>คุณแน่ใจหรือไม่?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            การกระทำนี้ไม่สามารถย้อนกลับได้ คุณกำลังจะลบโฆษณา "{deletingAd?.title}" ออกจากระบบอย่างถาวร
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDeleteAd} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">ยืนยันการลบ</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </main>
     )
 }
