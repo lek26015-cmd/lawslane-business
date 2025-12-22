@@ -21,6 +21,7 @@ import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useFirebase, useUser } from '@/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { notifyAdmins } from '@/app/actions/admin-notifications';
 
 function HelpPageContent() {
   const searchParams = useSearchParams();
@@ -155,6 +156,15 @@ function HelpPageContent() {
                     recipient: 'admin',
                     link: `/admin/tickets/${docRef.id}`,
                     relatedId: docRef.id
+                  });
+
+                  // Send Email Notification
+                  notifyAdmins('new_ticket', {
+                    ticketId: docRef.id,
+                    problemType: problemType,
+                    description: description,
+                    clientName: user.displayName || 'ผู้ใช้งาน',
+                    email: user.email
                   });
 
                   toast({

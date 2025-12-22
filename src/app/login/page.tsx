@@ -7,11 +7,12 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, sendPasswordResetEmail } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useFirebase } from '@/firebase';
 
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import {
   Card,
   CardContent,
@@ -19,6 +20,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -34,6 +44,7 @@ import Logo from '@/components/logo';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TurnstileWidget } from '@/components/turnstile-widget';
 import { validateTurnstile } from '@/app/actions/turnstile';
+// import { requestAdminPasswordReset } from '@/app/actions/auth-admin'; // Removed
 // import { Locale } from '@/../i18n.config'; // Removed unused import
 
 const formSchema = z.object({
@@ -49,7 +60,46 @@ export default function LoginPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
   const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [isResetting, setIsResetting] = useState(false);
+
+  const handleForgotPassword = async () => {
+    if (!resetEmail) {
+      toast({
+        variant: 'destructive',
+        title: 'กรุณากรอกอีเมล',
+        description: 'โปรดระบุอีเมลที่ต้องการรีเซ็ตรหัสผ่าน',
+      });
+      return;
+    }
+
+    setIsResetting(true);
+    try {
+      await sendPasswordResetEmail(auth!, resetEmail);
+      toast({
+        title: 'ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว',
+        description: `กรุณาตรวจสอบอีเมลของคุณ (${resetEmail})`,
+      });
+      setIsForgotPasswordOpen(false);
+      setResetEmail('');
+    } catch (error: any) {
+      console.error(error);
+      let errorMessage = 'ไม่สามารถส่งลิงก์รีเซ็ตรหัสผ่านได้';
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = 'ไม่พบอีเมลนี้ในระบบ';
+      }
+      toast({
+        variant: 'destructive',
+        title: 'เกิดข้อผิดพลาด',
+        description: errorMessage,
+      });
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -278,6 +328,41 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
+                <div className="flex justify-end">
+                  <Dialog open={isForgotPasswordOpen} onOpenChange={setIsForgotPasswordOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="link" className="px-0 font-normal text-sm text-slate-500 hover:text-[#0B3979]">
+                        ลืมรหัสผ่าน?
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>ลืมรหัสผ่าน?</DialogTitle>
+                        <DialogDescription>
+                          กรอกอีเมลของคุณเพื่อรับลิงก์สำหรับตั้งรหัสผ่านใหม่
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="reset-email">อีเมล</Label>
+                          <Input
+                            id="reset-email"
+                            placeholder="name@example.com"
+                            value={resetEmail}
+                            onChange={(e) => setResetEmail(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsForgotPasswordOpen(false)} disabled={isResetting}>ยกเลิก</Button>
+                        <Button onClick={handleForgotPassword} disabled={isResetting}>
+                          {isResetting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          ส่งลิงก์รีเซ็ต
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
                 <TurnstileWidget onVerify={setTurnstileToken} />
                 <Button type="submit" className="w-full h-12 rounded-full text-lg font-semibold bg-[#0B3979] hover:bg-[#082a5a] shadow-lg shadow-blue-900/20" disabled={isLoading || isGoogleLoading}>
                   {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}

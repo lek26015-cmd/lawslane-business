@@ -118,7 +118,8 @@ const chatPrompt = ai.definePrompt({
     5.  Always conclude your response by reminding the user that your analysis is for informational purposes only and they should consult with a qualified lawyer for formal advice.
     6.  If the user's question is complex or requires legal action (e.g., suing, drafting contracts), add a section with a Call to Action to "Find a Lawyer" linking to "/lawyers".
     7.  All responses must be in Thai.
-    8.  Only introduce yourself as the AI assistant in the very first response of the conversation. For subsequent messages, answer directly without re-introducing yourself.
+    8.  **CRITICAL**: In the **very first response** of the conversation, you **MUST** introduce yourself as the AI assistant for Lawslane AND explicitly state that your advice is preliminary and not a substitute for a lawyer (Limitation of Liability).
+    9.  For all **subsequent messages** (after the first one), **DO NOT** introduce yourself, **DO NOT** say "Hello" or "Sawasdee", and **DO NOT** repeat the disclaimer. Answer the user's question directly and immediately.
     `,
   prompt: `User prompt: {{{prompt}}}`,
 });
@@ -136,9 +137,15 @@ export async function chat(
       throw new Error("No API Key");
     }
 
+    // Check if this is a subsequent message (history exists)
+    let finalPrompt = prompt;
+    if (history && history.length > 0) {
+      finalPrompt = `${prompt}\n\n[System Note: This is a continuing conversation. Do NOT introduce yourself again. Do NOT say 'Hello' or 'Sawasdee'. Answer the question directly.]`;
+    }
+
     const { output } = await chatPrompt({
       history,
-      prompt,
+      prompt: finalPrompt,
     });
 
     return output!;
@@ -152,7 +159,7 @@ export async function chat(
 }
 
 import { collection, getDocs, limit, query } from 'firebase/firestore';
-import { getAuth, signInAnonymously } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 
 async function fallbackChat(prompt: string): Promise<ChatResponse> {
   console.log("[ChatFlow] Running fallback chat logic...");
@@ -161,6 +168,8 @@ async function fallbackChat(prompt: string): Promise<ChatResponse> {
 
     // Try to sign in anonymously to ensure we have a valid session
     // This helps avoid "Missing or insufficient permissions" in some server environments
+    // UPDATE: Removed anonymous sign-in as it creates unwanted user records and public read is allowed.
+    /*
     try {
       if (!auth.currentUser) {
         await signInAnonymously(auth);
@@ -169,6 +178,7 @@ async function fallbackChat(prompt: string): Promise<ChatResponse> {
     } catch (authError) {
       console.warn("[ChatFlow] Anonymous auth failed (ignoring):", authError);
     }
+    */
 
     // Use Client SDK with simple query
     const articlesRef = collection(firestore, 'articles');

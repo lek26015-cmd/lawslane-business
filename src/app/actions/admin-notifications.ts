@@ -1,0 +1,157 @@
+'use server';
+
+import { initAdmin } from '@/lib/firebase-admin';
+import { getFirestore } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
+import { Resend } from 'resend';
+
+
+
+export interface NotificationPreferences {
+    email: string;
+    notifyOnNewUser: boolean;
+    notifyOnNewTicket: boolean;
+    notifyOnPayment: boolean;
+}
+
+export async function saveNotificationPreferences(uid: string, preferences: NotificationPreferences) {
+    try {
+        const app = await initAdmin();
+        if (!app) {
+            return { success: false, error: 'Firebase Admin initialization failed' };
+        }
+        const db = getFirestore();
+
+        await db.collection('users').doc(uid).update({
+            notificationPreferences: preferences
+        });
+
+        return { success: true };
+    } catch (error: any) {
+        console.error('Error saving notification preferences:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+export async function getNotificationPreferences(uid: string): Promise<{ success: boolean, preferences?: NotificationPreferences, error?: string }> {
+    try {
+        const app = await initAdmin();
+        if (!app) {
+            return { success: false, error: 'Firebase Admin initialization failed' };
+        }
+        const db = getFirestore();
+        const doc = await db.collection('users').doc(uid).get();
+
+        if (!doc.exists) {
+            return { success: false, error: 'User not found' };
+        }
+
+        const data = doc.data();
+        return { success: true, preferences: data?.notificationPreferences };
+    } catch (error: any) {
+        console.error('Error fetching notification preferences:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+export async function notifyAdmins(type: 'new_user' | 'new_ticket' | 'payment', data: any) {
+    if (!process.env.RESEND_API_KEY) {
+        console.warn('RESEND_API_KEY is not set. Skipping admin notifications.');
+        return;
+    }
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    try {
+        const app = await initAdmin();
+        if (!app) return;
+        const db = getFirestore();
+
+        // 1. Get all admins
+        const adminsSnapshot = await db.collection('users').where('role', '==', 'admin').get();
+
+        if (adminsSnapshot.empty) return;
+
+        // 2. Filter admins who want this notification
+        const recipients: string[] = [];
+
+        adminsSnapshot.docs.forEach(doc => {
+            const userData = doc.data();
+            const prefs = userData.notificationPreferences as NotificationPreferences | undefined;
+
+            // Default to true if no prefs set (or handle as you see fit - maybe default false?)
+            // Let's assume if no prefs, they get everything to be safe, or nothing?
+            // Based on user request "want to configure", implies current default is "everyone gets it" or "hardcoded".
+            // Let's default to: if prefs exist, check them. If not, maybe send to account email?
+            // For now, let's say if no prefs, we DON'T send to avoid spam, OR we send to account email.
+            // Let's try: If prefs exist, use them. If not, use account email (legacy behavior).
+
+            let shouldNotify = true;
+            let emailToSend = userData.email;
+
+            if (prefs) {
+                emailToSend = prefs.email || userData.email;
+                if (type === 'new_user' && !prefs.notifyOnNewUser) shouldNotify = false;
+                if (type === 'new_ticket' && !prefs.notifyOnNewTicket) shouldNotify = false;
+                if (type === 'payment' && !prefs.notifyOnPayment) shouldNotify = false;
+            }
+
+            if (shouldNotify && emailToSend) {
+                recipients.push(emailToSend);
+            }
+        });
+
+        if (recipients.length === 0) return;
+
+        // 3. Prepare Email Content
+        let subject = '';
+        let html = '';
+
+        if (type === 'new_user') {
+            subject = `[Lawslane Admin] มีผู้ใช้งานใหม่ลงทะเบียน: ${data.name}`;
+            html = `
+        <h1>มีผู้ใช้งานใหม่ลงทะเบียน</h1>
+        <p><strong>ชื่อ:</strong> ${data.name}</p>
+        <p><strong>อีเมล:</strong> ${data.email}</p>
+        <p><strong>เวลา:</strong> ${new Date().toLocaleString('th-TH')}</p>
+      `;
+        } else if (type === 'new_ticket') {
+            subject = `[Lawslane Admin] Ticket ใหม่: ${data.problemType}`;
+            html = `
+        <h1>มีการแจ้งปัญหาใหม่ (Ticket)</h1>
+        <p><strong>หัวข้อ:</strong> ${data.problemType}</p>
+        <p><strong>รายละเอียด:</strong> ${data.description}</p>
+        <p><strong>จาก:</strong> ${data.clientName} (${data.email})</p>
+        <p><a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://lawslane.com'}/admin/tickets/${data.ticketId}">ดูรายละเอียด</a></p>
+      `;
+        } else if (type === 'payment') {
+            // Placeholder for payment
+            subject = `[Lawslane Admin] การชำระเงินสำเร็จ`;
+            html = `<p>มีการชำระเงินเข้ามาใหม่</p>`;
+        }
+
+        // 4. Send Emails (Batch or Loop)
+        // Resend supports multiple 'to' addresses, but they see each other? 
+        // Better to send individually or use BCC if supported, or loop.
+        // Resend 'to' array sends to all. To hide, use bcc.
+        // But let's just loop for now to personalize if needed, or just send one batch.
+        // Batch is safer for quota.
+
+        // Remove duplicates
+        const uniqueRecipients = [...new Set(recipients)];
+
+        await resend.emails.send({
+            from: 'Lawslane Admin <noreply@lawslane.com>',
+            to: uniqueRecipients, // This puts everyone in TO. If privacy matters between admins, use bcc.
+            // bcc: uniqueRecipients, 
+            // to: 'admin@lawslane.com', // Dummy TO
+            subject: subject,
+            html: html,
+        });
+
+        console.log(`[notifyAdmins] Sent ${type} notification to ${uniqueRecipients.length} admins.`);
+
+    } catch (error) {
+        console.error('Error sending admin notifications:', error);
+    }
+}

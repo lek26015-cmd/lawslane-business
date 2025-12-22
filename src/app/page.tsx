@@ -57,7 +57,7 @@ export default async function Home() {
     {
       icon: <MessageSquare className="w-6 h-6 text-blue-600" />,
       title: "ปรึกษาได้ทุกที่",
-      description: "แชทหรือวิดีโอคอลกับทนายความได้ทันที ไม่ว่าจะอยู่ที่ไหน",
+      description: "แชทกับทนายความได้ทันที ไม่ว่าจะอยู่ที่ไหน",
     },
     {
       icon: <Users className="w-6 h-6 text-blue-600" />,

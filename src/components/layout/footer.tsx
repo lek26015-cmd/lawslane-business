@@ -38,6 +38,7 @@ export default function Footer({ userRole }: { userRole: string | null }) {
   const legalLinks = [
     { href: `/privacy`, label: 'นโยบายความเป็นส่วนตัว' },
     { href: `/terms`, label: 'ข้อกำหนดการใช้งาน' },
+    { href: `/ai-disclaimer`, label: 'ข้อจำกัดความรับผิดของ AI' },
     { href: `/help`, label: 'ศูนย์ช่วยเหลือ' },
   ];
 

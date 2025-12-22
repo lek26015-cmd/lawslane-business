@@ -15,6 +15,12 @@ export interface UserProfile {
   avatar?: string;
   permissions?: Record<string, string[]>;
   superAdmin?: boolean;
+  notificationPreferences?: {
+    email: string;
+    notifyOnNewUser: boolean;
+    notifyOnNewTicket: boolean;
+    notifyOnPayment: boolean;
+  };
 }
 
 export interface LawyerProfile {
@@ -46,7 +52,7 @@ export interface LawyerProfile {
   reviewCount?: number;
   firmId?: string;
   pricing?: {
-    appointmentFee: number;     // Fee for in-person/video appointments
+    appointmentFee: number;     // Fee for in-person appointments
     chatFee: number;             // Fee for chat consultations
     platformFeeRate: number;     // GP rate (default 0.15 = 15%)
   };
