@@ -83,6 +83,14 @@ export default function SignupPage() {
       // 2. Update user profile in Firebase Auth
       await updateProfile(user, { displayName: values.name });
 
+      // Send Custom Email Verification
+      import('@/app/actions/auth').then(({ sendCustomVerificationEmail }) => {
+        sendCustomVerificationEmail(values.email, values.name).then((res) => {
+          if (res.success) console.log("Custom verification email sent");
+          else console.error("Error sending custom verification email:", res.error);
+        });
+      });
+
       // 3. Create user profile document in Firestore
       const userRef = doc(firestore, 'users', user.uid);
       const userProfileData = {

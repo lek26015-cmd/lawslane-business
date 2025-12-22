@@ -82,18 +82,46 @@ export default function LawyerLoginPage() {
 
     setIsResetting(true);
     try {
-      await sendPasswordResetEmail(auth!, resetEmail);
-      toast({
-        title: 'ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว',
-        description: `กรุณาตรวจสอบอีเมลของคุณ (${resetEmail})`,
+      // Use custom server action for password reset
+      import('@/app/actions/auth').then(({ sendCustomPasswordResetEmailV2 }) => {
+        sendCustomPasswordResetEmailV2(resetEmail).then((res) => {
+          if (res.success) {
+            toast({
+              title: 'ส่งอีเมลรีเซ็ตรหัสผ่านแล้ว',
+              description: 'กรุณาตรวจสอบกล่องจดหมายของคุณ และอย่าลืมเช็คในโฟลเดอร์ขยะ (Spam/Junk) หากไม่พบอีเมล',
+            });
+            setIsForgotPasswordOpen(false);
+            setResetEmail(''); // Clear email on success
+          } else {
+            toast({
+              variant: 'destructive',
+              title: 'เกิดข้อผิดพลาด',
+              description: res.error || 'ไม่สามารถส่งอีเมลได้',
+            });
+          }
+        }).catch((err) => { // Catch errors from sendCustomPasswordResetEmail promise
+          console.error(err);
+          toast({
+            variant: 'destructive',
+            title: 'เกิดข้อผิดพลาด',
+            description: 'ไม่สามารถส่งลิงก์รีเซ็ตรหัสผ่านได้',
+          });
+        });
+      }).catch((err) => { // Catch errors from dynamic import
+        console.error(err);
+        toast({
+          variant: 'destructive',
+          title: 'เกิดข้อผิดพลาด',
+          description: 'ไม่สามารถโหลดฟังก์ชันรีเซ็ตรหัสผ่านได้',
+        });
       });
-      setIsForgotPasswordOpen(false);
-      setResetEmail('');
     } catch (error: any) {
       console.error(error);
       let errorMessage = 'ไม่สามารถส่งลิงก์รีเซ็ตรหัสผ่านได้';
-      if (error.code === 'auth/user-not-found') {
-        errorMessage = 'ไม่พบอีเมลนี้ในระบบ';
+      // The specific Firebase error codes are now handled by the server action
+      // and returned in res.error. This catch block is for unexpected client-side errors.
+      if (error.message) {
+        errorMessage = error.message;
       }
       toast({
         variant: 'destructive',

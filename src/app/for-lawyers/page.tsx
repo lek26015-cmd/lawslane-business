@@ -241,11 +241,12 @@ export default function ForLawyersPage() {
       // 2. Update user profile in Firebase Auth
       await updateProfile(user, { displayName: values.name });
 
-      // Send Email Verification
-      import('firebase/auth').then(({ sendEmailVerification }) => {
-        sendEmailVerification(user).then(() => {
-          console.log("Verification email sent");
-        }).catch(err => console.error("Error sending verification email:", err));
+      // Send Custom Email Verification
+      import('@/app/actions/auth').then(({ sendCustomVerificationEmail }) => {
+        sendCustomVerificationEmail(values.email, values.name).then((res) => {
+          if (res.success) console.log("Custom verification email sent");
+          else console.error("Error sending custom verification email:", res.error);
+        });
       });
 
       // 3. Upload Files

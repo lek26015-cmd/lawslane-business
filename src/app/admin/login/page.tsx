@@ -85,7 +85,7 @@ export default function AdminLoginPage() {
       if (result.success) {
         toast({
           title: 'ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว',
-          description: `กรุณาตรวจสอบอีเมลของคุณ (ส่งไปที่ ${result.sentTo})`,
+          description: `กรุณาตรวจสอบอีเมลของคุณ (ส่งไปที่ ${result.sentTo}) และอย่าลืมเช็คในโฟลเดอร์ขยะ (Spam/Junk)`,
         });
         setIsForgotPasswordOpen(false);
         setResetEmail('');
