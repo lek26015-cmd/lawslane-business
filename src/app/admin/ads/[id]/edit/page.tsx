@@ -227,6 +227,7 @@ export default function AdminAdEditPage() {
                     <SelectContent>
                       <SelectItem value="Homepage Carousel">แบนเนอร์หน้าแรก</SelectItem>
                       <SelectItem value="Lawyer Page Sidebar">ไซด์บาร์หน้าทนาย</SelectItem>
+                      <SelectItem value="Legal Forms Sidebar">ไซด์บาร์หน้าแบบฟอร์ม</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

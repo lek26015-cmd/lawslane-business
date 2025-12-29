@@ -16,6 +16,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useFirebase } from '@/firebase';
 import { LawyerPageSidebarAds } from '@/components/lawyer-page-sidebar-ads';
+import { RecommendedArticles } from '@/components/recommended-articles';
 
 function LawyersPageContent() {
   const searchParams = useSearchParams();
@@ -133,6 +134,7 @@ function LawyersPageContent() {
         <div className="col-span-1 space-y-6">
           <LawyerFilterSidebar />
           <LawyerPageSidebarAds />
+          <RecommendedArticles />
         </div>
 
         <div className="md:col-span-3">

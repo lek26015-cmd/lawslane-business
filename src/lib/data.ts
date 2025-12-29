@@ -8,9 +8,11 @@ import {
   limit,
   orderBy,
   DocumentData,
-  Firestore
+  Firestore,
+  updateDoc,
+  increment
 } from 'firebase/firestore';
-import type { LawyerProfile, ImagePlaceholder, Ad, Article, Case, UpcomingAppointment, ReportedTicket, LawyerAppointmentRequest, LawyerCase, UserProfile } from '@/lib/types';
+import type { LawyerProfile, ImagePlaceholder, Ad, Article, Case, UpcomingAppointment, ReportedTicket, LawyerAppointmentRequest, LawyerCase, UserProfile, LegalForm } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { format } from 'date-fns';
 import { th } from 'date-fns/locale';
@@ -783,4 +785,32 @@ export async function getLawyersByFirm(db: Firestore, firmId: string): Promise<L
   const q = query(lawyersRef, where('firmId', '==', firmId), where('status', '==', 'approved'));
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as LawyerProfile));
+}
+
+// --- Legal Form Functions ---
+
+export async function getAllLegalForms(db: Firestore): Promise<LegalForm[]> {
+  if (!db) return [];
+  const formsRef = collection(db, 'legalForms');
+  const q = query(formsRef, orderBy('createdAt', 'desc'));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as LegalForm));
+}
+
+export async function getLegalFormById(db: Firestore, id: string): Promise<LegalForm | undefined> {
+  if (!db) return undefined;
+  const formRef = doc(db, 'legalForms', id);
+  const docSnap = await getDoc(formRef);
+  if (docSnap.exists()) {
+    return { id: docSnap.id, ...docSnap.data() } as LegalForm;
+  }
+  return undefined;
+}
+
+export async function incrementFormDownloads(db: Firestore, id: string) {
+  if (!db) return;
+  const formRef = doc(db, 'legalForms', id);
+  await updateDoc(formRef, {
+    downloads: increment(1)
+  });
 }

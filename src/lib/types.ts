@@ -85,6 +85,8 @@ export interface Article {
   content: string;
   publishedAt: any;
   authorName: string;
+  coverImage?: string;
+  excerpt?: string;
 }
 
 export interface Case {
@@ -148,7 +150,7 @@ export interface Ad {
   id: string;
   title: string;
   description: string;
-  placement: 'Homepage Carousel' | 'Lawyer Page Sidebar';
+  placement: 'Homepage Carousel' | 'Lawyer Page Sidebar' | 'Legal Forms Sidebar';
   status: 'active' | 'draft' | 'expired';
   imageUrl: string;
   imageHint: string;
@@ -258,5 +260,27 @@ export interface SmeRequest {
   fileUrl?: string;
   fileName?: string;
   status: 'new' | 'contacted' | 'completed';
+  createdAt: any;
+}
+
+export interface LegalFormAttachment {
+  url: string;
+  name: string;
+  type: 'pdf' | 'doc' | 'docx' | 'xls' | 'xlsx';
+}
+
+export interface LegalForm {
+  id: string;
+  title: string;
+  description: string;
+  // Deprecated single file fields (kept for backward compatibility if needed, but we will migrate to attachments)
+  fileUrl?: string;
+  fileName?: string;
+  fileType?: 'pdf' | 'doc' | 'docx' | 'xls' | 'xlsx';
+
+  attachments: LegalFormAttachment[];
+
+  category: string;
+  downloads: number;
   createdAt: any;
 }

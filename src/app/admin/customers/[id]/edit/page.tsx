@@ -53,7 +53,12 @@ export default function AdminCustomerEditPage() {
     const userRef = doc(firestore, 'users', id as string);
     getDoc(userRef).then(docSnap => {
       if (docSnap.exists()) {
-        setCustomer(docSnap.data() as UserProfile);
+        const data = docSnap.data();
+        setCustomer({
+          uid: docSnap.id,
+          ...data,
+          status: data.status || 'active'
+        } as UserProfile);
       }
       setIsLoading(false);
     })

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MessageSquare, Users, ShieldCheck, ArrowRight, Briefcase, UserCheck, FileText } from 'lucide-react';
+import { MessageSquare, Users, ShieldCheck, ArrowRight, Briefcase, UserCheck, FileText, Download } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getApprovedLawyers, getAllArticles, getAdsByPlacement, getImageUrl, getImageHint } from '@/lib/data';
@@ -121,6 +121,33 @@ export default async function Home() {
               <FadeIn direction="left" delay={200}>
                 <AiAnalysisCard />
               </FadeIn>
+            </div>
+          </div>
+        </section>
+
+        {/* Legal Forms CTA */}
+        <section className="w-full py-12 bg-blue-50 border-b border-blue-100">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-blue-600 rounded-2xl shadow-lg text-white hidden md:block">
+                  <FileText className="w-8 h-8" />
+                </div>
+                <div className="space-y-1 text-center md:text-left">
+                  <h3 className="text-2xl font-bold text-[#0B3979] font-headline">
+                    แจกฟรี! แบบฟอร์มสัญญาและเอกสารกฎหมาย
+                  </h3>
+                  <p className="text-slate-600 max-w-xl">
+                    ดาวน์โหลดเอกสารมาตรฐานที่ผ่านการตรวจสอบจากทนายความมืออาชีพ ได้ฟรีทันที
+                  </p>
+                </div>
+              </div>
+              <Button size="lg" className="bg-[#0B3979] hover:bg-[#082a5a] shadow-lg hover:shadow-xl transition-all" asChild>
+                <Link href="/forms" className="flex items-center gap-2">
+                  <Download className="w-5 h-5" />
+                  ดาวน์โหลดแบบฟอร์ม
+                </Link>
+              </Button>
             </div>
           </div>
         </section>

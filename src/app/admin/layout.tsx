@@ -253,6 +253,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 { href: "/landing-pages", icon: <LayoutTemplate className="h-4 w-4" />, label: "Landing Pages" },
                 { href: "/ads", icon: <Megaphone className="h-4 w-4" />, label: "จัดการโฆษณา" },
                 { href: "/content", icon: <FileEdit className="h-4 w-4" />, label: "จัดการเนื้อหา" },
+                { href: "/admin/forms", icon: <FileText className="h-4 w-4" />, label: "แบบฟอร์มกฎหมาย" },
                 { href: "/admin/legal", icon: <Scale className="h-4 w-4" />, label: "เอกสารทางกฎหมาย" },
                 { href: "/knowledge", icon: <BrainCircuit className="h-4 w-4" />, label: "คลังความรู้ AI" },
             ]

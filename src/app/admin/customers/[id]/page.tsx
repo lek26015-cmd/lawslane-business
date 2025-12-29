@@ -70,7 +70,12 @@ export default function AdminCustomerDetailPage() {
       const userRef = doc(firestore, 'users', id as string);
       const docSnap = await getDoc(userRef);
       if (docSnap.exists()) {
-        setCustomer({ uid: docSnap.id, ...docSnap.data() } as UserProfile);
+        const data = docSnap.data();
+        setCustomer({
+          uid: docSnap.id,
+          ...data,
+          status: data.status || 'active' // Default to active if missing
+        } as UserProfile);
 
         // Fetch User Cases
         const dashboardData = await getDashboardData(firestore, id as string);

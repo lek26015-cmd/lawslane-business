@@ -239,6 +239,9 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
           <Link href={getMainLink('/articles')} className={pathname.startsWith(`/articles`) ? activeNavLinkClasses : navLinkClasses}>
             บทความ
           </Link>
+          <Link href={getMainLink('/forms')} className={pathname.startsWith(`/forms`) ? activeNavLinkClasses : navLinkClasses}>
+            แบบฟอร์ม
+          </Link>
           <Link href={getMainLink('/for-lawyers')} className={pathname.startsWith(`/for-lawyers`) ? activeNavLinkClasses : navLinkClasses}>
             สำหรับทนายความ
           </Link>
@@ -333,6 +336,7 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
                   </div>
 
                   <Link href={getMainLink('/articles')} className="hover:text-primary">บทความ</Link>
+                  <Link href={getMainLink('/forms')} className="hover:text-primary">แบบฟอร์ม</Link>
                   <Link href={getMainLink('/for-lawyers')} className="hover:text-primary">สำหรับทนายความ</Link>
                   <Link href={getMainLink('/lawyers')} className="hover:text-primary">ค้นหาทนาย</Link>
                   <Link href={getMainLink('/verify-lawyer')} className="hover:text-primary">ตรวจสอบทนาย</Link>

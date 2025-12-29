@@ -154,6 +154,14 @@ service cloud.firestore {
         allow read, update, delete: if isAdmin();
     }
 
+    match /legalForms/{formId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      // Allow admin to update everything
+      // Allow public to update ONLY downloads count
+      allow update: if isAdmin() || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['downloads']));
+    }
+
     match /settings/{docId} {
         // Allow all authenticated users to read settings (for GP rate)
         allow read: if isSignedIn();

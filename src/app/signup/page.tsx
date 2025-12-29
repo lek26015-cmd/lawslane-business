@@ -98,6 +98,7 @@ export default function SignupPage() {
         name: values.name,
         email: values.email,
         role: 'customer', // Default role for general signup
+        status: 'active',
         termsAccepted: true,
         termsAcceptedAt: serverTimestamp(),
       };
@@ -165,6 +166,7 @@ export default function SignupPage() {
           name: user.displayName,
           email: user.email,
           role: 'customer',
+          status: 'active',
         };
         // Create a new user profile if it doesn't exist
         setDoc(userRef, userProfileData)
