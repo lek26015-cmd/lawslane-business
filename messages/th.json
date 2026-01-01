@@ -124,6 +124,7 @@
         "logout": "ออกจากระบบ",
         "myAccount": "บัญชีของฉัน",
         "dashboard": "แดชบอร์ด",
+        "adminDashboard": "แดชบอร์ดผู้ดูแลระบบ",
         "manageAccount": "จัดการบัญชี",
         "searchPlaceholder": "ค้นหาทนาย, ความเชี่ยวชาญ, หรือปัญหา...",
         "smeMenu": {

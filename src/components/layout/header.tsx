@@ -243,7 +243,7 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
                   <DropdownMenuLabel>{t('myAccount')}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href={(role === 'lawyer' || user.uid === 'N5ehLbkYXbQQLX5KEuwJbeL3cXO2') ? "/lawyer-dashboard" : "/dashboard"}><LayoutDashboard className="mr-2" />{t('dashboard')}</Link>
+                    <Link href={(role === 'lawyer' || user.uid === 'N5ehLbkYXbQQLX5KEuwJbeL3cXO2') ? "/lawyer-dashboard" : (role === 'admin' ? "/admin" : "/dashboard")}><LayoutDashboard className="mr-2" />{role === 'admin' ? t('adminDashboard') : t('dashboard')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/account"><User className="mr-2" />{t('manageAccount')}</Link>

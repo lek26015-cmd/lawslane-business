@@ -124,6 +124,7 @@
         "logout": "Logout",
         "myAccount": "My Account",
         "dashboard": "Dashboard",
+        "adminDashboard": "Admin Dashboard",
         "manageAccount": "Manage Account",
         "searchPlaceholder": "Search for lawyers, expertise, or issues...",
         "smeMenu": {
