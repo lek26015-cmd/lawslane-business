@@ -71,7 +71,7 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
         const lawyerSnap = await getDoc(lawyerDocRef);
 
         // Hotfix for specific user
-        if (lawyerSnap.exists() || user.uid === 'N5ehLbkYXbQQLX5KEuwJbeL3cXO2') {
+        if (lawyerSnap.exists() || user.uid === 'N5ehLbkYXbQQLX5KEuwJbeL3cXO2' || user.uid === 'wS9w7ysNYUajNsBYZ6C7n2Afe9H3') {
           console.log("User is a lawyer:", user.uid);
           setRole('lawyer');
           setUserRole('lawyer');
@@ -243,8 +243,13 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
                   <DropdownMenuLabel>{t('myAccount')}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href={(role === 'lawyer' || user.uid === 'N5ehLbkYXbQQLX5KEuwJbeL3cXO2') ? "/lawyer-dashboard" : (role === 'admin' ? "/admin" : "/dashboard")}><LayoutDashboard className="mr-2" />{role === 'admin' ? t('adminDashboard') : t('dashboard')}</Link>
+                    <Link href={(role === 'lawyer' || user.uid === 'N5ehLbkYXbQQLX5KEuwJbeL3cXO2' || user.uid === 'wS9w7ysNYUajNsBYZ6C7n2Afe9H3') ? "/lawyer-dashboard" : (role === 'admin' ? "/admin" : "/dashboard")}><LayoutDashboard className="mr-2" />{role === 'admin' ? t('adminDashboard') : t('dashboard')}</Link>
                   </DropdownMenuItem>
+                  {role === 'admin' && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/lawyer-dashboard?view=admin"><LayoutDashboard className="mr-2" />{t('adminView')}</Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem asChild>
                     <Link href="/account"><User className="mr-2" />{t('manageAccount')}</Link>
                   </DropdownMenuItem>

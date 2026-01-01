@@ -125,6 +125,7 @@
         "myAccount": "บัญชีของฉัน",
         "dashboard": "แดชบอร์ด",
         "adminDashboard": "แดชบอร์ดผู้ดูแลระบบ",
+        "adminView": "แดชบอร์ดทนาย (Admin View)",
         "manageAccount": "จัดการบัญชี",
         "searchPlaceholder": "ค้นหาทนาย, ความเชี่ยวชาญ, หรือปัญหา...",
         "smeMenu": {

@@ -11,6 +11,23 @@ const intlMiddleware = createMiddleware({
 
 export default async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
+    const hostname = request.headers.get('host');
+
+    // 0. Subdomain Routing (admin.lawslane.com -> /admin)
+    if (hostname && hostname.startsWith('admin.')) {
+        // If the path doesn't already start with /admin, rewrite it
+        // We also need to handle the locale part if present
+        const hasLocale = ['/th', '/en', '/zh'].some(locale => pathname.startsWith(locale));
+
+        if (!pathname.includes('/admin')) {
+            // If path is just '/' or '/th', rewrite to '/admin' or '/th/admin'
+            const newPath = hasLocale
+                ? pathname.replace(/^(\/[a-z]{2})/, '$1/admin')
+                : `/admin${pathname}`;
+
+            return NextResponse.rewrite(new URL(newPath, request.url));
+        }
+    }
 
     // 1. Admin Route Protection
     if (pathname.startsWith('/admin')) {

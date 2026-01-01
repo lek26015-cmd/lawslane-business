@@ -125,6 +125,7 @@
         "myAccount": "My Account",
         "dashboard": "Dashboard",
         "adminDashboard": "Admin Dashboard",
+        "adminView": "Lawyer Dashboard (Admin View)",
         "manageAccount": "Manage Account",
         "searchPlaceholder": "Search for lawyers, expertise, or issues...",
         "smeMenu": {
