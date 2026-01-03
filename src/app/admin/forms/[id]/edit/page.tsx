@@ -296,12 +296,12 @@ export default function AdminFormEditPage() {
             const updatedData: any = {
                 title: form.titleTh || form.title,
                 titleTh: form.titleTh || form.title,
-                titleEn: form.titleEn || undefined,
-                titleZh: form.titleZh || undefined,
+                titleEn: form.titleEn || null,
+                titleZh: form.titleZh || null,
                 description: form.descriptionTh || form.description,
                 descriptionTh: form.descriptionTh || form.description,
-                descriptionEn: form.descriptionEn || undefined,
-                descriptionZh: form.descriptionZh || undefined,
+                descriptionEn: form.descriptionEn || null,
+                descriptionZh: form.descriptionZh || null,
                 category: form.category,
                 attachments: finalAttachments,
             };

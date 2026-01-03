@@ -221,12 +221,12 @@ export default function AdminFormCreatePage() {
             const newForm = {
                 title: titleTh, // Primary fallback
                 titleTh,
-                titleEn: titleEn || undefined,
-                titleZh: titleZh || undefined,
+                titleEn: titleEn || null,
+                titleZh: titleZh || null,
                 description: descriptionTh, // Primary fallback
                 descriptionTh,
-                descriptionEn: descriptionEn || undefined,
-                descriptionZh: descriptionZh || undefined,
+                descriptionEn: descriptionEn || null,
+                descriptionZh: descriptionZh || null,
                 category,
                 attachments,
                 downloads: 0,
