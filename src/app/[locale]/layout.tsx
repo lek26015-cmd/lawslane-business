@@ -69,7 +69,8 @@ export default async function RootLayout({
               "description": "Lawyers working. ปรึกษาปัญหากฎหมายกับ ทนายความมืออาชีพ. แพลตฟอร์มที่เชื่อมโยงคุณกับทนายความผู้เชี่ยวชาญ ค้นหาทนายที่ใช่ หรือปรึกษา AI ทนายความอัจฉริยะได้ทันที.",
               "sameAs": [
                 "https://www.facebook.com/lawslane",
-                "https://lin.ee/CZzSmHr"
+                "https://lin.ee/CZzSmHr",
+                "https://www.tiktok.com/@lawslane"
               ]
             })
           }}
