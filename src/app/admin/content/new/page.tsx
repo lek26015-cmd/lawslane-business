@@ -10,6 +10,7 @@ import {
     Languages,
     Loader2
 } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
@@ -75,6 +76,11 @@ export default function AdminArticleCreatePage() {
 
     const [categories, setCategories] = React.useState(['กฎหมายแรงงาน', 'กฎหมายธุรกิจ', 'ทรัพย์สินทางปัญญา', 'คดีฉ้อโกง', 'กฎหมายแพ่ง']);
     const [newCategory, setNewCategory] = React.useState('');
+
+    // CTA (Call to Action) states
+    const [ctaEnabled, setCtaEnabled] = React.useState(false);
+    const [ctaText, setCtaText] = React.useState('');
+    const [ctaUrl, setCtaUrl] = React.useState('');
 
     const handleTranslateTitle = async () => {
         if (!title.trim()) {
@@ -219,7 +225,12 @@ export default function AdminArticleCreatePage() {
                         description: descriptionZh,
                         content: contentZh,
                     }
-                }
+                },
+                cta: ctaEnabled ? {
+                    enabled: true,
+                    text: ctaText,
+                    url: ctaUrl,
+                } : null,
             };
 
             const articlesCollection = collection(firestore, 'articles');
@@ -544,6 +555,58 @@ export default function AdminArticleCreatePage() {
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* CTA Section */}
+                <Card className="rounded-xl border-green-200">
+                    <CardHeader className="bg-green-50/50">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle>🎯 Call to Action (CTA)</CardTitle>
+                                <CardDescription>
+                                    เพิ่มปุ่มหรือลิงก์ในบทความเพื่อกระตุ้นให้ผู้อ่านทำกิจกรรม
+                                </CardDescription>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Label htmlFor="cta-toggle" className="text-sm">เปิดใช้งาน</Label>
+                                <Switch
+                                    id="cta-toggle"
+                                    checked={ctaEnabled}
+                                    onCheckedChange={setCtaEnabled}
+                                />
+                            </div>
+                        </div>
+                    </CardHeader>
+                    {ctaEnabled && (
+                        <CardContent className="pt-4">
+                            <div className="grid gap-4">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="cta-text">ข้อความปุ่ม</Label>
+                                    <Input
+                                        id="cta-text"
+                                        value={ctaText}
+                                        onChange={(e) => setCtaText(e.target.value)}
+                                        placeholder="เช่น ปรึกษาทนายความฟรี, ดูบริการเพิ่มเติม"
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="cta-url">ลิงก์ปลายทาง (URL)</Label>
+                                    <Input
+                                        id="cta-url"
+                                        value={ctaUrl}
+                                        onChange={(e) => setCtaUrl(e.target.value)}
+                                        placeholder="เช่น /lawyers, /services/contracts, https://..."
+                                    />
+                                </div>
+                                <Alert variant="default" className="bg-green-50 border-green-200 text-green-800">
+                                    <Info className="h-4 w-4 !text-green-600" />
+                                    <AlertDescription>
+                                        ปุ่ม CTA จะแสดงที่ท้ายบทความ
+                                    </AlertDescription>
+                                </Alert>
+                            </div>
+                        </CardContent>
+                    )}
+                </Card>
 
                 <div className="flex items-center justify-end gap-2 md:hidden">
                     <Link href="/admin/content">

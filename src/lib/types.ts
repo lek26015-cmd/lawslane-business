@@ -112,6 +112,11 @@ export interface Article {
       content: string;
     };
   };
+  cta?: {
+    enabled: boolean;
+    text: string;
+    url: string;
+  } | null;
 }
 
 export interface Case {

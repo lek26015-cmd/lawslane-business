@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { useFirebase } from '@/firebase';
 import { useEffect, useState } from 'react';
 import { Article } from '@/lib/types';
@@ -138,6 +139,20 @@ export default function ArticlePage() {
                   return <p key={index} className="mb-4">{paragraph}</p>
                 })}
               </div>
+
+              {/* CTA Button */}
+              {article.cta?.enabled && article.cta.text && article.cta.url && (
+                <div className="mt-8 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl border border-primary/20">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p className="text-lg font-semibold text-foreground">ต้องการความช่วยเหลือทางกฎหมาย?</p>
+                    <Link href={article.cta.url}>
+                      <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold px-8">
+                        {article.cta.text}
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
             </article>
 
             {/* Other Articles Sidebar */}
