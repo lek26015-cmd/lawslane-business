@@ -20,7 +20,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, FileText, ArrowLeft, Check } from 'lucide-react';
+import { Loader2, FileText, ArrowLeft, Check, User } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -114,6 +114,7 @@ export default function ForLawyersPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [idCardFile, setIdCardFile] = useState<File | null>(null);
   const [licenseFile, setLicenseFile] = useState<File | null>(null);
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string>('');
   const [customSpecialty, setCustomSpecialty] = useState('');
   const [customOptions, setCustomOptions] = useState<string[]>([]);
@@ -253,6 +254,12 @@ export default function ForLawyersPage() {
       const idCardUrl = await uploadFileToR2Wrapper(idCardFile, `lawyer-documents/${user.uid}/id-card`);
       const licenseUrl = await uploadFileToR2Wrapper(licenseFile, `lawyer-documents/${user.uid}/license`);
 
+      // 3.1 Upload Profile Image (optional)
+      let profileImageUrl = '';
+      if (profileImageFile) {
+        profileImageUrl = await uploadFileToR2Wrapper(profileImageFile, `lawyer-profile-images/${user.uid}`);
+      }
+
       // 4. Create user profile document in Firestore (users collection)
       const userDocRef = doc(firestore, 'users', user.uid);
       const userProfileData = {
@@ -292,7 +299,7 @@ export default function ForLawyersPage() {
         specialty: values.specialties,
         status: 'pending',
         description: '',
-        imageUrl: '',
+        imageUrl: profileImageUrl,
         imageHint: 'professional lawyer',
         idCardUrl: idCardUrl,
         licenseUrl: licenseUrl,
@@ -771,8 +778,17 @@ export default function ForLawyersPage() {
                       )} />
                     </div>
 
-                    <h3 className="text-lg font-semibold border-b pb-2 pt-4">เอกสารประกอบการสมัคร</h3>
+                    <h3 className="text-lg font-semibold border-b pb-2 pt-4">รูปโปรไฟล์และเอกสาร</h3>
                     <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label>รูปโปรไฟล์ (ไม่บังคับ - ไม่เกิน 5MB)</Label>
+                        <div className="flex items-center gap-2 p-2 border rounded-full bg-gray-50 px-4">
+                          <User className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                          <span className="text-sm text-gray-600 truncate flex-grow">{profileImageFile ? profileImageFile.name : 'ยังไม่ได้เลือกรูป'}</span>
+                          <Input id="profile-image-upload" type="file" accept="image/*" className="hidden" onChange={handleFileChange(setProfileImageFile)} />
+                          <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('profile-image-upload')?.click()} className="rounded-full">เลือกรูป</Button>
+                        </div>
+                      </div>
                       <div className="space-y-2">
                         <Label>ไฟล์บัตรประชาชน</Label>
                         <div className="flex items-center gap-2 p-2 border rounded-full bg-gray-50 px-4">

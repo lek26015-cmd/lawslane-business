@@ -9,6 +9,8 @@ import * as z from 'zod';
 import { createUserWithEmailAndPassword, updateProfile, signOut } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp, addDoc, collection } from 'firebase/firestore';
 import { useFirebase } from '@/firebase';
+import { uploadToR2 } from '@/app/actions/upload-r2';
+import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB } from '@/lib/constants';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ArrowLeft } from 'lucide-react';
+import { Loader2, ArrowLeft, User } from 'lucide-react';
 import Logo from '@/components/logo';
 import { TurnstileWidget } from '@/components/turnstile-widget';
 import { validateTurnstile } from '@/app/actions/turnstile';
@@ -50,6 +52,23 @@ export default function LawyerExpressSignupPage() {
     const [customSpecialty, setCustomSpecialty] = useState('');
     const [customOptions, setCustomOptions] = useState<string[]>([]);
     const isSubmittingRef = useRef(false);
+    const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            if (file.size > MAX_FILE_SIZE_BYTES) {
+                toast({
+                    variant: "destructive",
+                    title: "ไฟล์มีขนาดใหญ่เกินไป",
+                    description: `กรุณาอัปโหลดไฟล์ขนาดไม่เกิน ${MAX_FILE_SIZE_MB}MB`
+                });
+                e.target.value = '';
+                return;
+            }
+            setProfileImageFile(file);
+        }
+    };
 
     const handleAddCustomSpecialty = (field: any) => {
         if (!customSpecialty.trim()) return;
@@ -128,6 +147,14 @@ export default function LawyerExpressSignupPage() {
                 });
             });
 
+            // 2.5 Upload Profile Image (optional)
+            let profileImageUrl = '';
+            if (profileImageFile) {
+                const formData = new FormData();
+                formData.append('file', profileImageFile);
+                profileImageUrl = await uploadToR2(formData, `lawyer-profile-images/${user.uid}`);
+            }
+
             // 3. Create user profile document in Firestore (users collection)
             const userDocRef = doc(firestore, 'users', user.uid);
             const userProfileData = {
@@ -168,7 +195,7 @@ export default function LawyerExpressSignupPage() {
                 bankAccountName: '',
                 bankAccountNumber: '',
                 description: '',
-                imageUrl: '',
+                imageUrl: profileImageUrl,
                 idCardUrl: '',
                 licenseUrl: '',
             };
@@ -285,6 +312,17 @@ export default function LawyerExpressSignupPage() {
                                         </FormItem>
                                     )}
                                 />
+
+                                {/* Profile Image Upload */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">รูปโปรไฟล์ (ไม่บังคับ - ไม่เกิน 5MB)</label>
+                                    <div className="flex items-center gap-2 p-2 border rounded-xl bg-slate-50 border-slate-200 px-4">
+                                        <User className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                                        <span className="text-sm text-gray-600 truncate flex-grow">{profileImageFile ? profileImageFile.name : 'ยังไม่ได้เลือกรูป'}</span>
+                                        <Input id="profile-image-upload-express" type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                                        <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('profile-image-upload-express')?.click()} className="rounded-full">เลือกรูป</Button>
+                                    </div>
+                                </div>
 
                                 <div className="space-y-4">
                                     <FormField
