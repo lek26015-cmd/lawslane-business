@@ -50,6 +50,41 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+        {/* JSON-LD Structured Data for Google Search Logo */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Lawslane",
+              "url": "https://lawslane.com",
+              "logo": "https://lawslane.com/images/logo-lawslane-icon.png",
+              "description": "Lawyers working. ปรึกษาปัญหากฎหมายกับ ทนายความมืออาชีพ. แพลตฟอร์มที่เชื่อมโยงคุณกับทนายความผู้เชี่ยวชาญ ค้นหาทนายที่ใช่ หรือปรึกษา AI ทนายความอัจฉริยะได้ทันที.",
+              "sameAs": [
+                "https://www.facebook.com/lawslane",
+                "https://line.me/R/ti/p/@lawslane"
+              ]
+            })
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Lawslane",
+              "url": "https://lawslane.com",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://lawslane.com/lawyers?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
       </head>
       <body className="font-body antialiased">
         <NextIntlClientProvider messages={messages}>
