@@ -60,7 +60,7 @@ export default async function RootLayout({
               "@type": "Organization",
               "name": "Lawslane",
               "url": "https://lawslane.com",
-              "logo": "https://lawslane.com/images/logo-lawslane-icon.png",
+              "logo": "https://lawslane.com/logo-lawslane.jpg",
               "description": "Lawyers working. ปรึกษาปัญหากฎหมายกับ ทนายความมืออาชีพ. แพลตฟอร์มที่เชื่อมโยงคุณกับทนายความผู้เชี่ยวชาญ ค้นหาทนายที่ใช่ หรือปรึกษา AI ทนายความอัจฉริยะได้ทันที.",
               "sameAs": [
                 "https://www.facebook.com/lawslane",
