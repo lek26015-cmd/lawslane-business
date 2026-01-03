@@ -409,38 +409,54 @@ export function AdminClientLayout({ children }: { children: React.ReactNode }) {
                                 <span className="sr-only">Toggle navigation menu</span>
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="left" className="flex flex-col">
+                        <SheetContent side="left" className="flex flex-col bg-slate-900 text-slate-100 border-slate-700 p-0">
                             <SheetTitle className="sr-only">Admin Navigation</SheetTitle>
-                            <nav className="grid gap-2 text-lg font-medium">
-                                <Link href="/admin" className="flex items-center gap-2 text-lg font-semibold mb-4">
-                                    <div className="relative h-8 w-8">
-                                        <Image
-                                            src="/images/logo-lawslane-transparent-white.png"
-                                            alt="Lawslane Admin"
-                                            fill
-                                            className="object-contain"
-                                        />
-                                    </div>
-                                    <span className="sr-only">Lawslane Admin</span>
+
+                            {/* Header */}
+                            <div className="flex items-center gap-2 p-4 border-b border-slate-700">
+                                <div className="relative h-8 w-8">
+                                    <Image
+                                        src="/images/logo-lawslane-transparent-white.png"
+                                        alt="Lawslane Admin"
+                                        fill
+                                        className="object-contain"
+                                    />
+                                </div>
+                                <span className="font-semibold text-white">Lawslane Admin</span>
+                            </div>
+
+                            {/* Scrollable Nav */}
+                            <nav className="flex-1 overflow-y-auto p-4 space-y-2">
+                                {/* Dashboard Link */}
+                                <Link
+                                    href="/admin"
+                                    className={cn("flex items-center gap-3 rounded-lg px-3 py-3 text-slate-100 transition-all hover:bg-slate-800",
+                                        pathname === "/admin" && "bg-slate-800 text-white font-medium"
+                                    )}
+                                >
+                                    <LayoutDashboard className="h-5 w-5" />
+                                    แดชบอร์ด
                                 </Link>
-                                {navSections.map((section, index) => (
+
+                                {/* Collapsible Sections */}
+                                {navSections.map((section) => (
                                     <Collapsible
                                         key={section.title}
                                         open={openSection === section.title}
                                         onOpenChange={() => toggleSection(section.title)}
-                                        className="mb-2"
+                                        className=""
                                     >
-                                        <CollapsibleTrigger className="flex w-full items-center justify-between px-2 py-2 text-sm font-semibold text-muted-foreground tracking-wider uppercase hover:text-foreground transition-colors">
+                                        <CollapsibleTrigger className="flex w-full items-center justify-between px-3 py-2 text-xs font-semibold text-slate-400 tracking-wider uppercase hover:text-white transition-colors rounded-lg hover:bg-slate-800/50">
                                             {section.title}
-                                            <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", openSection !== section.title && "-rotate-90")} />
+                                            <ChevronRight className={cn("h-4 w-4 transition-transform duration-200", openSection === section.title && "rotate-90")} />
                                         </CollapsibleTrigger>
-                                        <CollapsibleContent className="space-y-1 pt-1 overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+                                        <CollapsibleContent className="space-y-1 pl-2 pt-1">
                                             {section.items.map((item) => (
                                                 <Link
                                                     key={item.label}
                                                     href={item.href}
-                                                    className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground",
-                                                        isActive(item.href) && "bg-muted text-foreground"
+                                                    className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-sky-300 transition-all hover:bg-slate-800 hover:text-white text-sm",
+                                                        isActive(item.href) && "bg-slate-800 text-white"
                                                     )}
                                                 >
                                                     {item.icon}
@@ -451,15 +467,33 @@ export function AdminClientLayout({ children }: { children: React.ReactNode }) {
                                     </Collapsible>
                                 ))}
 
-                                <div className="my-2 border-t border-border/50" />
+                                <div className="border-t border-slate-700 my-3" />
                                 <Link
                                     href={getMainLink()}
-                                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
                                 >
                                     <ArrowLeftCircle className="h-5 w-5" />
                                     กลับไปหน้าเว็บไซต์
                                 </Link>
                             </nav>
+
+                            {/* User Footer */}
+                            <div className="p-4 border-t border-slate-700 mt-auto">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <Avatar className="h-10 w-10 border border-slate-600">
+                                        <AvatarImage src={currentUser?.photoURL || ''} />
+                                        <AvatarFallback className="bg-slate-700 text-white">{currentUser?.displayName?.charAt(0) || currentUser?.email?.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-semibold truncate">{currentUser?.displayName || currentUser?.email}</p>
+                                        <p className="text-xs text-slate-400">{userRole}</p>
+                                    </div>
+                                </div>
+                                <Button onClick={handleLogout} variant="destructive" className="w-full">
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    ออกจากระบบ
+                                </Button>
+                            </div>
                         </SheetContent>
                     </Sheet>
                     <div className="w-full flex-1">
