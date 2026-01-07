@@ -8,7 +8,9 @@ import {
     Info,
     PlusCircle,
     Languages,
-    Loader2
+    Loader2,
+    X,
+    Tag
 } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { useRouter } from 'next/navigation'
@@ -33,6 +35,7 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
 import { useFirebase } from '@/firebase'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { errorEmitter, FirestorePermissionError } from '@/firebase'
@@ -77,10 +80,32 @@ export default function AdminArticleCreatePage() {
     const [categories, setCategories] = React.useState(['กฎหมายแรงงาน', 'กฎหมายธุรกิจ', 'ทรัพย์สินทางปัญญา', 'คดีฉ้อโกง', 'กฎหมายแพ่ง']);
     const [newCategory, setNewCategory] = React.useState('');
 
-    // CTA (Call to Action) states
     const [ctaEnabled, setCtaEnabled] = React.useState(false);
     const [ctaText, setCtaText] = React.useState('');
     const [ctaUrl, setCtaUrl] = React.useState('');
+
+    // Tags state
+    const [tags, setTags] = React.useState<string[]>([]);
+    const [newTag, setNewTag] = React.useState('');
+
+    const handleAddTag = () => {
+        const trimmedTag = newTag.trim().toLowerCase();
+        if (trimmedTag && !tags.includes(trimmedTag)) {
+            setTags(prev => [...prev, trimmedTag]);
+            setNewTag('');
+        }
+    };
+
+    const handleRemoveTag = (tagToRemove: string) => {
+        setTags(prev => prev.filter(tag => tag !== tagToRemove));
+    };
+
+    const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleAddTag();
+        }
+    };
 
     const handleTranslateTitle = async () => {
         if (!title.trim()) {
@@ -231,6 +256,7 @@ export default function AdminArticleCreatePage() {
                     text: ctaText,
                     url: ctaUrl,
                 } : null,
+                tags: tags,
             };
 
             const articlesCollection = collection(firestore, 'articles');
@@ -555,6 +581,51 @@ export default function AdminArticleCreatePage() {
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Tags Section */}
+                <Card className="rounded-xl border-purple-200">
+                    <CardHeader className="bg-purple-50/50">
+                        <CardTitle className="flex items-center gap-2">
+                            <Tag className="h-5 w-5" />
+                            แท็กบทความ
+                        </CardTitle>
+                        <CardDescription>
+                            เพิ่มแท็กเพื่อช่วยในการค้นหาและจัดกลุ่มบทความ
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-4">
+                        <div className="grid gap-3">
+                            <div className="flex flex-wrap gap-2 min-h-[40px] p-2 border rounded-lg bg-muted/30">
+                                {tags.length === 0 && (
+                                    <span className="text-muted-foreground text-sm">ยังไม่มีแท็ก</span>
+                                )}
+                                {tags.map(tag => (
+                                    <Badge key={tag} variant="secondary" className="flex items-center gap-1 px-3 py-1">
+                                        {tag}
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveTag(tag)}
+                                            className="ml-1 hover:text-destructive"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </Badge>
+                                ))}
+                            </div>
+                            <div className="flex gap-2">
+                                <Input
+                                    placeholder="พิมพ์แท็กแล้วกด Enter หรือคลิกปุ่มเพิ่ม"
+                                    value={newTag}
+                                    onChange={(e) => setNewTag(e.target.value)}
+                                    onKeyDown={handleTagKeyDown}
+                                />
+                                <Button variant="outline" size="icon" onClick={handleAddTag} type="button">
+                                    <PlusCircle className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
 
                 {/* CTA Section */}
                 <Card className="rounded-xl border-green-200">

@@ -117,6 +117,7 @@ export interface Article {
     text: string;
     url: string;
   } | null;
+  tags?: string[];
 }
 
 export interface Case {

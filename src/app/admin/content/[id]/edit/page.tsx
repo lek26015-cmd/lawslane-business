@@ -9,7 +9,9 @@ import {
     PlusCircle,
     Languages,
     Sparkles,
-    Loader2
+    Loader2,
+    X,
+    Tag
 } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -33,6 +35,7 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
 import { getArticleById } from '@/lib/data'
 import type { Article } from '@/lib/types'
 import { useFirebase } from '@/firebase'
@@ -63,12 +66,20 @@ export default function AdminArticleEditPage() {
     // Translation States
     const [isTranslating, setIsTranslating] = React.useState<string | null>(null); // 'en' or 'zh' or null
 
+    // Tags state
+    const [tags, setTags] = React.useState<string[]>([]);
+    const [newTag, setNewTag] = React.useState('');
+
     React.useEffect(() => {
         if (!firestore || !id) return;
         setIsLoading(true);
         getArticleById(firestore, id as string).then(foundArticle => {
             if (foundArticle) {
                 setArticle(foundArticle);
+                // Load existing tags
+                if (foundArticle.tags && Array.isArray(foundArticle.tags)) {
+                    setTags(foundArticle.tags);
+                }
             }
             setIsLoading(false);
         });
@@ -203,7 +214,8 @@ export default function AdminArticleEditPage() {
                 category: article.category || '',
                 authorName: article.authorName || 'ทีมงาน Lawslane',
                 imageUrl: finalImageUrl || '',
-                translations: article.translations || {}, // Save translations
+                translations: article.translations || {},
+                tags: tags,
             };
 
             await updateDoc(articleRef, updatedData);
@@ -251,6 +263,25 @@ export default function AdminArticleEditPage() {
             })
         }
     }
+
+    const handleAddTag = () => {
+        const trimmedTag = newTag.trim().toLowerCase();
+        if (trimmedTag && !tags.includes(trimmedTag)) {
+            setTags(prev => [...prev, trimmedTag]);
+            setNewTag('');
+        }
+    };
+
+    const handleRemoveTag = (tagToRemove: string) => {
+        setTags(prev => prev.filter(tag => tag !== tagToRemove));
+    };
+
+    const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleAddTag();
+        }
+    };
 
     if (isLoading || !article) {
         return <div>กำลังโหลด...</div>
@@ -533,6 +564,49 @@ export default function AdminArticleEditPage() {
                                                 <PlusCircle className="h-4 w-4" />
                                             </Button>
                                         </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Tags Section */}
+                        <Card className="rounded-xl border-purple-200">
+                            <CardHeader className="bg-purple-50/50">
+                                <CardTitle className="flex items-center gap-2 text-base">
+                                    <Tag className="h-4 w-4" />
+                                    แท็กบทความ
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-4">
+                                <div className="grid gap-3">
+                                    <div className="flex flex-wrap gap-2 min-h-[40px] p-2 border rounded-lg bg-muted/30">
+                                        {tags.length === 0 && (
+                                            <span className="text-muted-foreground text-sm">ยังไม่มีแท็ก</span>
+                                        )}
+                                        {tags.map(tag => (
+                                            <Badge key={tag} variant="secondary" className="flex items-center gap-1 px-2 py-1 text-xs">
+                                                {tag}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRemoveTag(tag)}
+                                                    className="ml-1 hover:text-destructive"
+                                                >
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Input
+                                            placeholder="พิมพ์แท็ก..."
+                                            value={newTag}
+                                            onChange={(e) => setNewTag(e.target.value)}
+                                            onKeyDown={handleTagKeyDown}
+                                            className="text-sm"
+                                        />
+                                        <Button variant="outline" size="icon" onClick={handleAddTag} type="button">
+                                            <PlusCircle className="h-4 w-4" />
+                                        </Button>
                                     </div>
                                 </div>
                             </CardContent>
