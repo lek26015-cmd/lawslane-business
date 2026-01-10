@@ -64,13 +64,17 @@ export default function DashboardPage() {
         );
     }
 
-    const activeCases = cases.filter(c => c.status === 'active');
+    const activeCases = cases.filter(c => c.status === 'active' || c.status === 'pending_payment' || c.status === 'rejected' || c.status === 'approved' || c.status === 'pending');
     const closedCases = cases.filter(c => c.status === 'closed');
+
+    // Filter appointments to show confirmed and pending (waiting for lawyer), exclude pending_payment
+    const visibleAppointments = appointments.filter(a => a.status !== 'pending_payment');
 
     const caseColors: { [key: string]: string } = {
         blue: 'border-l-4 border-blue-500',
         yellow: 'border-l-4 border-yellow-500',
         gray: 'border-l-4 border-gray-400',
+        red: 'border-l-4 border-red-500',
     };
 
     const quickServices = [
@@ -95,12 +99,19 @@ export default function DashboardPage() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                {appointments.length > 0 ? (
+                                {visibleAppointments.length > 0 ? (
                                     <div className="space-y-4">
-                                        {appointments.map((appt) => (
+                                        {visibleAppointments.map((appt) => (
                                             <div key={appt.id} className="flex items-center justify-between p-4 rounded-3xl bg-green-50 border border-green-200">
                                                 <div>
-                                                    <p className="font-semibold text-green-900">{appt.description || t('defaultAppointmentDescription')}</p>
+                                                    <p className="font-semibold text-green-900 flex items-center gap-2">
+                                                        {appt.description || t('defaultAppointmentDescription')}
+                                                        {appt.status === 'pending' && (
+                                                            <Badge variant="outline" className="text-yellow-700 border-yellow-600 bg-yellow-50">
+                                                                รอทนายตอบรับ
+                                                            </Badge>
+                                                        )}
+                                                    </p>
                                                     <p className="text-sm text-green-700">
                                                         {t('appointmentWith')}: {appt.lawyer.name} | {t('date')}: {format(appt.date, 'dd MMM yyyy', { locale: dateLocale })} | {t('time')}: {appt.time}
                                                     </p>
@@ -132,13 +143,33 @@ export default function DashboardPage() {
                                 <CardContent>
                                     <div className="space-y-3">
                                         {activeCases.map((caseItem) => (
-                                            <Link href={`/${locale}/chat/${caseItem.id}?lawyerId=${caseItem.lawyer.id}`} key={caseItem.id}>
-                                                <div className={`flex items-center justify-between p-4 rounded-3xl bg-card ${caseColors['blue']}`}>
+                                            <Link href={caseItem.status === 'rejected' ? '#' : `/${locale}/chat/${caseItem.id}?lawyerId=${caseItem.lawyer.id}`} key={caseItem.id} className={caseItem.status === 'rejected' ? 'cursor-default' : ''}>
+                                                <div className={`flex items-center justify-between p-4 rounded-3xl bg-card ${caseItem.status === 'rejected' ? caseColors['red'] : caseColors['blue']}`}>
                                                     <div>
-                                                        <p className="font-semibold">{caseItem.title || t('defaultCaseTitle')} <span className="font-mono text-xs text-muted-foreground">({caseItem.id})</span></p>
+                                                        <p className="font-semibold flex items-center gap-2 flex-wrap">
+                                                            {caseItem.title || t('defaultCaseTitle')}
+                                                            <span className="font-mono text-xs text-muted-foreground">({caseItem.id})</span>
+                                                            {caseItem.status === 'pending_payment' && (
+                                                                <Badge variant="outline" className="text-yellow-600 border-yellow-600 bg-yellow-50">
+                                                                    รอการชำระเงิน
+                                                                </Badge>
+                                                            )}
+                                                            {caseItem.status === 'rejected' && (
+                                                                <Badge variant="destructive">
+                                                                    คำขอถูกปฏิเสธ
+                                                                </Badge>
+                                                            )}
+                                                        </p>
+                                                        {caseItem.status === 'rejected' && caseItem.rejectReason && (
+                                                            <p className="text-sm text-red-600 mt-1">
+                                                                เหตุผล: {caseItem.rejectReason}
+                                                            </p>
+                                                        )}
                                                         <p className="text-sm text-muted-foreground">{caseItem.lastMessage}</p>
                                                     </div>
-                                                    <Button size="sm" className="bg-foreground hover:bg-foreground/90 text-background rounded-full">{t('viewDetails')}</Button>
+                                                    {caseItem.status !== 'rejected' && (
+                                                        <Button size="sm" className="bg-foreground hover:bg-foreground/90 text-background rounded-full">{t('viewDetails')}</Button>
+                                                    )}
                                                 </div>
                                             </Link>
                                         ))}

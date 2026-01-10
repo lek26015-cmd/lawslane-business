@@ -26,6 +26,15 @@ export default async function middleware(request: NextRequest) {
 
             return NextResponse.rewrite(new URL(newPath, request.url));
         }
+    } else if (hostname && hostname.startsWith('education.')) {
+        // Education Subdomain (education.lawslane.com -> /education)
+        console.log('Education subdomain detected:', { hostname, pathname });
+        if (!pathname.startsWith('/education')) {
+            // Rewrite to /education, stripping locale if present
+            const newPath = `/education${pathname.replace(/^\/[a-z]{2}/, '')}`;
+            console.log('Rewriting to:', newPath);
+            return NextResponse.rewrite(new URL(newPath, request.url));
+        }
     } else {
         // Redirect /admin on main domain to admin subdomain (Skip for localhost)
         if (pathname.startsWith('/admin') && hostname && !hostname.includes('localhost')) {
@@ -44,8 +53,8 @@ export default async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL(newPath, request.url));
     }
 
-    // 1. Admin & Lawyer System Exclusion (No i18n)
-    if (pathname.startsWith('/admin') || pathname.startsWith('/lawyer-') || pathname.startsWith('/verify-lawyer')) {
+    // 1. Admin & Lawyer & Education System Exclusion (No i18n)
+    if (pathname.startsWith('/admin') || pathname.startsWith('/lawyer-') || pathname.startsWith('/verify-lawyer') || pathname.startsWith('/education')) {
         // Admin Auth Check
         if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
             const session = request.cookies.get('session');

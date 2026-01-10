@@ -158,12 +158,13 @@ export async function getDashboardData(db: Firestore, userId: string) {
       lastMessageTimestamp: data.lastMessageAt ? data.lastMessageAt.toDate().toISOString() : '',
       lawyer: lawyer,
       updatedAt: data.lastMessageAt ? data.lastMessageAt.toDate() : new Date(),
+      rejectReason: data.rejectReason || '',
     } as Case;
   }));
 
   // 2. Fetch Appointments
   const appointmentsRef = collection(db, 'appointments');
-  const aptQuery = query(appointmentsRef, where('userId', '==', userId), where('status', '==', 'confirmed')); // Assuming 'confirmed' status
+  const aptQuery = query(appointmentsRef, where('userId', '==', userId));
   const aptSnapshot = await getDocs(aptQuery);
 
   const appointments: UpcomingAppointment[] = await Promise.all(aptSnapshot.docs.map(async (d) => {
@@ -183,6 +184,7 @@ export async function getDashboardData(db: Firestore, userId: string) {
       time: data.timeSlot || 'N/A',
       description: data.description || '',
       lawyer: lawyer,
+      status: data.status || 'pending',
     } as UpcomingAppointment;
   }));
 

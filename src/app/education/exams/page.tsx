@@ -1,0 +1,333 @@
+'use client';
+
+import { useState, useMemo } from 'react';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Clock, CheckCircle2, AlertCircle, Filter, X, ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+// Types
+interface Exam {
+    id: string;
+    title: string;
+    description: string;
+    price: number;
+    durationMinutes: number;
+    passingScore: number;
+    totalQuestions: number;
+    yearLevel: string; // ปี 1, ปี 2, ปี 3, ปี 4, ใบอนุญาต, เนติ
+    subject: string; // หัวข้อข้อสอบ
+    lawCategory: string; // แพ่ง, วิแพ่ง, อาญา, วิอาญา
+    difficulty: 'easy' | 'medium' | 'hard';
+}
+
+// MOCK DATA with expanded fields
+const MOCK_EXAMS: Exam[] = [
+    {
+        id: "exam-1",
+        title: "ข้อสอบกฎหมายแพ่ง: นิติกรรมและสัญญา",
+        description: "ทดสอบความเข้าใจเรื่องนิติกรรม สัญญา และผลของสัญญา",
+        price: 0,
+        durationMinutes: 60,
+        passingScore: 30,
+        totalQuestions: 50,
+        yearLevel: "ปี 1",
+        subject: "นิติกรรมและสัญญา",
+        lawCategory: "แพ่ง",
+        difficulty: 'easy',
+    },
+    {
+        id: "exam-2",
+        title: "ข้อสอบกฎหมายแพ่ง: ทรัพย์สินและที่ดิน",
+        description: "เน้นเรื่องกรรมสิทธิ์ ครอบครอง ภาระจำยอม และสิทธิเหนือที่ดิน",
+        price: 99,
+        durationMinutes: 90,
+        passingScore: 40,
+        totalQuestions: 60,
+        yearLevel: "ปี 2",
+        subject: "ทรัพย์สินและที่ดิน",
+        lawCategory: "แพ่ง",
+        difficulty: 'medium',
+    },
+    {
+        id: "exam-3",
+        title: "ข้อสอบกฎหมายอาญา: ความผิดเกี่ยวกับชีวิตและร่างกาย",
+        description: "ทดสอบความรู้เรื่องฆ่าคนตาย ทำร้ายร่างกาย และความผิดเกี่ยวกับชีวิต",
+        price: 0,
+        durationMinutes: 60,
+        passingScore: 25,
+        totalQuestions: 40,
+        yearLevel: "ปี 2",
+        subject: "ความผิดเกี่ยวกับชีวิตและร่างกาย",
+        lawCategory: "อาญา",
+        difficulty: 'medium',
+    },
+    {
+        id: "exam-4",
+        title: "ข้อสอบวิธีพิจารณาความแพ่ง: การดำเนินคดี",
+        description: "ขั้นตอนการฟ้องคดี การส่งหมาย พยานหลักฐาน และการบังคับคดี",
+        price: 150,
+        durationMinutes: 120,
+        passingScore: 50,
+        totalQuestions: 80,
+        yearLevel: "ปี 3",
+        subject: "การดำเนินคดีแพ่ง",
+        lawCategory: "วิแพ่ง",
+        difficulty: 'hard',
+    },
+    {
+        id: "exam-5",
+        title: "ข้อสอบวิธีพิจารณาความอาญา: สิทธิผู้ต้องหา",
+        description: "สิทธิของผู้ต้องหา การสอบสวน การฝากขัง และการประกันตัว",
+        price: 0,
+        durationMinutes: 60,
+        passingScore: 30,
+        totalQuestions: 45,
+        yearLevel: "ปี 3",
+        subject: "สิทธิผู้ต้องหา",
+        lawCategory: "วิอาญา",
+        difficulty: 'medium',
+    },
+    {
+        id: "exam-6",
+        title: "จำลองสอบใบอนุญาตว่าความ (ภาคทฤษฎี) ชุดที่ 1",
+        description: "ข้อสอบเสมือนจริง 100 ข้อ จำกัดเวลา 4 ชั่วโมง",
+        price: 0,
+        durationMinutes: 240,
+        passingScore: 50,
+        totalQuestions: 100,
+        yearLevel: "ใบอนุญาต",
+        subject: "ข้อสอบรวม",
+        lawCategory: "แพ่ง",
+        difficulty: 'hard',
+    },
+    {
+        id: "exam-7",
+        title: "จำลองสอบเนติบัณฑิต (กลุ่มกฎหมายแพ่ง)",
+        description: "เตรียมสอบเนติบัณฑิตด้วยข้อสอบอัตนัยพร้อมธงคำตอบ",
+        price: 299,
+        durationMinutes: 180,
+        passingScore: 60,
+        totalQuestions: 10,
+        yearLevel: "เนติ",
+        subject: "ข้อสอบเนติกลุ่มแพ่ง",
+        lawCategory: "แพ่ง",
+        difficulty: 'hard',
+    },
+    {
+        id: "exam-8",
+        title: "ข้อสอบกฎหมายอาญา: ความผิดเกี่ยวกับทรัพย์",
+        description: "ลักทรัพย์ ยักยอก ฉ้อโกง และความผิดเกี่ยวกับทรัพย์อื่นๆ",
+        price: 0,
+        durationMinutes: 60,
+        passingScore: 30,
+        totalQuestions: 50,
+        yearLevel: "ปี 2",
+        subject: "ความผิดเกี่ยวกับทรัพย์",
+        lawCategory: "อาญา",
+        difficulty: 'medium',
+    },
+];
+
+// Filter Options
+const YEAR_LEVELS = ['ทั้งหมด', 'ปี 1', 'ปี 2', 'ปี 3', 'ปี 4', 'ใบอนุญาต', 'เนติ'];
+const LAW_CATEGORIES = ['ทั้งหมด', 'แพ่ง', 'วิแพ่ง', 'อาญา', 'วิอาญา'];
+const DIFFICULTIES = ['ทั้งหมด', 'easy', 'medium', 'hard'];
+
+export default function ExamListingPage() {
+    const [yearFilter, setYearFilter] = useState('ทั้งหมด');
+    const [lawCategoryFilter, setLawCategoryFilter] = useState('ทั้งหมด');
+    const [difficultyFilter, setDifficultyFilter] = useState('ทั้งหมด');
+
+    const filteredExams = useMemo(() => {
+        return MOCK_EXAMS.filter(exam => {
+            const matchYear = yearFilter === 'ทั้งหมด' || exam.yearLevel === yearFilter;
+            const matchLaw = lawCategoryFilter === 'ทั้งหมด' || exam.lawCategory === lawCategoryFilter;
+            const matchDiff = difficultyFilter === 'ทั้งหมด' || exam.difficulty === difficultyFilter;
+            return matchYear && matchLaw && matchDiff;
+        });
+    }, [yearFilter, lawCategoryFilter, difficultyFilter]);
+
+    const clearFilters = () => {
+        setYearFilter('ทั้งหมด');
+        setLawCategoryFilter('ทั้งหมด');
+        setDifficultyFilter('ทั้งหมด');
+    };
+
+    const hasActiveFilters = yearFilter !== 'ทั้งหมด' || lawCategoryFilter !== 'ทั้งหมด' || difficultyFilter !== 'ทั้งหมด';
+
+    return (
+        <div className="flex flex-col gap-8">
+            {/* Header */}
+            <div className="flex flex-col gap-2">
+                <Link href="/education" className="inline-flex items-center text-sm text-slate-600 hover:text-primary transition-colors w-fit">
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    กลับหน้าหลัก
+                </Link>
+                <h1 className="text-3xl font-bold tracking-tight text-slate-900">คลังข้อสอบ</h1>
+                <p className="text-slate-600">
+                    ฝึกฝนให้มั่นใจกับระบบจำลองสอบเสมือนจริง
+                </p>
+            </div>
+
+            {/* Filters */}
+            <div className="bg-slate-50 rounded-2xl p-4 md:p-6 border">
+                <div className="flex items-center gap-2 mb-4">
+                    <Filter className="w-5 h-5 text-slate-600" />
+                    <span className="font-semibold text-slate-900">ตัวกรอง</span>
+                    {hasActiveFilters && (
+                        <button
+                            onClick={clearFilters}
+                            className="ml-auto text-sm text-slate-500 hover:text-slate-900 flex items-center gap-1"
+                        >
+                            <X className="w-4 h-4" /> ล้างตัวกรอง
+                        </button>
+                    )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Year Level Filter */}
+                    <div>
+                        <label className="text-sm font-medium text-slate-700 mb-2 block">ระดับชั้นปี</label>
+                        <Select value={yearFilter} onValueChange={setYearFilter}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="เลือกระดับ" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {YEAR_LEVELS.map(year => (
+                                    <SelectItem key={year} value={year}>{year}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Law Category Filter */}
+                    <div>
+                        <label className="text-sm font-medium text-slate-700 mb-2 block">ประเภทกฎหมาย</label>
+                        <Select value={lawCategoryFilter} onValueChange={setLawCategoryFilter}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="เลือกประเภท" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {LAW_CATEGORIES.map(cat => (
+                                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Difficulty Filter */}
+                    <div>
+                        <label className="text-sm font-medium text-slate-700 mb-2 block">ระดับความยาก</label>
+                        <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="เลือกระดับ" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {DIFFICULTIES.map(diff => (
+                                    <SelectItem key={diff} value={diff}>
+                                        {diff === 'ทั้งหมด' ? 'ทั้งหมด' : diff === 'easy' ? 'ง่าย' : diff === 'medium' ? 'ปานกลาง' : 'ยาก'}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+
+                {/* Quick Filter Pills for Law Categories */}
+                <div className="flex flex-wrap gap-2 mt-4">
+                    {LAW_CATEGORIES.filter(c => c !== 'ทั้งหมด').map(cat => (
+                        <button
+                            key={cat}
+                            onClick={() => setLawCategoryFilter(cat === lawCategoryFilter ? 'ทั้งหมด' : cat)}
+                            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${lawCategoryFilter === cat
+                                    ? 'bg-slate-900 text-white'
+                                    : 'bg-white border hover:bg-slate-100 text-slate-700'
+                                }`}
+                        >
+                            {cat}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Results Count */}
+            <div className="flex items-center justify-between">
+                <p className="text-slate-600">
+                    พบ <strong>{filteredExams.length}</strong> ข้อสอบ
+                </p>
+            </div>
+
+            {/* Exam List */}
+            <div className="space-y-4">
+                {filteredExams.length > 0 ? (
+                    filteredExams.map((exam) => (
+                        <div key={exam.id} className="group relative flex flex-col sm:flex-row gap-6 p-6 border rounded-xl bg-white hover:border-purple-300 transition-all hover:shadow-md">
+                            <div className="flex-1 space-y-3">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <Badge variant={exam.price === 0 ? "default" : "outline"} className={exam.price === 0 ? "bg-green-600 hover:bg-green-700" : ""}>
+                                        {exam.price === 0 ? "ฟรี" : `฿${exam.price}`}
+                                    </Badge>
+                                    <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                                        {exam.yearLevel}
+                                    </Badge>
+                                    <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                                        {exam.lawCategory}
+                                    </Badge>
+                                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${exam.difficulty === 'hard' ? 'bg-red-100 text-red-700' :
+                                            exam.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                                                'bg-green-100 text-green-700'
+                                        }`}>
+                                        {exam.difficulty === 'easy' ? 'ง่าย' : exam.difficulty === 'medium' ? 'ปานกลาง' : 'ยาก'}
+                                    </span>
+                                </div>
+
+                                <h3 className="text-xl font-bold text-slate-900 group-hover:text-purple-700 transition-colors">
+                                    {exam.title}
+                                </h3>
+                                <p className="text-slate-500">
+                                    {exam.description}
+                                </p>
+
+                                <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
+                                    <div className="flex items-center gap-1.5">
+                                        <Clock className="w-4 h-4" />
+                                        <span>{exam.durationMinutes} นาที</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <AlertCircle className="w-4 h-4" />
+                                        <span>{exam.totalQuestions} ข้อ</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <CheckCircle2 className="w-4 h-4" />
+                                        <span>เกณฑ์ผ่าน {exam.passingScore} คะแนน</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-row sm:flex-col items-center sm:justify-center border-t sm:border-t-0 sm:border-l pt-4 sm:pt-0 sm:pl-6 gap-3">
+                                <Link href={`/education/exams/${exam.id}`} className="w-full sm:w-auto">
+                                    <Button className="w-full sm:w-32 bg-purple-600 hover:bg-purple-700">
+                                        เริ่มทำข้อสอบ
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className="text-center py-16 bg-slate-50 rounded-2xl border">
+                        <AlertCircle className="mx-auto h-12 w-12 text-slate-400" />
+                        <h3 className="mt-4 text-lg font-semibold text-slate-900">ไม่พบข้อสอบ</h3>
+                        <p className="mt-2 text-sm text-slate-600">
+                            ลองเปลี่ยนตัวกรองหรือล้างการค้นหา
+                        </p>
+                        <Button variant="outline" className="mt-4" onClick={clearFilters}>
+                            ล้างตัวกรอง
+                        </Button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}

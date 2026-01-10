@@ -126,9 +126,10 @@ export interface Case {
   lawyer: Pick<LawyerProfile, 'id' | 'name' | 'imageUrl' | 'imageHint'>;
   lastMessage: string;
   lastMessageTimestamp: string;
-  status: 'active' | 'closed' | 'pending_payment';
+  status: 'active' | 'closed' | 'pending_payment' | 'rejected' | 'approved' | 'pending';
   hasNewMessage?: boolean;
   color?: 'blue' | 'yellow';
+  rejectReason?: string;
 }
 
 export interface UpcomingAppointment {
@@ -137,6 +138,7 @@ export interface UpcomingAppointment {
   date: Date;
   description: string;
   time: string;
+  status?: string;
 }
 
 export interface Document {
