@@ -23,7 +23,7 @@ export function HomeRecommendedLawyers() {
             if (!firestore) return;
             try {
                 const fetchedLawyers = await getApprovedLawyers(firestore);
-                setLawyers(fetchedLawyers.slice(0, 3));
+                setLawyers(fetchedLawyers.slice(0, 10));
             } catch (error) {
                 console.error("Error fetching lawyers:", error);
             } finally {
