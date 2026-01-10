@@ -286,7 +286,7 @@ export async function getLawyerDashboardData(db: Firestore, lawyerId: string): P
 
   return {
     newRequests,
-    activeCases: lawyerCases.filter(c => c.status === 'active'),
+    activeCases: lawyerCases.filter(c => c.status === 'active' || c.status === 'pending_payment'),
     completedCases: lawyerCases.filter(c => c.status === 'closed'),
   };
 }

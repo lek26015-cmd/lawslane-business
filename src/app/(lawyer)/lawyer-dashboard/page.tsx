@@ -305,7 +305,14 @@ export default function LawyerDashboardPage() {
                   <Link href={`/chat/${caseItem.id}?lawyerId=${user.uid}&clientId=${caseItem.clientId}&view=lawyer`} key={caseItem.id}>
                     <div className="flex items-center justify-between p-4 rounded-3xl hover:bg-gray-200/50 transition-colors">
                       <div>
-                        <p className="font-semibold">{caseItem.title}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold">{caseItem.title}</p>
+                          {caseItem.status === 'pending_payment' && (
+                            <Badge variant="outline" className="text-yellow-600 border-yellow-600 bg-yellow-50 text-xs py-0 h-5">
+                              รอตรวจสอบสลิป
+                            </Badge>
+                          )}
+                        </div>
                         <p className="text-sm text-muted-foreground">ลูกค้า: {caseItem.clientName} | อัปเดตล่าสุด: {caseItem.lastUpdate}</p>
                       </div>
                       <div className="flex items-center gap-2">
