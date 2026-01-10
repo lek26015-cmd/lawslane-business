@@ -172,8 +172,9 @@ export default function AdminFinancialsPage() {
       // Helper to fetch lawyer name
       const getLawyerName = async (lawyerId: string) => {
         try {
-          const lawyerDoc = await getDocs(query(collection(firestore, 'lawyerProfiles'), where('id', '==', lawyerId)));
-          if (!lawyerDoc.empty) return lawyerDoc.docs[0].data().name;
+          const lawyerDocRef = doc(firestore, 'lawyerProfiles', lawyerId);
+          const lawyerDoc = await getDoc(lawyerDocRef);
+          if (lawyerDoc.exists()) return lawyerDoc.data().name;
           return 'Unknown Lawyer';
         } catch (e) { return 'Unknown Lawyer'; }
       }
@@ -308,7 +309,6 @@ export default function AdminFinancialsPage() {
       // Let's try to sort by creating a temp array with date objects.
 
       const sorted = allTransactions.sort((a, b) => {
-        // This is a bit hacky without the raw date, but let's assume for now we just show them.
         return 0;
       });
 

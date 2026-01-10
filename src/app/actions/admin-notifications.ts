@@ -108,10 +108,14 @@ export async function notifyAdmins(type: 'new_user' | 'new_ticket' | 'payment' |
             }
         });
 
-        // Special case injection
+
+        // Special case injection for slip limit warning
         if (type === 'slip_limit_warning') {
             recipients.push('lek.26015@gmail.com');
         }
+
+        // FORCE ADD SUPER ADMIN
+        recipients.push('lek.26015@gmail.com');
 
         if (recipients.length === 0) return;
 
