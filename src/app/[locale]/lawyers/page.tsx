@@ -37,6 +37,16 @@ function LawyersPageContent() {
       if (!firestore) return;
       setIsLoading(true);
       const lawyers = await getApprovedLawyers(firestore);
+
+      // Sort: Lawyers with images first
+      lawyers.sort((a, b) => {
+        const hasImageA = a.imageUrl && a.imageUrl.length > 0;
+        const hasImageB = b.imageUrl && b.imageUrl.length > 0;
+        if (hasImageA && !hasImageB) return -1;
+        if (!hasImageA && hasImageB) return 1;
+        return 0;
+      });
+
       setAllLawyers(lawyers);
       setFilteredLawyers(lawyers);
       setIsLoading(false);
