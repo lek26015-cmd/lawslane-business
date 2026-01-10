@@ -426,6 +426,38 @@ export default function AdminFinancialsPage() {
           relatedId: item.id
         });
       }
+      // Fetch Lawyer Email
+      if (item.lawyerId) {
+        try {
+          const lawyerDoc = await getDoc(doc(firestore, 'lawyerProfiles', item.lawyerId));
+          if (lawyerDoc.exists()) {
+            const lawyerData = lawyerDoc.data();
+            const lawyerEmail = lawyerData.email;
+
+            if (lawyerEmail) {
+              // Send Email
+              import('@/app/actions/email').then(({ sendLawyerNewCaseEmail }) => {
+                // Construct Link (Admin context lacks locale sometimes, default to th or derive?)
+                // Actually, we can just point to /chat or /appointments
+                const link = item.type === 'Chat'
+                  ? `${window.location.origin}/chat/${item.id}?lawyerId=${item.lawyerId}`
+                  : `${window.location.origin}/lawyer-dashboard/appointments`; // Simplify for appointment
+
+                sendLawyerNewCaseEmail(
+                  lawyerEmail,
+                  lawyerData.name,
+                  item.userName || 'ลูกค้า',
+                  `อนุมัติแล้ว: ${item.type === 'Chat' ? 'Ticket สนทนา' : 'นัดหมายใหม่'}`,
+                  link
+                );
+              });
+            }
+          }
+        } catch (e) {
+          console.error("Failed to send approval email", e);
+        }
+      }
+
       // Refetch the list after approval
       fetchPendingPayments();
     } catch (error) {
@@ -676,6 +708,11 @@ export default function AdminFinancialsPage() {
                             </TableCell>
                             <TableCell>{item.lawyerName}</TableCell>
                             <TableCell>
+                              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                                รออนุมัติ
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
                               ฿{item.amount.toLocaleString()}
                             </TableCell>
                             <TableCell className="text-right space-x-2">
@@ -690,7 +727,7 @@ export default function AdminFinancialsPage() {
                                 <Eye className="mr-1 h-3 w-3" /> ตรวจสอบสลิป
                               </Button>
                               <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleApprovePayment(item)}>
-                                <CheckCircle className="mr-1 h-3 w-3" /> อนุมัติ
+                                <CheckCircle className="mr-1 h-3 w-3" /> ยืนยัน
                               </Button>
                             </TableCell>
                           </TableRow>
