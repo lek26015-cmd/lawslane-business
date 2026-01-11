@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { useUser, useFirebase } from '@/firebase';
 import { getProblemTypeKey } from '@/lib/problem-types';
 import { useTranslations, useLocale } from 'next-intl';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -306,8 +307,25 @@ export default function DashboardPage() {
                         </Card>
                     </div>
                 </div>
-                <div className="mt-8 text-center text-xs text-muted-foreground/50">
-                    User ID: {user.uid}
+                <div className="mt-8 text-center text-xs text-muted-foreground/50 space-y-2">
+                    <div>User ID: {user.uid}</div>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 text-[10px]"
+                        onClick={async () => {
+                            if (!firestore || !user) return;
+                            try {
+                                const q = query(collection(firestore, 'chats'), where('userId', '==', user.uid));
+                                const snap = await getDocs(q);
+                                alert(`Debug Check:\nFound ${snap.size} chats for your UID.\nUID: ${user.uid}`);
+                            } catch (e: any) {
+                                alert(`Error: ${e.message}`);
+                            }
+                        }}
+                    >
+                        Check Data Connectivity
+                    </Button>
                 </div>
             </div>
         </div>
