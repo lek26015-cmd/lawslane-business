@@ -69,7 +69,7 @@ function LawyersPageContent() {
       if (!isMounted) return;
 
       const recommended = allLawyers.filter(lawyer =>
-        lawyer.specialty.some(spec => specialtyArray.includes(spec))
+        (lawyer.specialty || []).some(spec => specialtyArray.includes(spec))
       );
       const remaining = allLawyers.filter(lawyer =>
         !recommended.some(rec => rec.id === lawyer.id)

@@ -174,7 +174,7 @@ export default function LawyerProfilePage() {
                                     <div className="text-center md:text-left flex-grow">
                                         {/* Lawyer name is NOT translated */}
                                         <h1 className="text-3xl font-bold font-headline text-foreground">{lawyer.name}</h1>
-                                        <p className="text-lg text-primary font-semibold mt-1">{translateSpecialty(lawyer.specialty[0])}</p>
+                                        {lawyer.specialty?.[0] && <p className="text-lg text-primary font-semibold mt-1">{translateSpecialty(lawyer.specialty[0])}</p>}
                                         <div className="flex items-center gap-2 mt-2 justify-center md:justify-start">
                                             <div className="flex items-center gap-1">
                                                 {[...Array(5)].map((_, i) => (
@@ -184,7 +184,7 @@ export default function LawyerProfilePage() {
                                             <span className="text-muted-foreground">({reviewCount} {t('reviews')})</span>
                                         </div>
                                         <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
-                                            {lawyer.specialty.map((spec, index) => (
+                                            {(lawyer.specialty || []).map((spec, index) => (
                                                 <Badge key={index} variant="secondary">{translateSpecialty(spec)}</Badge>
                                             ))}
                                         </div>

@@ -86,7 +86,8 @@ export default function AdminLawyersPage() {
     }, [firestore]);
 
     React.useEffect(() => {
-        let lawyers = allLawyers;
+        // Ensure we only work with valid lawyer objects
+        let lawyers = (allLawyers || []).filter(l => l && l.id);
 
         if (activeTab !== 'all') {
             lawyers = lawyers.filter(l => l.status === activeTab);
@@ -95,7 +96,7 @@ export default function AdminLawyersPage() {
         const activeSpecialties = Object.keys(specialtyFilters).filter(s => specialtyFilters[s]);
         if (activeSpecialties.length > 0 && activeSpecialties.length < specialties.length) {
             lawyers = lawyers.filter(l =>
-                l.specialty.some(s => activeSpecialties.includes(s))
+                (l.specialty || []).some(s => activeSpecialties.includes(s))
             );
         }
 
@@ -107,7 +108,7 @@ export default function AdminLawyersPage() {
         const csvRows = [
             headers.join(','),
             ...filteredLawyers.map(l =>
-                [l.id, `"${l.name}"`, `"${l.specialty.join(', ')}"`, l.joinedAt, l.status].join(',')
+                [l.id, `"${l.name}"`, `"${(l.specialty || []).join(', ')}"`, l.joinedAt, l.status].join(',')
             )
         ];
 
@@ -240,7 +241,7 @@ export default function AdminLawyersPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {filteredLawyers.map(lawyer => (
+                                    {filteredLawyers.filter(Boolean).map(lawyer => (
                                         <TableRow
                                             key={lawyer.id}
                                             className="cursor-pointer hover:bg-muted/50"
@@ -260,7 +261,7 @@ export default function AdminLawyersPage() {
                                             </TableCell>
                                             <TableCell className="hidden lg:table-cell">
                                                 <div className="flex flex-col gap-1">
-                                                    {lawyer.specialty.map(s => <Badge key={s} variant="outline" className="w-fit">{s}</Badge>)}
+                                                    {lawyer?.specialty?.map(s => <Badge key={s} variant="outline" className="w-fit">{s}</Badge>) || null}
                                                 </div>
                                             </TableCell>
                                             <TableCell className="hidden md:table-cell">{statusBadges[lawyer.status]}</TableCell>

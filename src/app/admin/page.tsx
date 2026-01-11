@@ -218,7 +218,7 @@ export default function AdminDashboard() {
                       </div>
                     </TableCell>
                     <TableCell className="hidden xl:table-cell">
-                      {lawyer.specialty.join(', ')}
+                      {(lawyer.specialty || []).join(', ') || '-'}
                     </TableCell>
                     <TableCell className="hidden xl:table-cell">
                       <Badge className="text-xs" variant="outline">

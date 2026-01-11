@@ -66,7 +66,7 @@ import { doc, updateDoc, collection, query, where, getDocs } from 'firebase/fire
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, Trash2 } from "lucide-react"
 
 export default function AdminLawyerDetailPage() {
   const params = useParams()
@@ -80,6 +80,8 @@ export default function AdminLawyerDetailPage() {
   const [currentDate, setCurrentDate] = React.useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = React.useState("");
   const [isRejectDialogOpen, setIsRejectDialogOpen] = React.useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [isDeleting, setIsDeleting] = React.useState(false);
   const [duplicateLawyers, setDuplicateLawyers] = React.useState<LawyerProfile[]>([]);
 
   React.useEffect(() => {
@@ -237,8 +239,55 @@ export default function AdminLawyerDetailPage() {
                 >
                   ปฏิเสธ
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={(e) => { e.preventDefault(); setIsDeleteDialogOpen(true); }}
+                  className="text-destructive font-bold"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  ลบทนายความ
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* Delete Dialog */}
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>ยืนยันการลบทนายความ</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    คุณแน่ใจหรือไม่ว่าต้องการลบ <strong>{lawyer.name}</strong>?
+                    การดำเนินการนี้ไม่สามารถย้อนกลับได้
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={isDeleting}>ยกเลิก</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={async () => {
+                      setIsDeleting(true);
+                      try {
+                        const { deleteLawyerById } = await import('@/app/actions/seed-actions');
+                        const result = await deleteLawyerById(lawyer.id);
+                        if (result.success) {
+                          toast({ title: 'ลบทนายสำเร็จ', description: `ลบ ${lawyer.name} เรียบร้อยแล้ว` });
+                          router.push('/admin/lawyers');
+                        } else {
+                          throw new Error(result.error);
+                        }
+                      } catch (error: any) {
+                        toast({ variant: 'destructive', title: 'ลบไม่สำเร็จ', description: error.message });
+                      } finally {
+                        setIsDeleting(false);
+                        setIsDeleteDialogOpen(false);
+                      }
+                    }}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? 'กำลังลบ...' : 'ยืนยันการลบ'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
 
             {/* Reject Dialog */}
             <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
@@ -392,7 +441,7 @@ export default function AdminLawyerDetailPage() {
               <Separator />
               <div className="font-semibold">ความเชี่ยวชาญ</div>
               <div className="flex flex-wrap gap-2">
-                {lawyer.specialty.map(s => <Badge key={s} variant="outline">{s}</Badge>)}
+                {(lawyer.specialty || []).map(s => <Badge key={s} variant="outline">{s}</Badge>)}
               </div>
               <Separator />
               <div className="font-semibold">หมายเหตุสำหรับแอดมิน</div>

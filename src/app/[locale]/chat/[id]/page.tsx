@@ -56,6 +56,7 @@ function ChatPageContent() {
     const [isLoading, setIsLoading] = useState(true);
     const [files, setFiles] = useState<{ name: string, url: string, size: number }[]>([]);
     const [chatStatus, setChatStatus] = useState<string>(searchParams.get('status') || 'active');
+    const [chatAmount, setChatAmount] = useState<number>(0);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
 
@@ -87,6 +88,9 @@ function ChatPageContent() {
                 if (data.files) {
                     setFiles(data.files);
                 }
+                if (data.amount !== undefined) {
+                    setChatAmount(data.amount);
+                }
             }
         }, (error) => {
             // Suppress permission errors that might happen during logout race conditions
@@ -103,8 +107,23 @@ function ChatPageContent() {
         const db = firestore; // Capture non-null firestore
         async function fetchData() {
             setIsLoading(true);
-            if (lawyerId) {
-                const lawyerData = await getLawyerById(db, lawyerId);
+
+            // Try to get lawyer from URL param first
+            let effectiveLawyerId = lawyerId;
+
+            // If no lawyerId from URL, try to get from chat document
+            if (!effectiveLawyerId && chatId) {
+                const chatRef = doc(db, 'chats', chatId);
+                const chatSnap = await getDoc(chatRef);
+                if (chatSnap.exists()) {
+                    const chatData = chatSnap.data();
+                    // Try lawyerId field first, then from participants
+                    effectiveLawyerId = chatData.lawyerId || chatData.participants?.find((p: string) => p !== user?.uid);
+                }
+            }
+
+            if (effectiveLawyerId) {
+                const lawyerData = await getLawyerById(db, effectiveLawyerId);
                 setLawyer(lawyerData || null);
             }
             if (isLawyerView && clientId) {
@@ -123,7 +142,7 @@ function ChatPageContent() {
             setIsLoading(false);
         }
         fetchData();
-    }, [lawyerId, clientId, isLawyerView, firestore]);
+    }, [lawyerId, clientId, isLawyerView, firestore, chatId, user]);
 
     const handleUploadClick = () => {
         fileInputRef.current?.click();
@@ -491,7 +510,7 @@ function ChatPageContent() {
                             </CardHeader>
                             <CardContent className="text-center">
                                 <p className="text-muted-foreground">เงินของคุณถูกพักไว้ที่ Lawlane</p>
-                                <p className="text-4xl font-bold my-2">฿3,500</p>
+                                <p className="text-4xl font-bold my-2">฿{chatAmount > 0 ? chatAmount.toLocaleString() : '---'}</p>
                                 <p className="text-xs text-muted-foreground max-w-xs mx-auto">
                                     เงินจะถูกโอนให้ทนายเมื่อคุณกดยืนยันว่างานเสร็จสิ้น
                                 </p>

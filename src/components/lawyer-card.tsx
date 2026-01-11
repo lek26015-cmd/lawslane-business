@@ -57,7 +57,7 @@ export default function LawyerCard({ lawyer }: LawyerCardProps) {
       <div className="flex-shrink-0 flex flex-col items-center gap-3 w-full md:w-auto relative z-10">
         <div className="relative h-24 w-24 flex-shrink-0">
           <Image
-            src={lawyer.imageUrl || profileLawyerImg}
+            src={profileLawyerImg}
             alt={lawyer.name}
             fill
             className="rounded-full object-cover ring-4 ring-white shadow-md group-hover:scale-105 transition-transform duration-300"
@@ -90,17 +90,17 @@ export default function LawyerCard({ lawyer }: LawyerCardProps) {
           )}
         </div>
 
-        <p className="font-semibold text-primary/90 text-sm uppercase tracking-wide mb-2">{translateSpecialty(lawyer.specialty[0])}</p>
+        {lawyer.specialty?.[0] && <p className="font-semibold text-primary/90 text-sm uppercase tracking-wide mb-2">{translateSpecialty(lawyer.specialty[0])}</p>}
         <p className="text-sm text-slate-500 mb-4 line-clamp-2 leading-relaxed">{lawyer.description}</p>
 
         <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-          {lawyer.specialty.slice(0, 3).map((spec, index) => (
+          {(lawyer.specialty || []).slice(0, 3).map((spec, index) => (
             <Badge key={index} variant="secondary" className="bg-slate-100 text-slate-600 hover:bg-slate-200 font-normal">
               {translateSpecialty(spec)}
             </Badge>
           ))}
-          {lawyer.specialty.length > 3 && (
-            <Badge variant="outline" className="text-muted-foreground font-normal">+{lawyer.specialty.length - 3}</Badge>
+          {(lawyer.specialty?.length || 0) > 3 && (
+            <Badge variant="outline" className="text-muted-foreground font-normal">+{lawyer.specialty!.length - 3}</Badge>
           )}
         </div>
       </div>

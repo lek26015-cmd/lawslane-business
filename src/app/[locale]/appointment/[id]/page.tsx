@@ -56,7 +56,7 @@ export default function AppointmentDetailPage() {
 
   useEffect(() => {
     async function fetchAppointmentData() {
-      if(!firestore || !user) return;
+      if (!firestore || !user) return;
       setIsLoading(true);
       const { appointments } = await getDashboardData(firestore, user.uid);
       const currentAppointment = appointments.find((appt) => appt.id === id);
@@ -166,7 +166,7 @@ export default function AppointmentDetailPage() {
                   <div>
                     <p className="font-bold">{lawyer.name}</p>
                     <p className="text-sm text-muted-foreground">
-                      {lawyer.specialty.join(', ')}
+                      {(lawyer.specialty || []).join(', ') || '-'}
                     </p>
                   </div>
                 </div>
@@ -179,7 +179,7 @@ export default function AppointmentDetailPage() {
           <CardFooter className="flex flex-col gap-3 bg-gray-50 p-6 sm:flex-row sm:justify-end">
             <Button variant="outline" asChild>
               <Link href={`/chat/case-from-${appointment.id}?lawyerId=${lawyer.id}`}>
-                 <Mail className="mr-2" /> ติดต่อทนาย
+                <Mail className="mr-2" /> ติดต่อทนาย
               </Link>
             </Button>
             <AlertDialog>

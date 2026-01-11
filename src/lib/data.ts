@@ -137,8 +137,10 @@ export async function getDashboardData(db: Firestore, userId: string) {
 
   const cases: Case[] = await Promise.all(allChatDocs.map(async (d) => {
     const data = d.data();
-    const lawyerId = data.participants.find((p: string) => p !== userId);
-    let lawyer = { id: 'unknown', name: 'Unknown Lawyer', imageUrl: '', imageHint: '' };
+    // Try to get lawyerId from participants array, or fall back to lawyerId field
+    const lawyerIdFromParticipants = data.participants?.find((p: string) => p !== userId);
+    const lawyerId = lawyerIdFromParticipants || data.lawyerId;
+    let lawyer = { id: lawyerId || 'unknown', name: 'Unknown Lawyer', imageUrl: '', imageHint: '' };
 
     if (lawyerId) {
       const lawyerDoc = await getDoc(doc(db, 'lawyerProfiles', lawyerId));

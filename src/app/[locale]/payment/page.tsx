@@ -171,7 +171,8 @@ function PaymentPageContent() {
                     lawyerId: lawyer.id, // Add lawyerId for easier querying
                     userId: user.uid, // Add userId for easier querying
                     lastMessage: initialMessage,
-                    lastMessageAt: serverTimestamp()
+                    lastMessageAt: serverTimestamp(),
+                    amount: fee // Store the payment amount
                 };
 
                 console.log("Creating chat document...", chatPayload);

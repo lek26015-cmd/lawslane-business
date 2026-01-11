@@ -279,12 +279,13 @@ export default function AdminLawyerEditPage() {
                     <div key={spec} className="flex items-center space-x-2 p-2 rounded-md bg-secondary/50">
                       <Checkbox
                         id={`spec-${spec}`}
-                        checked={lawyer.specialty.includes(spec)}
+                        checked={(lawyer.specialty || []).includes(spec)}
                         onCheckedChange={(checked) => {
+                          const currentSpecialty = lawyer.specialty || [];
                           if (checked) {
-                            setLawyer({ ...lawyer, specialty: [...lawyer.specialty, spec] });
+                            setLawyer({ ...lawyer, specialty: [...currentSpecialty, spec] });
                           } else {
-                            setLawyer({ ...lawyer, specialty: lawyer.specialty.filter(s => s !== spec) });
+                            setLawyer({ ...lawyer, specialty: currentSpecialty.filter(s => s !== spec) });
                           }
                         }}
                       />
