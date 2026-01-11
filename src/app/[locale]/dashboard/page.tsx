@@ -8,19 +8,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Calendar, Briefcase, FileText, Loader2, Search, MessageSquare, Building, FileUp, HelpCircle, CheckCircle, User, Ticket } from 'lucide-react';
-import { getDashboardData } from '@/lib/data';
 import type { Case, UpcomingAppointment, ReportedTicket } from '@/lib/types';
 import { format } from 'date-fns';
 import { th, enUS, zhCN } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
-import { useUser, useFirebase } from '@/firebase';
+import { useUser } from '@/firebase';
 import { getProblemTypeKey } from '@/lib/problem-types';
 import { useTranslations, useLocale } from 'next-intl';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { getUserDashboardData } from '@/app/actions/dashboard-actions';
 
 export default function DashboardPage() {
     const router = useRouter();
-    const { auth, firestore } = useFirebase();
     const { user, isUserLoading } = useUser();
     const t = useTranslations('Dashboard');
     const tHelp = useTranslations('Help');
@@ -34,28 +32,38 @@ export default function DashboardPage() {
     const dateLocale = locale === 'th' ? th : locale === 'zh' ? zhCN : enUS;
 
     useEffect(() => {
-        if (isUserLoading) return;
+        if (isUserLoading) {
+            setIsLoading(true);
+            return;
+        }
         if (!user) {
             router.push('/login');
             return;
         }
-        if (!firestore) return;
 
         async function fetchData() {
             setIsLoading(true);
-            try {
-                const { cases, appointments, tickets } = await getDashboardData(firestore!, user!.uid);
-                setCases(cases);
-                setAppointments(appointments);
-                setTickets(tickets);
-            } catch (error) {
-                console.error("Error fetching dashboard data:", error);
-            } finally {
-                setIsLoading(false);
+            if (user?.uid) {
+                try {
+                    const data = await getUserDashboardData(user.uid);
+                    setCases(data.cases);
+                    setAppointments(data.appointments);
+                    setTickets(data.tickets);
+                } catch (error) {
+                    console.error("Error fetching dashboard data:", error);
+                    setCases([]);
+                    setAppointments([]);
+                    setTickets([]);
+                }
+            } else {
+                setCases([]);
+                setAppointments([]);
+                setTickets([]);
             }
+            setIsLoading(false);
         }
         fetchData();
-    }, [isUserLoading, user, router, firestore]);
+    }, [isUserLoading, user, router, locale]); // Removed firestore from dependencies
 
     if (isUserLoading || isLoading || !user) {
         return (
@@ -309,23 +317,6 @@ export default function DashboardPage() {
                 </div>
                 <div className="mt-8 text-center text-xs text-muted-foreground/50 space-y-2">
                     <div>User ID: {user.uid}</div>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 text-[10px]"
-                        onClick={async () => {
-                            if (!firestore || !user) return;
-                            try {
-                                const q = query(collection(firestore, 'chats'), where('userId', '==', user.uid));
-                                const snap = await getDocs(q);
-                                alert(`Debug Check:\nFound ${snap.size} chats for your UID.\nUID: ${user.uid}`);
-                            } catch (e: any) {
-                                alert(`Error: ${e.message}`);
-                            }
-                        }}
-                    >
-                        Check Data Connectivity
-                    </Button>
                 </div>
             </div>
         </div>
