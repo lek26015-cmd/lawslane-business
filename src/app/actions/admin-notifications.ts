@@ -141,9 +141,22 @@ export async function notifyAdmins(type: 'new_user' | 'new_ticket' | 'payment' |
         <p><a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://lawslane.com'}/admin/tickets/${data.ticketId}">ดูรายละเอียด</a></p>
       `;
         } else if (type === 'payment') {
-            // Placeholder for payment
-            subject = `[Lawslane Admin] การชำระเงินสำเร็จ`;
-            html = `<p>มีการชำระเงินเข้ามาใหม่</p>`;
+            subject = `[Lawslane Admin] การชำระเงินสำเร็จ - ${data.lawyerName || 'ทนายความ'}`;
+            html = `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #1a365d;">มีการชำระเงินเข้ามาใหม่</h2>
+            <div style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #86efac;">
+                ${data.lawyerName ? `<p><strong>ทนายความ:</strong> ${data.lawyerName}</p>` : ''}
+                ${data.amount ? `<p><strong>จำนวนเงิน:</strong> <span style="color: #16a34a; font-weight: bold;">฿${data.amount.toLocaleString()}</span></p>` : ''}
+                ${data.slipUrl ? `<p><strong>สลิปการโอน:</strong> <a href="${data.slipUrl}" style="color: #2563eb;">ดูสลิป</a></p>` : ''}
+                <p><strong>เวลา:</strong> ${new Date().toLocaleString('th-TH')}</p>
+            </div>
+            <p>กรุณาตรวจสอบและอนุมัติการชำระเงินได้ที่ระบบหลังบ้าน:</p>
+            <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://lawslane.com'}/admin/financials" style="display: inline-block; background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                ไปที่หน้าตรวจสอบการชำระเงิน
+            </a>
+        </div>
+            `;
         } else if (type === 'withdrawal') {
             subject = `[Lawslane Admin] คำร้องขอถอนเงินใหม่: ฿${data.amount.toLocaleString()}`;
             html = `

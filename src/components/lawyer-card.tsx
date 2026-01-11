@@ -56,13 +56,23 @@ export default function LawyerCard({ lawyer }: LawyerCardProps) {
 
       <div className="flex-shrink-0 flex flex-col items-center gap-3 w-full md:w-auto relative z-10">
         <div className="relative h-24 w-24 flex-shrink-0">
-          <Image
-            src={profileLawyerImg}
-            alt={lawyer.name}
-            fill
-            className="rounded-full object-cover ring-4 ring-white shadow-md group-hover:scale-105 transition-transform duration-300"
-            data-ai-hint={lawyer.imageHint}
-          />
+          {lawyer.imageUrl ? (
+            <img
+              src={lawyer.imageUrl}
+              alt={lawyer.name}
+              className="w-full h-full rounded-full object-cover ring-4 ring-white shadow-md group-hover:scale-105 transition-transform duration-300"
+              onError={(e) => {
+                e.currentTarget.src = '/pic/profile-lawyer.jpg';
+              }}
+            />
+          ) : (
+            <Image
+              src={profileLawyerImg}
+              alt={lawyer.name}
+              fill
+              className="rounded-full object-cover ring-4 ring-white shadow-md group-hover:scale-105 transition-transform duration-300"
+            />
+          )}
           <div className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow-sm">
             <BadgeCheck className="w-5 h-5 text-blue-500 fill-blue-50" />
           </div>

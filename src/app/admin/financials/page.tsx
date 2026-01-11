@@ -27,7 +27,11 @@ import {
   Clock,
   Eye,
   ScanLine,
+  FileJson,
 } from 'lucide-react';
+
+
+
 import {
   Bar,
   BarChart,
@@ -133,6 +137,36 @@ export default function AdminFinancialsPage() {
   const [isReleaseDialogOpen, setIsReleaseDialogOpen] = React.useState(false);
   const [releaseTicketId, setReleaseTicketId] = React.useState('');
   const [selectedReleaseTransactionId, setSelectedReleaseTransactionId] = React.useState<string | null>(null);
+
+  // Debug State
+  const [debugData, setDebugData] = React.useState<any>(null);
+  const [isDebugOpen, setIsDebugOpen] = React.useState(false);
+
+  const handleDebug = async (collectionName: string, id: string) => {
+    if (!firestore) return;
+    try {
+      const docRef = doc(firestore, collectionName, id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        // Convert timestamps to string for display
+        const displayData = Object.entries(data).reduce((acc: any, [key, value]) => {
+          if (value && typeof value === 'object' && 'toDate' in value) {
+            acc[key] = value.toDate().toISOString();
+          } else {
+            acc[key] = value;
+          }
+          return acc;
+        }, { id: docSnap.id }); // Include ID
+
+        setDebugData(displayData);
+        setIsDebugOpen(true);
+      }
+    } catch (e) {
+      console.error("Debug fetch error:", e);
+      toast({ title: "Error", description: "Failed to fetch debug data" });
+    }
+  };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -782,6 +816,10 @@ export default function AdminFinancialsPage() {
                               ฿{item.amount.toLocaleString()}
                             </TableCell>
                             <TableCell className="text-right space-x-2">
+                              {/* Debug Button */}
+                              <Button variant="ghost" size="sm" onClick={() => handleDebug(item.collectionName, item.id)}>
+                                <FileJson className="h-4 w-4 text-gray-500" />
+                              </Button>
                               <Button variant="outline" size="sm" onClick={() => {
                                 setSelectedSlip({
                                   url: item.slipUrl || '',
@@ -868,20 +906,18 @@ export default function AdminFinancialsPage() {
                             <TableCell className="text-right font-medium">
                               ฿{t.amount.toLocaleString()}
                             </TableCell>
-                            <TableCell className="text-right">
-                              {t.status === 'pending' && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-blue-600 hover:text-blue-800"
-                                  onClick={() => {
-                                    setSelectedReleaseTransactionId(t.id);
-                                    setIsReleaseDialogOpen(true);
-                                  }}
-                                >
-                                  ปล่อยเงิน
-                                </Button>
-                              )}
+                            <TableCell className="text-right space-x-2">
+                              {/* Debug Button */}
+                              <Button variant="ghost" size="sm" onClick={() => handleDebug(t.description.includes('นัดหมาย') ? 'appointments' : 'chats', t.id)}>
+                                <FileJson className="h-4 w-4 text-gray-500" />
+                              </Button>
+                              <Button variant="outline" size="sm" onClick={() => {
+                                setIsReleaseDialogOpen(true);
+                                setReleaseTicketId('');
+                                setSelectedReleaseTransactionId(t.id);
+                              }}>
+                                ปล่อยเงิน
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))
@@ -1009,6 +1045,25 @@ export default function AdminFinancialsPage() {
           </Tabs>
         </CardContent>
       </Card>
+
+      <AlertDialog open={isDebugOpen} onOpenChange={setIsDebugOpen}>
+        <AlertDialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Debug Data (Raw Firestore)</AlertDialogTitle>
+            <AlertDialogDescription>
+              ข้อมูลดิบจาก Firestore สำหรับการตรวจสอบ
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="bg-slate-950 p-4 rounded-md overflow-x-auto">
+            <pre className="text-xs text-green-400 font-mono whitespace-pre-wrap">
+              {JSON.stringify(debugData, null, 2)}
+            </pre>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>ปิด</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 }

@@ -9,6 +9,8 @@ import { Loader2, CheckCircle, AlertCircle, Database, MessageSquare, Trash2 } fr
 import { useToast } from '@/hooks/use-toast';
 import { doc, setDoc, collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function SeedDataPage() {
     const { firestore } = useFirebase();
@@ -16,6 +18,7 @@ export default function SeedDataPage() {
     const [isSeeding, setIsSeeding] = useState(false);
     const [isSeedingChat, setIsSeedingChat] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [targetUserId, setTargetUserId] = useState('wS9w7ysNYUajNsBYZ6C7n2Afe9H3');
     const [result, setResult] = useState<{ articles: number; lawyers: number; errors: string[] } | null>(null);
 
     const handleSeed = async () => {
@@ -58,7 +61,10 @@ export default function SeedDataPage() {
 
         try {
             // User UID provided by admin
-            const testUserId = 'wS9w7ysNYUajNsBYZ6C7n2Afe9H3';
+            const testUserId = targetUserId.trim();
+            if (!testUserId) {
+                throw new Error("Target User UID is required");
+            }
             // Mock lawyer ID (simulated)
             const mockLawyerId = 'mock-lawyer-001';
             const chatId = uuidv4();
@@ -235,9 +241,22 @@ export default function SeedDataPage() {
                         </p>
                     </div>
 
+                    <div className="space-y-2">
+                        <Label htmlFor="targetUid">User UID (ID ของลูกค้าที่ต้องการทดสอบ)</Label>
+                        <Input
+                            id="targetUid"
+                            value={targetUserId}
+                            onChange={(e) => setTargetUserId(e.target.value)}
+                            placeholder="วาง User UID ของลูกค้าที่นี่ (เช่น wS9w...)"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                            * หา UID ได้จากหน้า Users หรือ Firebase Console
+                        </p>
+                    </div>
+
                     <Button
                         onClick={handleSeedMockChat}
-                        disabled={isSeedingChat || !firestore}
+                        disabled={isSeedingChat || !firestore || !targetUserId}
                         className="w-full bg-blue-600 hover:bg-blue-700"
                         size="lg"
                     >

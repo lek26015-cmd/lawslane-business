@@ -306,6 +306,9 @@ export default function DashboardPage() {
                         </Card>
                     </div>
                 </div>
+                <div className="mt-8 text-center text-xs text-muted-foreground/50">
+                    User ID: {user.uid}
+                </div>
             </div>
         </div>
     );
