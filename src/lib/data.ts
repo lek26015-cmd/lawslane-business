@@ -116,12 +116,26 @@ export async function getAdById(db: Firestore, id: string): Promise<Ad | undefin
 export async function getDashboardData(db: Firestore, userId: string) {
   if (!db) return { cases: [], appointments: [], tickets: [] };
 
-  // 1. Fetch Cases (Chats)
+  // 1. Fetch Cases (Chats) - Use dual query for reliability
   const chatsRef = collection(db, 'chats');
-  const casesQuery = query(chatsRef, where('participants', 'array-contains', userId));
-  const casesSnapshot = await getDocs(casesQuery);
 
-  const cases: Case[] = await Promise.all(casesSnapshot.docs.map(async (d) => {
+  // Query by participants array (primary method)
+  const participantsQuery = query(chatsRef, where('participants', 'array-contains', userId));
+  const participantsSnapshot = await getDocs(participantsQuery);
+
+  // Query by userId field (fallback method for older/inconsistent docs)
+  const userIdQuery = query(chatsRef, where('userId', '==', userId));
+  const userIdSnapshot = await getDocs(userIdQuery);
+
+  // Merge results, avoiding duplicates
+  const seenIds = new Set<string>();
+  const allChatDocs = [...participantsSnapshot.docs, ...userIdSnapshot.docs].filter(doc => {
+    if (seenIds.has(doc.id)) return false;
+    seenIds.add(doc.id);
+    return true;
+  });
+
+  const cases: Case[] = await Promise.all(allChatDocs.map(async (d) => {
     const data = d.data();
     const lawyerId = data.participants.find((p: string) => p !== userId);
     let lawyer = { id: 'unknown', name: 'Unknown Lawyer', imageUrl: '', imageHint: '' };
