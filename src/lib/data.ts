@@ -43,8 +43,8 @@ export async function getLawyerById(db: Firestore, id: string): Promise<LawyerPr
 export async function getAllArticles(db: Firestore | null): Promise<Article[]> {
   if (!db) return [];
   const articlesRef = collection(db, 'articles');
-  // const q = query(articlesRef, orderBy('publishedAt', 'desc'));
-  const q = query(articlesRef);
+  const q = query(articlesRef, orderBy('publishedAt', 'desc'));
+  // const q = query(articlesRef);
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map(doc => {
     const data = doc.data();
