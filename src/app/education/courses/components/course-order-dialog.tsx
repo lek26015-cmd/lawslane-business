@@ -12,17 +12,17 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Copy, CreditCard, CheckCircle2, MessageCircle, AlertCircle } from "lucide-react";
-import { Book } from '@/lib/education-types';
+import { Course } from '@/lib/education-types';
 import Image from 'next/image';
 
-interface BookOrderDialogProps {
-    book: Book;
+interface CourseOrderDialogProps {
+    course: Course;
     trigger?: React.ReactNode;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
 }
 
-export function BookOrderDialog({ book, trigger, open, onOpenChange }: BookOrderDialogProps) {
+export function CourseOrderDialog({ course, trigger, open, onOpenChange }: CourseOrderDialogProps) {
     const [step, setStep] = React.useState<'payment' | 'confirm'>('payment');
 
     const handleCopy = (text: string) => {
@@ -35,11 +35,11 @@ export function BookOrderDialog({ book, trigger, open, onOpenChange }: BookOrder
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>{step === 'payment' ? 'สั่งซื้อหนังสือ' : 'แจ้งชำระเงิน'}</DialogTitle>
+                    <DialogTitle>{step === 'payment' ? 'สมัครเรียนคอร์ส' : 'แจ้งชำระเงิน'}</DialogTitle>
                     <DialogDescription>
                         {step === 'payment'
-                            ? `ชำระเงินสำหรับ "${book.title}"`
-                            : 'ยืนยันการสั่งซื้อเรียบร้อยแล้ว'}
+                            ? `ชำระเงินสำหรับ "${course.title}"`
+                            : 'ยืนยันการสมัครเรียบร้อยแล้ว'}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -47,17 +47,18 @@ export function BookOrderDialog({ book, trigger, open, onOpenChange }: BookOrder
                     <div className="space-y-6 py-2">
                         {/* Order Summary */}
                         <div className="bg-slate-50 p-4 rounded-lg flex items-start gap-4">
-                            <div className="relative w-16 h-24 bg-slate-200 rounded flex-shrink-0 overflow-hidden">
-                                <img
-                                    src={book.coverUrl}
-                                    alt={book.title}
-                                    className="object-cover w-full h-full"
+                            <div className="relative w-24 h-16 bg-slate-200 rounded flex-shrink-0 overflow-hidden">
+                                <Image
+                                    src={course.coverUrl}
+                                    alt={course.title}
+                                    fill
+                                    className="object-cover"
                                 />
                             </div>
                             <div>
-                                <h4 className="font-semibold text-slate-900 line-clamp-1">{book.title}</h4>
-                                <p className="text-sm text-slate-500 mb-2">โดย {book.author}</p>
-                                <p className="text-lg font-bold text-indigo-700">฿{book.price.toLocaleString()}</p>
+                                <h4 className="font-semibold text-slate-900 line-clamp-1">{course.title}</h4>
+                                <p className="text-sm text-slate-500 mb-1">โดย {course.instructor.name}</p>
+                                <p className="text-lg font-bold text-indigo-700">฿{course.price.toLocaleString()}</p>
                             </div>
                         </div>
 
@@ -104,7 +105,7 @@ export function BookOrderDialog({ book, trigger, open, onOpenChange }: BookOrder
                         <div className="space-y-2">
                             <h3 className="text-xl font-bold text-slate-900">เหลืออีกหนึ่งขั้นตอน!</h3>
                             <p className="text-slate-600 max-w-xs mx-auto">
-                                กรุณาส่งหลักฐานการโอนเงิน (Slip) มาที่ Line Official Account ของเราเพื่อรับสินค้า
+                                กรุณาส่งหลักฐานการโอนเงิน (Slip) มาที่ Line Official Account ของเราเพื่อเริ่มเรียน
                             </p>
                         </div>
 

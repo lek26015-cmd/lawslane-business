@@ -4,6 +4,7 @@ import Image, { StaticImageData } from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Star, ThumbsUp, Zap } from 'lucide-react';
 
 interface BookCardProps {
@@ -12,6 +13,9 @@ interface BookCardProps {
     coverUrl: string | StaticImageData;
     price: number;
     originalPrice?: number;
+    description?: string;
+    author?: string;
+    level?: string;
     rating?: number; // 0-5
     badges?: Array<{ text: string; color: string; icon?: 'thumbs-up' | 'zap' }>;
     isEbook?: boolean;
@@ -25,72 +29,90 @@ export function BookCard({
     price,
     originalPrice,
     rating = 5.0,
+    description,
+    author,
+    level,
     badges = [],
     isEbook = false,
     href = '#'
 }: BookCardProps) {
     return (
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col h-full hover:shadow-xl transition-all duration-300 group">
+        <Card className="flex flex-col h-full hover:shadow-lg transition-shadow bg-white border-slate-200 overflow-hidden group">
             {/* Image Section */}
-            <Link href={href} className="relative aspect-[3/4] w-full mb-4 overflow-hidden rounded-xl bg-slate-50">
-                <Image
-                    src={coverUrl}
-                    alt={title}
-                    fill
-                    className="object-contain p-2 hover:scale-105 transition-transform duration-500"
-                />
-                {isEbook && (
-                    <Badge className="absolute top-2 right-2 bg-blue-600/90 backdrop-blur-sm text-[10px] px-2 py-0.5">E-Book</Badge>
-                )}
-            </Link>
-
-            {/* Badges */}
-            <div className="flex flex-wrap gap-2 mb-2">
-                {badges.map((badge, idx) => (
-                    <div key={idx} className={`flex items-center gap-1 text-xs font-bold ${badge.color}`}>
-                        {badge.icon === 'thumbs-up' && <ThumbsUp className="w-3 h-3" />}
-                        {badge.icon === 'zap' && <Zap className="w-3 h-3" />}
-                        {badge.text}
-                    </div>
-                ))}
-            </div>
-
-            {/* Rating */}
-            <div className="flex items-center gap-1 mb-2">
-                <div className="flex text-yellow-400">
-                    {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`w-3 h-3 ${i < Math.floor(rating) ? 'fill-current' : 'text-slate-200'}`} />
-                    ))}
+            <Link href={href}>
+                <div className="relative aspect-[2/3] w-full bg-slate-100 overflow-hidden">
+                    <Image
+                        src={coverUrl}
+                        alt={title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    {isEbook && (
+                        <Badge className="absolute top-2 right-2 bg-indigo-600 hover:bg-indigo-700">E-Book</Badge>
+                    )}
                 </div>
-                <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 rounded-sm font-medium">
-                    {rating.toFixed(1)}
-                </span>
-            </div>
-
-            {/* Title */}
-            <Link href={href} className="group-hover:text-primary transition-colors">
-                <h3 className="font-bold text-slate-800 text-sm leading-snug line-clamp-2 mb-4 h-10">
-                    {title}
-                </h3>
             </Link>
+
+            {/* Content Section */}
+            <CardContent className="flex-1 p-4 flex flex-col items-start text-left">
+                {/* Badges */}
+                {badges.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                        {badges.map((badge, idx) => (
+                            <Badge key={idx} variant="secondary" className={`text-[10px] h-5 ${badge.color.replace('text-', 'text-').replace('text-', 'bg-').replace('600', '100').replace('500', '100')} ${badge.color}`}>
+                                {badge.icon === 'thumbs-up' && <ThumbsUp className="w-3 h-3 mr-1" />}
+                                {badge.icon === 'zap' && <Zap className="w-3 h-3 mr-1" />}
+                                {badge.text}
+                            </Badge>
+                        ))}
+                    </div>
+                )}
+
+                {/* Title */}
+                <Link href={href} className="w-full">
+                    <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-2 min-h-[3.5rem] text-slate-900 group-hover:text-indigo-600 transition-colors">
+                        {title}
+                    </h3>
+                </Link>
+
+                {/* Description */}
+                {description && (
+                    <p className="text-sm text-slate-500 mb-2 line-clamp-2">
+                        {description}
+                    </p>
+                )}
+
+                {/* Level */}
+                {level && (
+                    <Badge variant="outline" className="mb-3 text-xs font-normal text-slate-500 border-slate-300">
+                        {level}
+                    </Badge>
+                )}
+
+                {/* Author */}
+                {author && (
+                    <div className="text-sm text-slate-500 flex items-center gap-1 mt-auto pt-2">
+                        <span className="font-medium">ผู้แต่ง:</span> {author}
+                    </div>
+                )}
+            </CardContent>
 
             {/* Footer: Price & Action */}
-            <div className="mt-auto flex items-center justify-between">
-                <div className="flex flex-col">
+            <CardFooter className="p-4 pt-0 flex items-center justify-between mt-auto border-t border-slate-50/50">
+                <div className="flex flex-col items-start pt-4">
                     {originalPrice && (
                         <span className="text-xs text-slate-400 line-through">฿{originalPrice.toLocaleString()}</span>
                     )}
-                    <span className="text-lg font-bold text-[#F43F5E]">฿{price.toLocaleString()}</span>
+                    <span className="text-lg font-bold text-indigo-700">฿{price.toLocaleString()}</span>
                 </div>
-                <Link href={href}>
+                <Link href={href} className="pt-4">
                     <Button
-                        size="sm"
-                        className="rounded-full bg-[#F43F5E] hover:bg-[#E11D48] text-white text-xs px-4 h-8 shadow-sm hover:shadow-md transition-all"
+                        variant="outline" size="sm" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50"
                     >
-                        ซื้อเลย
+                        ดูรายละเอียด
                     </Button>
                 </Link>
-            </div>
-        </div>
+            </CardFooter>
+        </Card>
     );
 }

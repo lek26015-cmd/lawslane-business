@@ -12,7 +12,7 @@ export default async function BookListingPage() {
                 title="ร้านหนังสือแนะนำ"
                 description="คัดสรรหนังสือคุณภาพเพื่อนักกฎหมายโดยเฉพาะ ทั้งคู่มือสอบ สรุปย่อ และรวมข้อสอบเก่า"
                 icon="BookOpen"
-                theme="amber"
+                theme="indigo"
                 backLink="/education"
                 backLabel="กลับหน้าหลัก"
                 badge={`${books.length} เล่ม`}

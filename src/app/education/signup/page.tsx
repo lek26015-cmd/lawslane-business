@@ -158,7 +158,7 @@ export default function EducationSignupPage() {
 
             toast({
                 title: 'สมัครสมาชิกสำเร็จ',
-                description: 'ยินดีต้อนรับสู่ Lawlanes Education',
+                description: 'ยินดีต้อนรับสู่ Lawslane Education',
             });
 
             router.push('/education');
@@ -187,21 +187,21 @@ export default function EducationSignupPage() {
                         <div className="flex flex-col items-center justify-center mb-4 gap-3">
                             <Image
                                 src={logoColor}
-                                alt="Lawlanes Logo"
+                                alt="Lawslane Logo"
                                 width={60}
                                 height={60}
                                 className="h-16 w-auto"
                                 priority
                             />
                             <div className="flex flex-col" style={{ lineHeight: '1.1' }}>
-                                <span className="font-bold text-2xl text-indigo-900">Lawlanes</span>
+                                <span className="font-bold text-2xl text-indigo-900">Lawslane</span>
                                 <span className="font-bold text-2xl text-indigo-600">Education</span>
                             </div>
                         </div>
 
                         <div className="space-y-1">
                             <CardDescription className="text-slate-500">
-                                สำหรับใช้งานคลังข้อสอบ Lawlanes Education
+                                สำหรับใช้งานคลังข้อสอบ Lawslane Education
                             </CardDescription>
                         </div>
                     </CardHeader>

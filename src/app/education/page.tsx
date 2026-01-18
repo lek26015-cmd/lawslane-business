@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Book, GraduationCap, ChevronRight, Target, Award, FileText } from "lucide-react";
+import { GraduationCap, ChevronRight, Target, FileText } from "lucide-react";
 import { ArticlesSection } from "./components/articles-section";
 import { RecommendedBooksSection } from './components/recommended-books';
 import {
@@ -9,54 +9,65 @@ import {
     ExamCategoriesAnimated,
     SampleExamsAnimated
 } from './components/animated-sections';
+import { SampleExamsList } from './components/sample-exams-list';
 import { HeroFadeIn, SectionFadeIn } from './components/fade-in';
+import skillScoreImg from "../../pic/lawslane-education-catoon.png";
 
 export default function EducationPage() {
     return (
-        <div className="flex flex-col gap-12" key="education-page-v4-cache-buster">
+        <div className="flex flex-col gap-12 overflow-x-hidden" key="education-page-v5-cache-buster">
             {/* Hero Section - Exam Focused */}
             <HeroFadeIn>
                 <section
-                    className="relative overflow-hidden rounded-3xl text-white p-12 lg:p-20"
+                    className="relative overflow-hidden rounded-3xl text-white p-6 md:p-12 lg:p-20"
                     style={{ background: 'linear-gradient(to bottom right, #581c87, #312e81, #0f172a)' }}
                 >
-                    <div className="relative z-10 max-w-3xl space-y-6">
-                        <h1 className="text-4xl lg:text-6xl font-bold tracking-tight">
+                    <div className="relative z-20 max-w-2xl space-y-6 mx-auto lg:mx-0 text-center lg:text-left">
+                        <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight">
                             ฝึกทำข้อสอบ<br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-200">
                                 จนกว่าจะมั่นใจ
                             </span>
                         </h1>
-                        <p className="text-lg text-slate-300 max-w-xl">
+                        <p className="text-base md:text-lg text-slate-300 max-w-xl mx-auto lg:mx-0">
                             ข้อสอบครบทุกวิชา ทั้ง <strong className="text-white">แพ่ง วิแพ่ง อาญา วิอาญา</strong> พร้อมธงคำตอบละเอียด
                             เหมาะกับนักศึกษา<strong className="text-white">ปี 1 ถึงเตรียมสอบเนติบัณฑิต</strong>
                         </p>
 
                         {/* Subject Tags */}
-                        <div className="flex flex-wrap gap-2">
-                            <span className="px-3 py-1 bg-white/20 rounded-full text-sm">กฎหมายแพ่ง</span>
-                            <span className="px-3 py-1 bg-white/20 rounded-full text-sm">วิธีพิจารณาความแพ่ง</span>
-                            <span className="px-3 py-1 bg-white/20 rounded-full text-sm">กฎหมายอาญา</span>
-                            <span className="px-3 py-1 bg-white/20 rounded-full text-sm">วิธีพิจารณาความอาญา</span>
-                            <span className="px-3 py-1 bg-amber-500/30 rounded-full text-sm text-amber-200">ข้อสอบทนาย</span>
+                        <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+                            <span className="px-3 py-1 bg-white/20 rounded-full text-xs md:text-sm">กฎหมายแพ่ง</span>
+                            <span className="px-3 py-1 bg-white/20 rounded-full text-xs md:text-sm">วิธีพิจารณาความแพ่ง</span>
+                            <span className="px-3 py-1 bg-white/20 rounded-full text-xs md:text-sm">กฎหมายอาญา</span>
+                            <span className="px-3 py-1 bg-white/20 rounded-full text-xs md:text-sm">วิธีพิจารณาความอาญา</span>
+                            <span className="px-3 py-1 bg-amber-500/30 rounded-full text-xs md:text-sm text-amber-200">ข้อสอบทนาย</span>
                         </div>
 
-                        <div className="flex flex-wrap gap-4 pt-4">
+                        <div className="flex flex-wrap gap-3 md:gap-4 pt-4 justify-center lg:justify-start">
                             <Link href="/education/exams">
                                 <Button
                                     size="lg"
-                                    className="bg-white !text-purple-900 border border-white hover:bg-slate-100 font-bold rounded-full px-8 h-12 shadow-lg relative z-10"
+                                    className="bg-white !text-purple-900 border border-white hover:bg-slate-100 font-bold rounded-full px-6 md:px-8 h-10 md:h-12 text-sm md:text-base shadow-lg relative z-10"
                                     style={{ color: '#4c1d95' }} // Force purple-900 color
                                 >
                                     เริ่มทำข้อสอบเลย
                                 </Button>
                             </Link>
                             <Link href="/education/books">
-                                <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/20 hover:text-white rounded-full px-8 h-12 backdrop-blur-sm relative z-10 font-medium">
+                                <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/20 hover:text-white rounded-full px-6 md:px-8 h-10 md:h-12 text-sm md:text-base backdrop-blur-sm relative z-10 font-medium">
                                     ดูหนังสือประกอบ
                                 </Button>
                             </Link>
                         </div>
+                    </div>
+
+                    {/* Hero Image - Absolute Positioned - Hidden on small mobile */}
+                    <div className="hidden md:flex absolute bottom-0 right-4 lg:right-8 h-[95%] w-auto z-10 items-end pointer-events-none">
+                        <img
+                            src={skillScoreImg.src}
+                            alt="Lawlanes Education"
+                            className="w-full h-auto object-contain drop-shadow-2xl"
+                        />
                     </div>
 
                     {/* Background decoration elements */}
@@ -86,102 +97,96 @@ export default function EducationPage() {
             <FeatureCardsAnimated />
 
             {/* Exam CTA - Big Card */}
+            {/* Exam CTA - Big Card (Restored) */}
             <SectionFadeIn delay={0.1}>
-                <Link href="/education/exams" className="group block">
-                    <div className="relative overflow-hidden border-2 border-purple-200 rounded-3xl p-10 lg:p-16 hover:shadow-2xl transition-all bg-gradient-to-br from-purple-50 to-white hover:border-purple-400">
-                        <div className="flex flex-col lg:flex-row items-center gap-8">
-                            <div className="w-24 h-24 bg-purple-600 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform shadow-lg shadow-purple-200">
-                                <GraduationCap className="w-12 h-12" />
+                <Link href="/education/exams" className="group block relative no-underline">
+                    <div className="bg-white rounded-3xl p-8 md:p-12 border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300">
+                        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-20">
+                            {/* Text Content */}
+                            <div className="flex-1 space-y-6 text-center md:text-left">
+                                <div className="space-y-4">
+                                    <h3 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">
+                                        วัดระดับความพร้อมก่อนลงสนามจริงด้วย<br />
+                                        <span className="text-[#4c1d95] font-extrabold">Skill Score by Lawslane</span>
+                                    </h3>
+                                    <p className="text-lg text-slate-500 font-light leading-relaxed max-w-2xl mx-auto md:mx-0">
+                                        ระบบทดสอบวัดระดับความรู้กฎหมายที่ช่วยวิเคราะห์จุดแข็ง (Strengths) และจุดอ่อน (Gaps)
+                                        ของคุณได้อย่างแม่นยำ พร้อมระบบจับเวลาเสมือนจริง เพื่อเตรียมความพร้อมให้มั่นใจที่สุดก่อนสอบจริง
+                                    </p>
+                                </div>
+                                <div className="pt-2">
+                                    <Button
+                                        size="lg"
+                                        className="rounded-full bg-[#4c1d95] hover:bg-[#3b1775] text-white font-bold text-lg px-10 h-14 shadow-lg shadow-indigo-900/20"
+                                        style={{ backgroundColor: '#4c1d95', color: '#ffffff' }}
+                                    >
+                                        เลือกแบบทดสอบ
+                                    </Button>
+                                </div>
                             </div>
-                            <div className="flex-1 text-center lg:text-left">
-                                <h3 className="text-3xl lg:text-4xl font-bold mb-3 text-purple-900">คลังข้อสอบทนายความ</h3>
-                                <p className="text-lg text-slate-600 max-w-2xl">
-                                    ฝึกทำข้อสอบใบอนุญาตว่าความ ทั้งภาคทฤษฎีและอัตนัย
-                                    พร้อมธงคำตอบจากทีมอาจารย์กฎหมาย
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-2 text-purple-600 font-bold text-lg">
-                                เข้าสู่ห้องสอบ
-                                <ChevronRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+
+                            {/* Illustration */}
+                            <div className="flex-1 w-full max-w-lg lg:max-w-xl">
+                                <div className="relative aspect-[4/3] w-full">
+                                    {/* Decorative elements */}
+                                    <div className="absolute -top-4 -right-4 w-24 h-24 bg-amber-100 rounded-full blur-2xl opacity-60" />
+                                    <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-teal-100 rounded-full blur-2xl opacity-60" />
+
+                                    <div className="relative h-full w-full bg-slate-50 rounded-2xl border border-slate-100 p-2 shadow-sm group-hover:-translate-y-2 transition-transform duration-500">
+                                        <img
+                                            src={skillScoreImg.src}
+                                            alt="Skill Score Dashboard"
+                                            className="w-full h-full object-contain drop-shadow-md rounded-xl"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </Link>
             </SectionFadeIn>
 
-            {/* Books - Secondary/Smaller */}
-            <SectionFadeIn delay={0.2}>
-                <div className="grid md:grid-cols-2 gap-6">
-                    <Link href="/education/books" className="group block">
-                        <div className="h-full border rounded-2xl p-6 hover:shadow-md transition-all hover:border-indigo-200 bg-white">
-                            <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform flex-shrink-0">
-                                    <Book className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold mb-1">หนังสือเตรียมสอบ</h3>
-                                    <p className="text-sm text-slate-600 mb-3">
-                                        คู่มือติว สรุปย่อ และรวมข้อสอบเก่าพร้อมเฉลย
-                                    </p>
-                                    <span className="text-indigo-600 font-medium inline-flex items-center text-sm group-hover:gap-2 transition-all">
-                                        ดูรายการหนังสือ <ChevronRight className="w-4 h-4" />
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link href="/education/my-learning" className="group block">
-                        <div className="h-full border rounded-2xl p-6 hover:shadow-md transition-all hover:border-slate-300 bg-white">
-                            <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 group-hover:scale-110 transition-transform flex-shrink-0">
-                                    <Award className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold mb-1">การเรียนรู้ของฉัน</h3>
-                                    <p className="text-sm text-slate-600 mb-3">
-                                        ดูประวัติการสอบ คะแนน และความก้าวหน้าของคุณ
-                                    </p>
-                                    <span className="text-slate-600 font-medium inline-flex items-center text-sm group-hover:gap-2 transition-all">
-                                        เข้าสู่ห้องเรียน <ChevronRight className="w-4 h-4" />
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                </div>
+            {/* Exam Categories Section */}
+            <SectionFadeIn delay={0.15}>
+                <ExamCategoriesAnimated />
             </SectionFadeIn>
 
-            {/* Sample Exams Section */}
-            <section className="py-8">
-                <SectionFadeIn>
-                    <div className="flex justify-between items-center mb-6">
+            {/* Popular Exams Section (List View) */}
+            <SectionFadeIn delay={0.2}>
+                <div className="space-y-6">
+                    <div className="flex justify-between items-center px-4 md:px-0">
                         <div className="flex items-center gap-2">
-                            <FileText className="w-5 h-5 text-slate-600" />
-                            <h2 className="text-xl font-bold text-slate-900">ตัวอย่างข้อสอบจากคลังข้อสอบ</h2>
+                            <Target className="w-6 h-6 text-indigo-600" />
+                            <h2 className="text-2xl md:text-3xl font-bold text-slate-900">ข้อสอบยอดนิยม</h2>
                         </div>
                         <Link href="/education/exams">
-                            <Button variant="link" className="text-slate-600 hover:text-primary text-sm">
-                                ดูทั้งหมด <ChevronRight className="ml-1 h-3 w-3" />
+                            <Button variant="link" className="text-slate-600 hover:text-primary text-sm font-medium">
+                                ดูทั้งหมด <ChevronRight className="ml-1 h-4 w-4" />
                             </Button>
                         </Link>
                     </div>
-                </SectionFadeIn>
+                    <SampleExamsList />
+                </div>
+            </SectionFadeIn>
 
-                {/* Categories */}
-                <ExamCategoriesAnimated />
 
-                {/* Sample Exam Cards */}
-                <SampleExamsAnimated />
+
+            {/* Sample Exams Section */}
+            <section className="py-8">
             </section>
 
             {/* Testimonials Section */}
             <TestimonialsAnimated />
 
+            {/* Recommended Books Section */}
+            <SectionFadeIn delay={0.2}>
+                <RecommendedBooksSection />
+            </SectionFadeIn>
+
             {/* Articles from Main Site */}
             <ArticlesSection />
 
-            {/* Recommended Books Section */}
-            <RecommendedBooksSection />
+
         </div>
     );
 }

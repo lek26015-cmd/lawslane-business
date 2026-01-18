@@ -30,7 +30,7 @@ export function EducationHeaderActions() {
             await signOut(auth);
             toast({
                 title: "ออกจากระบบแล้ว",
-                description: "ขอบคุณที่ใช้บริการ Lawlanes Education",
+                description: "ขอบคุณที่ใช้บริการ Lawslane Education",
             });
             router.push('/education/login');
         }
@@ -40,7 +40,7 @@ export function EducationHeaderActions() {
 
     if (!user) {
         return (
-            <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
                 <Link href="/education/login">
                     <Button variant="ghost" className="font-medium text-slate-600 hover:text-indigo-600">
                         เข้าสู่ระบบ

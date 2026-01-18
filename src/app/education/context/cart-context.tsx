@@ -1,19 +1,28 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Book } from '@/lib/education-types';
+import { Book, Course } from '@/lib/education-types';
 import { useToast } from "@/hooks/use-toast";
 
-export interface CartItem extends Book {
+export type ProductType = 'BOOK' | 'COURSE' | 'EXAM';
+
+export interface CartItem {
+    id: string;
+    title: string;
+    price: number;
+    coverUrl: string;
     quantity: number;
+    type: ProductType;
+    // Original full object for reference if needed
+    originalItem: Book | Course;
 }
 
 interface CartContextType {
     items: CartItem[];
     isOpen: boolean;
     setIsOpen: (open: boolean) => void;
-    addItem: (book: Book) => void;
-    removeItem: (bookId: string) => void;
+    addItem: (product: Book | Course, type?: ProductType) => void;
+    removeItem: (id: string) => void;
     updateQuantity: (bookId: string, quantity: number) => void;
     clearCart: () => void;
     totalItems: number;
@@ -48,38 +57,45 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
     }, [items, isLoaded]);
 
-    const addItem = (book: Book) => {
+    const addItem = (product: Book | Course, type: ProductType = 'BOOK') => {
         setItems(prev => {
-            const existing = prev.find(item => item.id === book.id);
+            const existing = prev.find(item => item.id === product.id);
             if (existing) {
                 return prev.map(item =>
-                    item.id === book.id
+                    item.id === product.id
                         ? { ...item, quantity: item.quantity + 1 }
                         : item
                 );
             }
-            return [...prev, { ...book, quantity: 1 }];
+            return [...prev, {
+                id: product.id,
+                title: product.title,
+                price: product.price,
+                coverUrl: product.coverUrl,
+                quantity: 1,
+                type: type,
+                originalItem: product
+            }];
         });
-        // setIsOpen(true); // Removed auto-open as per user request
 
         toast({
             title: "เพิ่มลงตะกร้าเรียบร้อย",
-            description: `เพิ่ม "${book.title}" ลงในตะกร้าแล้ว`,
+            description: `เพิ่ม "${product.title}" ลงในตะกร้าแล้ว`,
             duration: 1500,
         });
     };
 
-    const removeItem = (bookId: string) => {
-        setItems(prev => prev.filter(item => item.id !== bookId));
+    const removeItem = (id: string) => {
+        setItems(prev => prev.filter(item => item.id !== id));
     };
 
-    const updateQuantity = (bookId: string, quantity: number) => {
+    const updateQuantity = (id: string, quantity: number) => {
         if (quantity <= 0) {
-            removeItem(bookId);
+            removeItem(id);
             return;
         }
         setItems(prev => prev.map(item =>
-            item.id === bookId ? { ...item, quantity } : item
+            item.id === id ? { ...item, quantity } : item
         ));
     };
 

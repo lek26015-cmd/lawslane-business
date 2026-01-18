@@ -22,6 +22,7 @@ interface Exam {
     subject: string; // หัวข้อข้อสอบ
     lawCategory: string; // แพ่ง, วิแพ่ง, อาญา, วิอาญา
     difficulty: 'easy' | 'medium' | 'hard';
+    coverUrl?: string;
 }
 
 // MOCK DATA with expanded fields
@@ -38,6 +39,7 @@ const MOCK_EXAMS: Exam[] = [
         subject: "นิติกรรมและสัญญา",
         lawCategory: "แพ่ง",
         difficulty: 'easy',
+        coverUrl: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=400",
     },
     {
         id: "exam-2",
@@ -51,6 +53,7 @@ const MOCK_EXAMS: Exam[] = [
         subject: "ทรัพย์สินและที่ดิน",
         lawCategory: "แพ่ง",
         difficulty: 'medium',
+        coverUrl: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80&w=400",
     },
     {
         id: "exam-3",
@@ -64,6 +67,7 @@ const MOCK_EXAMS: Exam[] = [
         subject: "ความผิดเกี่ยวกับชีวิตและร่างกาย",
         lawCategory: "อาญา",
         difficulty: 'medium',
+        coverUrl: "https://images.unsplash.com/photo-1453928582365-b6ad33cbcf64?auto=format&fit=crop&q=80&w=400",
     },
     {
         id: "exam-4",
@@ -77,6 +81,7 @@ const MOCK_EXAMS: Exam[] = [
         subject: "การดำเนินคดีแพ่ง",
         lawCategory: "วิแพ่ง",
         difficulty: 'hard',
+        coverUrl: "https://images.unsplash.com/photo-1589578527966-fd7105698a39?auto=format&fit=crop&q=80&w=400",
     },
     {
         id: "exam-5",
@@ -90,6 +95,7 @@ const MOCK_EXAMS: Exam[] = [
         subject: "สิทธิผู้ต้องหา",
         lawCategory: "วิอาญา",
         difficulty: 'medium',
+        coverUrl: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&q=80&w=400",
     },
     {
         id: "exam-6",
@@ -103,6 +109,7 @@ const MOCK_EXAMS: Exam[] = [
         subject: "ข้อสอบรวม",
         lawCategory: "แพ่ง",
         difficulty: 'hard',
+        coverUrl: "https://images.unsplash.com/photo-1479142506502-19b3a3b7ff33?auto=format&fit=crop&q=80&w=400",
     },
     {
         id: "exam-7",
@@ -116,6 +123,7 @@ const MOCK_EXAMS: Exam[] = [
         subject: "ข้อสอบเนติกลุ่มแพ่ง",
         lawCategory: "แพ่ง",
         difficulty: 'hard',
+        coverUrl: "https://images.unsplash.com/photo-1593115057345-2ba7216f0662?auto=format&fit=crop&q=80&w=400",
     },
     {
         id: "exam-8",
@@ -129,6 +137,7 @@ const MOCK_EXAMS: Exam[] = [
         subject: "ความผิดเกี่ยวกับทรัพย์",
         lawCategory: "อาญา",
         difficulty: 'medium',
+        coverUrl: "https://images.unsplash.com/photo-1589216532380-1d9740262d46?auto=format&fit=crop&q=80&w=400",
     },
 ];
 
@@ -166,7 +175,7 @@ export default function ExamListingPage() {
                 title="คลังข้อสอบ"
                 description="ฝึกฝนให้มั่นใจกับระบบจำลองสอบเสมือนจริง ทั้งข้อสอบปรนัยและอัตนัยพร้อมธงคำตอบ"
                 icon="GraduationCap"
-                theme="blue"
+                theme="indigo"
                 backLink="/education"
                 backLabel="กลับหน้าหลัก"
                 badge={`${filteredExams.length} ชุดข้อสอบ`}
@@ -282,6 +291,22 @@ export default function ExamListingPage() {
                                     transition={{ duration: 0.2 }}
                                     className="group relative flex flex-col sm:flex-row gap-6 p-6 border rounded-xl bg-white hover:border-purple-300 transition-all hover:shadow-md"
                                 >
+                                    <div className="w-full sm:w-40 md:w-48 h-48 sm:h-auto rounded-lg overflow-hidden bg-slate-100 shrink-0 relative">
+                                        <img
+                                            src={exam.coverUrl || "https://placehold.co/400x300?text=Exam"}
+                                            alt={exam.title}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute top-2 left-2">
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded shadow-sm uppercase ${exam.difficulty === 'hard' ? 'bg-red-500 text-white' :
+                                                    exam.difficulty === 'medium' ? 'bg-yellow-500 text-white' :
+                                                        'bg-green-500 text-white'
+                                                }`}>
+                                                {exam.difficulty}
+                                            </span>
+                                        </div>
+                                    </div>
+
                                     <div className="flex-1 space-y-3">
                                         <div className="flex flex-wrap items-center gap-2">
                                             <Badge variant={exam.price === 0 ? "default" : "outline"} className={exam.price === 0 ? "bg-green-600 hover:bg-green-700" : ""}>

@@ -160,7 +160,7 @@ export default function EducationLoginPage() {
                             height={40}
                             className="h-10 w-auto brightness-0 invert"
                         />
-                        <span className="text-xl font-bold tracking-tight">Lawlanes Education</span>
+                        <span className="text-xl font-bold tracking-tight">Lawslane Education</span>
                     </div>
                     <div className="space-y-4 max-w-lg">
                         <h1 className="text-4xl font-extrabold leading-tight tracking-tight">
@@ -171,7 +171,7 @@ export default function EducationLoginPage() {
                         </p>
                     </div>
                     <div className="text-sm text-slate-400">
-                        © {new Date().getFullYear()} Lawlanes. All rights reserved.
+                        © {new Date().getFullYear()} Lawslane. All rights reserved.
                     </div>
                 </div>
             </div>
@@ -183,7 +183,7 @@ export default function EducationLoginPage() {
                         <div className="mx-auto mb-4 bg-slate-100 p-3 rounded-full lg:hidden">
                             <Image
                                 src={logoColor}
-                                alt="Lawlanes Logo"
+                                alt="Lawslane Logo"
                                 width={40}
                                 height={40}
                                 className="h-10 w-auto"
@@ -191,7 +191,7 @@ export default function EducationLoginPage() {
                         </div>
                         <h1 className="text-2xl font-semibold tracking-tight">เข้าสู่ระบบ</h1>
                         <p className="text-sm text-slate-500">
-                            ยินดีต้อนรับกลับสู่ Lawlanes Education
+                            ยินดีต้อนรับกลับสู่ Lawslane Education
                         </p>
                     </div>
 

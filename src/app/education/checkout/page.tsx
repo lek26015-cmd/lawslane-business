@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '../context/cart-context'; // Adjust path if needed
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +15,32 @@ import Image from 'next/image';
 
 export default function CheckoutPage() {
     const router = useRouter();
-    const { items, totalPrice, clearCart } = useCart();
+    const searchParams = useSearchParams();
+    const { items: cartItems, totalPrice: cartTotalPrice, clearCart } = useCart();
     const { toast } = useToast();
+
+    // Direct Checkout Params
+    const directId = searchParams.get('id');
+    const directTitle = searchParams.get('title');
+    const directPrice = searchParams.get('price');
+    const directCover = searchParams.get('coverUrl');
+    const directType = searchParams.get('type');
+
+    const isDirectCheckout = !!directId;
+
+    const effectiveItems = isDirectCheckout ? [{
+        id: directId!,
+        title: directTitle || 'สินค้า',
+        price: Number(directPrice) || 0,
+        coverUrl: directCover || '',
+        quantity: 1,
+        type: (directType as any) || 'COURSE',
+        originalItem: {} as any
+    }] : cartItems;
+
+    const totalPrice = isDirectCheckout
+        ? (Number(directPrice) || 0)
+        : cartTotalPrice;
 
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -32,12 +56,12 @@ export default function CheckoutPage() {
     const [slipFile, setSlipFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Redirect if cart is empty
+    // Redirect if invalid state
     React.useEffect(() => {
-        if (items.length === 0 && !isSuccess) {
+        if (effectiveItems.length === 0 && !isSuccess) {
             router.push('/education');
         }
-    }, [items, isSuccess, router]);
+    }, [effectiveItems, isSuccess, router]);
 
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -63,9 +87,22 @@ export default function CheckoutPage() {
         }
     };
 
+    // Check if shipping is required (Physical Books). 
+    // Logic: It is a book if type is BOOK or undefined, AND it's not explicitly digital in originalItem.
+    // ADDED: Fallback check if title contains "คอร์ส", "Course", "E-Book" -> treat as digital (no shipping).
+    const requiresShipping = effectiveItems.some(item => {
+        // REMOVED 'Exam' and 'ข้อสอบ' because physical books often contain these words (e.g. "รวมข้อสอบ")
+        const isDigitalKeyword = /คอร์ส|Course|E-Book|e-book|ebook/i.test(item.title);
+        const isDigitalType = item.type === 'COURSE' || item.type === 'EXAM';
+        const isDigitalFlag = (item.originalItem as any)?.isDigital;
+
+        // It requires shipping if it is NOT digital
+        return !(isDigitalKeyword || isDigitalType || isDigitalFlag);
+    });
+
     const handleSubmit = async () => {
         // Validation
-        if (!shippingInfo.name || !shippingInfo.phone || !shippingInfo.address) {
+        if (requiresShipping && (!shippingInfo.name || !shippingInfo.phone || !shippingInfo.address)) {
             toast({
                 variant: 'destructive',
                 title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
@@ -85,13 +122,47 @@ export default function CheckoutPage() {
 
         setIsLoading(true);
 
-        // Simulate API Call / Upload
-        setTimeout(() => {
+        try {
+            // Create Order Payload
+            const orderData = {
+                userId: 'user-123', // Hardcoded for demo/dev match with MyLearning default
+                items: effectiveItems,
+                totalAmount: totalPrice,
+                shippingInfo: requiresShipping ? shippingInfo : null,
+                paymentMethod: activeTab,
+                slipUrl: 'https://placehold.co/400x600/png?text=Slip', // Mock slip URL since we don't have real upload yet
+                status: 'PAID'
+            };
+
+            const response = await fetch('/api/education/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create order');
+            }
+
+            // Success
             setIsLoading(false);
             setIsSuccess(true);
-            clearCart();
+            if (!isDirectCheckout) {
+                clearCart();
+            }
             window.scrollTo(0, 0);
-        }, 1500);
+
+        } catch (error) {
+            console.error("Checkout error:", error);
+            setIsLoading(false);
+            toast({
+                variant: 'destructive',
+                title: 'เกิดข้อผิดพลาด',
+                description: 'ไม่สามารถทำรายการได้ กรุณาลองใหม่อีกครั้ง'
+            });
+        }
     };
 
     if (isSuccess) {
@@ -126,7 +197,7 @@ export default function CheckoutPage() {
         );
     }
 
-    if (items.length === 0) return null; // Prevent flash before redirect
+    if (effectiveItems.length === 0) return null; // Prevent flash before redirect
 
     return (
         <div className="container mx-auto px-4 py-8 md:py-12 animate-in fade-in duration-500">
@@ -149,7 +220,7 @@ export default function CheckoutPage() {
                             </CardHeader>
                             <CardContent className="p-0">
                                 <div className="divide-y divide-slate-100">
-                                    {items.map((item) => (
+                                    {effectiveItems.map((item) => (
                                         <div key={item.id} className="flex gap-4 p-4 bg-white hover:bg-slate-50/50 transition-colors">
                                             <div className="w-16 h-24 bg-slate-100 rounded-md overflow-hidden flex-shrink-0 shadow-sm">
                                                 <img
@@ -162,7 +233,11 @@ export default function CheckoutPage() {
                                                 <div>
                                                     <h4 className="font-medium text-slate-900 line-clamp-2 text-sm leading-snug">{item.title}</h4>
                                                     <p className="text-xs text-slate-500 mt-1">
-                                                        จำนวน: {item.quantity} เล่ม
+                                                        จำนวน: {item.quantity} {
+                                                            (item.type === 'COURSE' || /คอร์ส|Course|E-Book|e-book|ebook/i.test(item.title))
+                                                                ? 'รายการ'
+                                                                : 'เล่ม'
+                                                        }
                                                     </p>
                                                 </div>
                                                 <p className="font-semibold text-indigo-600 text-sm">
@@ -174,12 +249,16 @@ export default function CheckoutPage() {
                                 </div>
                                 <div className="p-6 bg-slate-50/50 border-t space-y-3">
                                     <div className="flex justify-between text-slate-600 text-sm">
-                                        <span>ยอดรวม ({items.reduce((sum, i) => sum + i.quantity, 0)} รายการ)</span>
+                                        <span>ยอดรวม ({effectiveItems.reduce((sum, i) => sum + i.quantity, 0)} รายการ)</span>
                                         <span>฿{totalPrice.toLocaleString()}</span>
                                     </div>
                                     <div className="flex justify-between text-slate-600 text-sm">
                                         <span>ค่าจัดส่ง</span>
-                                        <span className="text-green-600 font-medium">ฟรี</span>
+                                        {requiresShipping ? (
+                                            <span className="text-green-600 font-medium">ฟรี</span>
+                                        ) : (
+                                            <span className="text-slate-400">-</span>
+                                        )}
                                     </div>
                                     <div className="border-t pt-3 mt-3 flex justify-between items-center">
                                         <span className="font-bold text-lg text-slate-900">ยอดสุทธิ</span>
@@ -193,50 +272,52 @@ export default function CheckoutPage() {
 
                 {/* Right Column: Checkout Form */}
                 <div className="lg:col-span-2 space-y-6">
-                    <Card className="shadow-md border-0">
-                        <CardHeader className="border-b pb-4">
-                            <CardTitle className="text-xl">ข้อมูลการจัดส่ง</CardTitle>
-                            <CardDescription>กรุณากรอกที่อยู่สำหรับจัดส่งหนังสือ</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4 pt-6">
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="name" className="flex items-center gap-2">
-                                        <User className="w-4 h-4 text-slate-400" /> ชื่อ-นามสกุล
-                                    </Label>
-                                    <Input
-                                        id="name"
-                                        placeholder="ชื่อผู้รับ"
-                                        value={shippingInfo.name}
-                                        onChange={(e) => setShippingInfo({ ...shippingInfo, name: e.target.value })}
-                                    />
+                    {requiresShipping && (
+                        <Card className="shadow-md border-0">
+                            <CardHeader className="border-b pb-4">
+                                <CardTitle className="text-xl">ข้อมูลการจัดส่ง</CardTitle>
+                                <CardDescription>กรุณากรอกที่อยู่สำหรับจัดส่งหนังสือ</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4 pt-6">
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="name" className="flex items-center gap-2">
+                                            <User className="w-4 h-4 text-slate-400" /> ชื่อ-นามสกุล
+                                        </Label>
+                                        <Input
+                                            id="name"
+                                            placeholder="ชื่อผู้รับ"
+                                            value={shippingInfo.name}
+                                            onChange={(e) => setShippingInfo({ ...shippingInfo, name: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="phone" className="flex items-center gap-2">
+                                            <Phone className="w-4 h-4 text-slate-400" /> เบอร์โทรศัพท์
+                                        </Label>
+                                        <Input
+                                            id="phone"
+                                            placeholder="08x-xxx-xxxx"
+                                            value={shippingInfo.phone}
+                                            onChange={(e) => setShippingInfo({ ...shippingInfo, phone: e.target.value })}
+                                        />
+                                    </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="phone" className="flex items-center gap-2">
-                                        <Phone className="w-4 h-4 text-slate-400" /> เบอร์โทรศัพท์
+                                    <Label htmlFor="address" className="flex items-center gap-2">
+                                        <MapPin className="w-4 h-4 text-slate-400" /> ที่อยู่จัดส่ง
                                     </Label>
-                                    <Input
-                                        id="phone"
-                                        placeholder="08x-xxx-xxxx"
-                                        value={shippingInfo.phone}
-                                        onChange={(e) => setShippingInfo({ ...shippingInfo, phone: e.target.value })}
+                                    <Textarea
+                                        id="address"
+                                        placeholder="บ้านเลขที่, หมู่, ซอย, ถนน, ตำบล/แขวง, อำเภอ/เขต, จังหวัด, รหัสไปรษณีย์"
+                                        className="min-h-[100px]"
+                                        value={shippingInfo.address}
+                                        onChange={(e) => setShippingInfo({ ...shippingInfo, address: e.target.value })}
                                     />
                                 </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="address" className="flex items-center gap-2">
-                                    <MapPin className="w-4 h-4 text-slate-400" /> ที่อยู่จัดส่ง
-                                </Label>
-                                <Textarea
-                                    id="address"
-                                    placeholder="บ้านเลขที่, หมู่, ซอย, ถนน, ตำบล/แขวง, อำเภอ/เขต, จังหวัด, รหัสไปรษณีย์"
-                                    className="min-h-[100px]"
-                                    value={shippingInfo.address}
-                                    onChange={(e) => setShippingInfo({ ...shippingInfo, address: e.target.value })}
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     <Card className="shadow-md border-0">
                         <CardHeader className="border-b pb-4">

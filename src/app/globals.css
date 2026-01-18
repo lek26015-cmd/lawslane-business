@@ -5,12 +5,14 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 203 100% 16%; /* #003654 */
+    --foreground: 203 100% 16%;
+    /* #003654 */
     --card: 0 0% 100%;
     --card-foreground: 203 100% 16%;
     --popover: 0 0% 100%;
     --popover-foreground: 203 100% 16%;
-    --primary: 203 100% 17%; /* Deep Navy Blue */
+    --primary: 203 100% 17%;
+    /* Deep Navy Blue */
     --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 203 100% 16%;
@@ -52,17 +54,34 @@
   * {
     @apply border-border;
   }
+
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
   body {
     @apply bg-background text-foreground font-body;
   }
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-headline;
   }
 }
 
 @layer utilities {
   @keyframes rainbow-border-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
   }
 }

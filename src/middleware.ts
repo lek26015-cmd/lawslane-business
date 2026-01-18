@@ -49,14 +49,14 @@ export default async function middleware(request: NextRequest) {
     }
 
     // 0.5 Redirect localized lawyer/admin/education routes to root (e.g. /th/admin -> /admin)
-    const localizedSystemRegex = /^\/[a-z]{2}\/(admin|lawyer-|verify-lawyer|education)(.*)/;
+    const localizedSystemRegex = /^\/[a-z]{2}\/(admin|lawyer-|education)(.*)/;
     if (localizedSystemRegex.test(pathname)) {
         const newPath = pathname.replace(/^\/[a-z]{2}/, '');
         return NextResponse.redirect(new URL(newPath, request.url));
     }
 
     // 1. Admin & Lawyer & Education System Exclusion (No i18n)
-    if (pathname.startsWith('/admin') || pathname.startsWith('/lawyer-') || pathname.startsWith('/verify-lawyer') || pathname.startsWith('/education')) {
+    if (pathname.startsWith('/admin') || pathname.startsWith('/lawyer-') || pathname.startsWith('/education')) {
         // Admin Auth Check
         if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
             const session = request.cookies.get('session');

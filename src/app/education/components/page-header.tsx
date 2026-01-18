@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, LucideIcon, BookOpen, GraduationCap, Award, Settings, FileText, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, LucideIcon, BookOpen, GraduationCap, Award, Settings, FileText, ShoppingBag, PlayCircle } from 'lucide-react';
 
 const ICON_MAP: Record<string, LucideIcon> = {
     BookOpen,
@@ -11,7 +11,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
     Award,
     Settings,
     FileText,
-    ShoppingBag
+    ShoppingBag,
+    PlayCircle
 };
 
 
@@ -29,55 +30,65 @@ interface PageHeaderProps {
 }
 
 const THEMES = {
-    indigo: 'from-indigo-600 to-purple-600',
-    emerald: 'from-emerald-600 to-teal-600',
-    amber: 'from-amber-600 to-orange-600',
-    purple: 'from-purple-600 to-indigo-600',
-    rose: 'from-rose-600 to-pink-600',
-    slate: 'from-slate-700 to-slate-900',
-    blue: 'from-blue-600 to-indigo-600',
-    cyan: 'from-cyan-600 to-blue-600'
+    indigo: 'bg-indigo-900 from-indigo-600 to-purple-600',
+    emerald: 'bg-emerald-900 from-emerald-600 to-teal-600',
+    amber: 'bg-amber-900 from-amber-600 to-orange-600',
+    purple: 'bg-purple-900 from-purple-600 to-indigo-600',
+    rose: 'bg-rose-900 from-rose-600 to-pink-600',
+    slate: 'bg-slate-900 from-slate-700 to-slate-900',
+    blue: 'bg-blue-900 from-blue-600 to-indigo-600',
+    cyan: 'bg-cyan-900 from-cyan-600 to-blue-600'
+};
+
+const THEME_STYLES: Record<string, React.CSSProperties> = {
+    indigo: { backgroundImage: 'linear-gradient(to right, #312e81, #581c87)', backgroundColor: '#312e81' },
+    emerald: { backgroundImage: 'linear-gradient(to right, #059669, #0d9488)', backgroundColor: '#059669' },
+    amber: { backgroundImage: 'linear-gradient(to right, #d97706, #ea580c)', backgroundColor: '#d97706' },
+    purple: { backgroundImage: 'linear-gradient(to right, #9333ea, #4f46e5)', backgroundColor: '#9333ea' },
+    rose: { backgroundImage: 'linear-gradient(to right, #e11d48, #db2777)', backgroundColor: '#e11d48' },
+    slate: { backgroundImage: 'linear-gradient(to right, #334155, #0f172a)', backgroundColor: '#334155' },
+    blue: { backgroundImage: 'linear-gradient(to right, #2563eb, #4f46e5)', backgroundColor: '#2563eb' },
+    cyan: { backgroundImage: 'linear-gradient(to right, #0891b2, #2563eb)', backgroundColor: '#0891b2' },
 };
 
 export function PageHeader({
     title,
     description,
     icon: iconProp,
-    iconColor = 'text-white',
+    iconColor, // Remove default here, determine based on theme below
     theme = 'indigo',
     backLink,
     backLabel = 'กลับ',
     children,
     badge,
-    badgeColor = 'bg-white/20 text-white',
+    badgeColor, // Remove default, determine below
 }: PageHeaderProps) {
     const Icon = typeof iconProp === 'string' ? ICON_MAP[iconProp] : iconProp;
-    const themeClasses = THEMES[theme] || THEMES.indigo;
+
+    // Define theme-specific colors for accents (instead of backgrounds)
+    const themeColors = {
+        indigo: { text: 'text-indigo-600', bg: 'bg-indigo-50', badge: 'bg-indigo-100 text-indigo-700' },
+        emerald: { text: 'text-emerald-600', bg: 'bg-emerald-50', badge: 'bg-emerald-100 text-emerald-700' },
+        amber: { text: 'text-amber-600', bg: 'bg-amber-50', badge: 'bg-amber-100 text-amber-700' },
+        purple: { text: 'text-purple-600', bg: 'bg-purple-50', badge: 'bg-purple-100 text-purple-700' },
+        rose: { text: 'text-rose-600', bg: 'bg-rose-50', badge: 'bg-rose-100 text-rose-700' },
+        slate: { text: 'text-slate-600', bg: 'bg-slate-50', badge: 'bg-slate-100 text-slate-700' },
+        blue: { text: 'text-blue-600', bg: 'bg-blue-50', badge: 'bg-blue-100 text-blue-700' },
+        cyan: { text: 'text-cyan-600', bg: 'bg-cyan-50', badge: 'bg-cyan-100 text-cyan-700' },
+    };
+
+    const currentTheme = themeColors[theme] || themeColors.indigo;
+    const finalIconColor = iconColor || currentTheme.text;
+    const finalBadgeColor = badgeColor || currentTheme.badge;
 
     return (
-        <div key={theme} className={`relative overflow-hidden rounded-2xl bg-gradient-to-r ${themeClasses} p-8 md:p-10 mb-8`}>
+        <div className="relative rounded-2xl p-6 md:p-8 mb-8 bg-white border border-slate-200 shadow-sm">
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 className="relative z-10"
             >
-                {/* Background decoration */}
-                <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl -z-10" />
-                <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-48 h-48 bg-white/10 rounded-full blur-2xl -z-10" />
-
-                {/* Pattern overlay */}
-                <div className="absolute inset-0 opacity-10 -z-10">
-                    <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="1" />
-                            </pattern>
-                        </defs>
-                        <rect width="100%" height="100%" fill="url(#grid)" />
-                    </svg>
-                </div>
-
                 {/* Back link */}
                 {backLink && (
                     <motion.div
@@ -87,7 +98,7 @@ export function PageHeader({
                     >
                         <Link
                             href={backLink}
-                            className="inline-flex items-center text-white/80 hover:text-white transition-colors mb-4 text-sm font-medium"
+                            className="inline-flex items-center text-slate-500 hover:text-slate-900 transition-colors mb-4 text-sm font-medium"
                         >
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             {backLabel}
@@ -95,45 +106,49 @@ export function PageHeader({
                     </motion.div>
                 )}
 
-                <div className="flex flex-col md:flex-row md:items-center gap-6">
+                <div className="flex flex-col md:flex-row md:items-start gap-6">
                     {/* Icon */}
                     {Icon && (
                         <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
-                            className="w-16 h-16 md:w-20 md:h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center flex-shrink-0"
+                            className={`w-14 h-14 md:w-16 md:h-16 ${currentTheme.bg} rounded-xl flex items-center justify-center flex-shrink-0 mt-1`}
                         >
-                            <Icon className={`w-8 h-8 md:w-10 md:h-10 ${iconColor}`} />
+                            <Icon className={`w-7 h-7 md:w-8 md:h-8 ${finalIconColor}`} />
                         </motion.div>
                     )}
 
                     {/* Content */}
                     <div className="flex-1">
-                        {badge && (
-                            <motion.span
-                                initial={{ opacity: 0, y: -10 }}
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <motion.h1
+                                initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.15 }}
-                                className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-3 ${badgeColor}`}
+                                transition={{ delay: 0.2 }}
+                                className="text-2xl md:text-3xl font-bold text-slate-900"
                             >
-                                {badge}
-                            </motion.span>
-                        )}
-                        <motion.h1
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                            className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2"
-                        >
-                            {title}
-                        </motion.h1>
+                                {title}
+                            </motion.h1>
+
+                            {badge && (
+                                <motion.span
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 0.25 }}
+                                    className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${finalBadgeColor}`}
+                                >
+                                    {badge}
+                                </motion.span>
+                            )}
+                        </div>
+
                         {description && (
                             <motion.p
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
-                                className="text-white/80 text-sm md:text-base max-w-2xl"
+                                className="text-slate-500 text-sm md:text-base max-w-3xl leading-relaxed"
                             >
                                 {description}
                             </motion.p>
@@ -146,16 +161,13 @@ export function PageHeader({
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.4 }}
-                            className="flex-shrink-0"
+                            className="flex-shrink-0 pt-2"
                         >
                             {children}
                         </motion.div>
                     )}
                 </div>
             </motion.div>
-
-            {/* Tailwind Safelist - Hidden element to ensure classes are not purged */}
-            <div className="hidden from-indigo-600 to-purple-600 from-emerald-600 to-teal-600 from-amber-600 to-orange-600 from-purple-600 to-indigo-600 from-rose-600 to-pink-600 from-slate-700 to-slate-900 from-blue-600 to-indigo-600 from-cyan-600 to-blue-600" />
         </div>
     );
 }

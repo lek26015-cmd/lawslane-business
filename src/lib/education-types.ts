@@ -12,6 +12,8 @@ export interface Book {
     isDigital: boolean; // true = ebook (pdf), false = physical
     fileUrl?: string; // for ebook
     stock: number;
+    category?: string; // e.g., 'Civil Law', 'Criminal Law'
+    level?: string; // e.g., 'Bachelor', 'Bar Exam', 'Lawyer License'
     createdAt: Date;
     updatedAt: Date;
 }
@@ -83,9 +85,9 @@ export interface ExamResult {
 export type OrderStatus = 'PENDING' | 'PAID' | 'SHIPPING' | 'COMPLETED' | 'CANCELLED';
 
 export interface OrderItem {
-    id: string; // Product ID (Book ID or Exam ID)
+    id: string; // Product ID (Book ID, Exam ID, or Course ID)
     title: string;
-    type: 'BOOK' | 'EXAM';
+    type: 'BOOK' | 'EXAM' | 'COURSE';
     price: number;
     quantity: number;
     coverUrl?: string;
@@ -108,3 +110,45 @@ export interface Order {
     createdAt: Date;
     updatedAt: Date;
 }
+
+// Course Types
+export interface CourseLesson {
+    id: string;
+    title: string;
+    durationMinutes: number;
+    videoUrl?: string; // For streaming
+    isFreePreview: boolean; // Can watch without buying
+    completed?: boolean; // For user progress
+}
+
+export interface CourseModule {
+    id: string;
+    title: string;
+    description?: string;
+    lessons: CourseLesson[];
+}
+
+export interface Course {
+    id: string;
+    title: string;
+    description: string;
+    longDescription?: string; // HTML or Markdown
+    price: number;
+    coverUrl: string;
+    instructor: {
+        name: string;
+        avatarUrl?: string;
+        bio?: string;
+    };
+    category: string; // e.g., 'Civil Law', 'Exam Prep'
+    level: 'Beginner' | 'Intermediate' | 'Advanced';
+    totalDurationMinutes: number;
+    totalLessons: number;
+    rating?: number;
+    reviewCount?: number;
+    modules: CourseModule[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+

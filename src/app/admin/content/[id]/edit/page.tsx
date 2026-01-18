@@ -13,6 +13,7 @@ import {
     X,
     Tag
 } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
 import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
@@ -70,6 +71,11 @@ export default function AdminArticleEditPage() {
     const [tags, setTags] = React.useState<string[]>([]);
     const [newTag, setNewTag] = React.useState('');
 
+    // CTA State
+    const [ctaEnabled, setCtaEnabled] = React.useState(false);
+    const [ctaText, setCtaText] = React.useState('');
+    const [ctaUrl, setCtaUrl] = React.useState('');
+
     React.useEffect(() => {
         if (!firestore || !id) return;
         setIsLoading(true);
@@ -79,6 +85,12 @@ export default function AdminArticleEditPage() {
                 // Load existing tags
                 if (foundArticle.tags && Array.isArray(foundArticle.tags)) {
                     setTags(foundArticle.tags);
+                }
+                // Load existing CTA
+                if (foundArticle.cta) {
+                    setCtaEnabled(foundArticle.cta.enabled);
+                    setCtaText(foundArticle.cta.text || '');
+                    setCtaUrl(foundArticle.cta.url || '');
                 }
             }
             setIsLoading(false);
@@ -216,6 +228,11 @@ export default function AdminArticleEditPage() {
                 imageUrl: finalImageUrl || '',
                 translations: article.translations || {},
                 tags: tags,
+                cta: ctaEnabled ? {
+                    enabled: true,
+                    text: ctaText,
+                    url: ctaUrl,
+                } : null,
             };
 
             await updateDoc(articleRef, updatedData);
@@ -610,6 +627,47 @@ export default function AdminArticleEditPage() {
                                     </div>
                                 </div>
                             </CardContent>
+                        </Card>
+
+                        {/* CTA Section */}
+                        <Card className="rounded-xl border-green-200">
+                            <CardHeader className="bg-green-50/50">
+                                <div className="flex items-center justify-between">
+                                    <div className="space-y-1">
+                                        <CardTitle className="text-base flex items-center gap-2">
+                                            🎯 Call to Action
+                                        </CardTitle>
+                                    </div>
+                                    <Switch
+                                        checked={ctaEnabled}
+                                        onCheckedChange={setCtaEnabled}
+                                    />
+                                </div>
+                            </CardHeader>
+                            {ctaEnabled && (
+                                <CardContent className="pt-4">
+                                    <div className="grid gap-4">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="cta-text">ข้อความปุ่ม</Label>
+                                            <Input
+                                                id="cta-text"
+                                                value={ctaText}
+                                                onChange={(e) => setCtaText(e.target.value)}
+                                                placeholder="เช่น ปรึกษาทนายความฟรี"
+                                            />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="cta-url">ลิงก์ปลายทาง (URL)</Label>
+                                            <Input
+                                                id="cta-url"
+                                                value={ctaUrl}
+                                                onChange={(e) => setCtaUrl(e.target.value)}
+                                                placeholder="/lawyers"
+                                            />
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            )}
                         </Card>
                     </div>
                 </div>

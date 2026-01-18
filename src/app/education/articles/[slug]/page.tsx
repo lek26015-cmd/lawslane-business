@@ -81,7 +81,7 @@ export default function EducationArticlePage() {
                                 <AvatarFallback>L</AvatarFallback>
                             </Avatar>
                             <div>
-                                <p className="font-semibold text-slate-900">{article.authorName || 'ทีมงาน Lawlanes'}</p>
+                                <p className="font-semibold text-slate-900">{article.authorName || 'ทีมงาน Lawslane'}</p>
                                 <p>เผยแพร่: {article.publishedAt ? format(new Date(article.publishedAt), 'd MMMM yyyy', { locale: th }) : 'N/A'}</p>
                             </div>
                         </div>
