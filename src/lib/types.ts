@@ -217,7 +217,7 @@ export type ImagePlaceholder = {
 
 export interface AdminNotification {
   id: string;
-  type: 'ticket' | 'lawyer_registration' | 'withdrawal';
+  type: 'ticket' | 'lawyer_registration' | 'withdrawal' | 'payment' | 'new_user' | 'new_lawyer';
   title: string;
   message: string;
   createdAt: any; // Firestore Timestamp

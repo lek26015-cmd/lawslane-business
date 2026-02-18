@@ -85,13 +85,23 @@ export default function AdminCouponsPage() {
         if (!firestore) return;
         setIsLoading(true);
         try {
-            const q = query(collection(firestore, 'coupons'), orderBy('createdAt', 'desc'));
+            const q = query(collection(firestore, 'coupons'));
             const snapshot = await getDocs(q);
             const data = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             })) as Coupon[];
-            setCoupons(data);
+
+            // Sort client-side to ensure documents without createdAt are still shown
+            const sortedData = data.sort((a, b) => {
+                const dateA = a.createdAt?.toDate?.() || new Date(0);
+                const dateB = b.createdAt?.toDate?.() || new Date(0);
+                if (dateA > dateB) return -1;
+                if (dateA < dateB) return 1;
+                return a.code.localeCompare(b.code);
+            });
+
+            setCoupons(sortedData);
         } catch (error) {
             console.error("Error fetching coupons:", error);
             toast({ variant: 'destructive', title: 'เกิดข้อผิดพลาด', description: 'ไม่สามารถโหลดข้อมูลคูปองได้' });

@@ -1,7 +1,7 @@
 'use server';
 
 import { initAdmin } from '@/lib/firebase-admin';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import { Resend } from 'resend';
 
@@ -228,7 +228,47 @@ export async function notifyAdmins(type: 'new_user' | 'new_ticket' | 'payment' |
             html: html,
         });
 
-        console.log(`[notifyAdmins] Sent ${type} notification to ${uniqueRecipients.length} admins.`);
+        // 5. Create In-System Notifications for Admin
+        // We link these to the 'admin' recipient which NotificationBell listens to
+        try {
+            let notificationTitle = subject.replace(/\[Lawslane Admin\] /g, '');
+            let notificationMessage = '';
+            let notificationLink = '/admin';
+
+            if (type === 'new_user') {
+                notificationMessage = `มีผู้ใช้งานใหม่: ${data.name} (${data.email})`;
+                notificationLink = '/admin/customers';
+            } else if (type === 'new_ticket') {
+                notificationMessage = `หัวข้อ: ${data.problemType} จาก ${data.clientName}`;
+                notificationLink = `/admin/tickets/${data.ticketId}`;
+            } else if (type === 'payment') {
+                notificationMessage = `มีการชำระเงินใหม่ ฿${data.amount?.toLocaleString()} ${data.lawyerName ? `สำหรับ ${data.lawyerName}` : ''}`;
+                notificationLink = '/admin/financials';
+            } else if (type === 'withdrawal') {
+                notificationMessage = `คำร้องขอถอนเงินใหม่ ฿${data.amount?.toLocaleString()} จาก ${data.lawyerName}`;
+                notificationLink = '/admin/financials';
+            } else if (type === 'new_lawyer') {
+                notificationMessage = `ทนายความใหม่สมัครสมาชิก: ${data.name}`;
+                notificationLink = `/admin/lawyers/${data.uid}`;
+            }
+
+            if (notificationMessage) {
+                await db.collection('notifications').add({
+                    type: type,
+                    title: notificationTitle,
+                    message: notificationMessage,
+                    link: notificationLink,
+                    recipient: 'admin',
+                    read: false,
+                    createdAt: FieldValue.serverTimestamp(),
+                    relatedId: data.ticketId || data.uid || null
+                });
+            }
+        } catch (notifError) {
+            console.error('Error creating in-system admin notification:', notifError);
+        }
+
+        console.log(`[notifyAdmins] Sent ${type} notification to ${uniqueRecipients.length} admins and created in-system notification.`);
 
     } catch (error) {
         console.error('Error sending admin notifications:', error);
