@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { initializeFirebase } from '@/firebase';
-import { collection, getDocs, orderBy, query, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query, Timestamp, limit } from 'firebase/firestore';
 import { ContractRequest } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -20,7 +20,7 @@ export default function AdminContractRequestsPage() {
         const fetchRequests = async () => {
             try {
                 const { firestore: db } = initializeFirebase();
-                const q = query(collection(db, 'contractRequests'), orderBy('createdAt', 'desc'));
+                const q = query(collection(db, 'contractRequests'), orderBy('createdAt', 'desc'), limit(50));
                 const querySnapshot = await getDocs(q);
 
                 const data = querySnapshot.docs.map(doc => ({
