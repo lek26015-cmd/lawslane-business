@@ -29,7 +29,9 @@ export default function AdminLayout({
             <body className="font-body antialiased">
                 <FirebaseClientProvider>
                     <ChatProvider>
-                        <AdminClientLayout>{children}</AdminClientLayout>
+                        <React.Suspense fallback={<div className="flex h-screen items-center justify-center text-slate-500">Loading Layout...</div>}>
+                            <AdminClientLayout>{children}</AdminClientLayout>
+                        </React.Suspense>
                         <Toaster />
                     </ChatProvider>
                 </FirebaseClientProvider>
