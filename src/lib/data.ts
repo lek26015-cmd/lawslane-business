@@ -11,7 +11,8 @@ import {
   Firestore,
   updateDoc,
   increment,
-  getCountFromServer
+  getCountFromServer,
+  writeBatch
 } from 'firebase/firestore';
 import type { LawyerProfile, ImagePlaceholder, Ad, Article, Case, UpcomingAppointment, ReportedTicket, LawyerAppointmentRequest, LawyerCase, UserProfile, LegalForm } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -860,4 +861,50 @@ export async function incrementFormDownloads(db: Firestore, id: string) {
   await updateDoc(formRef, {
     downloads: increment(1)
   });
+}
+
+export async function syncLawyersToRegistry(db: Firestore): Promise<{ success: number; total: number }> {
+  if (!db) return { success: 0, total: 0 };
+  try {
+    const lawyersRef = collection(db, 'lawyerProfiles');
+    const querySnapshot = await getDocs(lawyersRef);
+    const lawyers = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as LawyerProfile));
+
+    let successCount = 0;
+    const batchSize = 400; // Firestore limit is 500
+
+    for (let i = 0; i < lawyers.length; i += batchSize) {
+      const chunk = lawyers.slice(i, i + batchSize);
+      const batch = writeBatch(db);
+
+      chunk.forEach(lawyer => {
+        if (lawyer.licenseNumber) {
+          // Sanitize license number for use as document ID (replace / with -)
+          const docId = lawyer.licenseNumber.replace(/\//g, '-');
+          const verifiedRef = doc(db, 'verifiedLawyers', docId);
+
+          const firstName = lawyer.name.split(' ')[0] || '';
+          const lastName = lawyer.name.split(' ').slice(1).join(' ') || '';
+
+          batch.set(verifiedRef, {
+            licenseNumber: lawyer.licenseNumber,
+            firstName,
+            lastName,
+            province: lawyer.serviceProvinces?.[0] || lawyer.address || '',
+            status: lawyer.status === 'approved' ? 'active' : 'pending',
+            registeredDate: lawyer.joinedAt?.toDate ? lawyer.joinedAt.toDate().toISOString() : (lawyer.joinedAt || new Date().toISOString()),
+            updatedAt: new Date().toISOString()
+          }, { merge: true });
+          successCount++;
+        }
+      });
+
+      await batch.commit();
+    }
+
+    return { success: successCount, total: lawyers.length };
+  } catch (error) {
+    console.error("[syncLawyersToRegistry] Error syncing lawyers:", error);
+    throw error;
+  }
 }

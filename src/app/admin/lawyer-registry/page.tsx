@@ -12,10 +12,11 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Upload, CheckCircle, AlertCircle, FileText, Search, Trash2, Plus, FileType } from 'lucide-react';
+import { Loader2, Upload, CheckCircle, AlertCircle, FileText, Search, Trash2, Plus, FileType, RefreshCw } from 'lucide-react';
 import Papa from 'papaparse';
 import { VerifiedLawyer } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { syncLawyersToRegistry } from '@/lib/data';
 
 export default function LawyerRegistryPage() {
     const { firestore, user } = useFirebase();
@@ -29,6 +30,7 @@ export default function LawyerRegistryPage() {
     const [file, setFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadStats, setUploadStats] = useState<{ total: number; success: number; error: number } | null>(null);
+    const [isSyncing, setIsSyncing] = useState(false);
 
     // Manual Entry State
     const [isManualDialogOpen, setIsManualDialogOpen] = useState(false);
@@ -201,6 +203,28 @@ export default function LawyerRegistryPage() {
         });
     };
 
+    const handleSync = async () => {
+        if (!firestore) return;
+        setIsSyncing(true);
+        try {
+            const result = await syncLawyersToRegistry(firestore);
+            toast({
+                title: "ซิงค์ข้อมูลสำเร็จ",
+                description: `ดึงข้อมูลจากใบสมัครสำเร็จ ${result.success} จากทั้งหมด ${result.total} รายการ`,
+            });
+            fetchLawyers(); // Refresh list
+        } catch (error) {
+            console.error("Sync Error:", error);
+            toast({
+                title: "เกิดข้อผิดพลาด",
+                description: "ไม่สามารถซิงค์ข้อมูลได้",
+                variant: "destructive",
+            });
+        } finally {
+            setIsSyncing(false);
+        }
+    };
+
     const handleManualSubmit = async () => {
         if (!firestore || !newLawyer.licenseNumber || !newLawyer.firstName || !newLawyer.lastName) {
             toast({
@@ -300,137 +324,76 @@ export default function LawyerRegistryPage() {
                     <h1 className="text-3xl font-bold text-slate-900">ฐานข้อมูลตรวจสอบสถานะทนาย</h1>
                     <p className="text-slate-500">จัดการฐานข้อมูลรายชื่อทนายความสำหรับตรวจสอบสถานะ</p>
                 </div>
-                <Dialog open={isManualDialogOpen} onOpenChange={setIsManualDialogOpen}>
-                    <DialogTrigger asChild>
-                        <Button className="gap-2">
-                            <Plus className="w-4 h-4" />
-                            เพิ่มข้อมูลด้วยตนเอง
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>เพิ่มข้อมูลทนายความ</DialogTitle>
-                            <DialogDescription>
-                                กรอกข้อมูลทนายความเพื่อเพิ่มลงในฐานข้อมูล
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="license" className="text-right">เลขใบอนุญาต</Label>
-                                <Input
-                                    id="license"
-                                    value={newLawyer.licenseNumber || ''}
-                                    onChange={(e) => setNewLawyer({ ...newLawyer, licenseNumber: e.target.value })}
-                                    className="col-span-3"
-                                />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="firstname" className="text-right">ชื่อ</Label>
-                                <Input
-                                    id="firstname"
-                                    value={newLawyer.firstName || ''}
-                                    onChange={(e) => setNewLawyer({ ...newLawyer, firstName: e.target.value })}
-                                    className="col-span-3"
-                                />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="lastname" className="text-right">นามสกุล</Label>
-                                <Input
-                                    id="lastname"
-                                    value={newLawyer.lastName || ''}
-                                    onChange={(e) => setNewLawyer({ ...newLawyer, lastName: e.target.value })}
-                                    className="col-span-3"
-                                />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="province" className="text-right">จังหวัด</Label>
-                                <Input
-                                    id="province"
-                                    value={newLawyer.province || ''}
-                                    onChange={(e) => setNewLawyer({ ...newLawyer, province: e.target.value })}
-                                    className="col-span-3"
-                                />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="status" className="text-right">สถานะ</Label>
-                                <Select
-                                    value={newLawyer.status}
-                                    onValueChange={(val: any) => setNewLawyer({ ...newLawyer, status: val })}
-                                >
-                                    <SelectTrigger className="col-span-3">
-                                        <SelectValue placeholder="เลือกสถานะ" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="active">ปกติ (Active)</SelectItem>
-                                        <SelectItem value="pending">รอตรวจสอบ (Pending)</SelectItem>
-                                        <SelectItem value="suspended">ถูกระงับ (Suspended)</SelectItem>
-                                        <SelectItem value="struck_off">ลบชื่อออก (Struck Off)</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsManualDialogOpen(false)}>ยกเลิก</Button>
-                            <Button onClick={handleManualSubmit} disabled={isSubmitting}>
-                                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                บันทึก
+                <div className="flex gap-2">
+                    <Button
+                        variant="outline"
+                        onClick={handleSync}
+                        disabled={isSyncing}
+                        className="gap-2"
+                    >
+                        {isSyncing ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                            <RefreshCw className="w-4 h-4" />
+                        )}
+                        ซิงค์ข้อมูลจากใบสมัคร
+                    </Button>
+                    <Dialog open={isManualDialogOpen} onOpenChange={setIsManualDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button className="gap-2">
+                                <Plus className="w-4 h-4" />
+                                เพิ่มข้อมูลด้วยตนเอง
                             </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-
-                {/* Edit Dialog */}
-                <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>แก้ไขข้อมูลทนายความ</DialogTitle>
-                            <DialogDescription>
-                                แก้ไขข้อมูลทนายความในฐานข้อมูล
-                            </DialogDescription>
-                        </DialogHeader>
-                        {editingLawyer && (
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>เพิ่มข้อมูลทนายความ</DialogTitle>
+                                <DialogDescription>
+                                    กรอกข้อมูลทนายความเพื่อเพิ่มลงในฐานข้อมูล
+                                </DialogDescription>
+                            </DialogHeader>
                             <div className="grid gap-4 py-4">
                                 <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="edit-license" className="text-right">เลขใบอนุญาต</Label>
+                                    <Label htmlFor="license" className="text-right">เลขใบอนุญาต</Label>
                                     <Input
-                                        id="edit-license"
-                                        value={editingLawyer.licenseNumber}
-                                        onChange={(e) => setEditingLawyer({ ...editingLawyer, licenseNumber: e.target.value })}
+                                        id="license"
+                                        value={newLawyer.licenseNumber || ''}
+                                        onChange={(e) => setNewLawyer({ ...newLawyer, licenseNumber: e.target.value })}
                                         className="col-span-3"
                                     />
                                 </div>
                                 <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="edit-firstname" className="text-right">ชื่อ</Label>
+                                    <Label htmlFor="firstname" className="text-right">ชื่อ</Label>
                                     <Input
-                                        id="edit-firstname"
-                                        value={editingLawyer.firstName}
-                                        onChange={(e) => setEditingLawyer({ ...editingLawyer, firstName: e.target.value })}
+                                        id="firstname"
+                                        value={newLawyer.firstName || ''}
+                                        onChange={(e) => setNewLawyer({ ...newLawyer, firstName: e.target.value })}
                                         className="col-span-3"
                                     />
                                 </div>
                                 <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="edit-lastname" className="text-right">นามสกุล</Label>
+                                    <Label htmlFor="lastname" className="text-right">นามสกุล</Label>
                                     <Input
-                                        id="edit-lastname"
-                                        value={editingLawyer.lastName}
-                                        onChange={(e) => setEditingLawyer({ ...editingLawyer, lastName: e.target.value })}
+                                        id="lastname"
+                                        value={newLawyer.lastName || ''}
+                                        onChange={(e) => setNewLawyer({ ...newLawyer, lastName: e.target.value })}
                                         className="col-span-3"
                                     />
                                 </div>
                                 <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="edit-province" className="text-right">จังหวัด</Label>
+                                    <Label htmlFor="province" className="text-right">จังหวัด</Label>
                                     <Input
-                                        id="edit-province"
-                                        value={editingLawyer.province}
-                                        onChange={(e) => setEditingLawyer({ ...editingLawyer, province: e.target.value })}
+                                        id="province"
+                                        value={newLawyer.province || ''}
+                                        onChange={(e) => setNewLawyer({ ...newLawyer, province: e.target.value })}
                                         className="col-span-3"
                                     />
                                 </div>
                                 <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="edit-status" className="text-right">สถานะ</Label>
+                                    <Label htmlFor="status" className="text-right">สถานะ</Label>
                                     <Select
-                                        value={editingLawyer.status}
-                                        onValueChange={(val: any) => setEditingLawyer({ ...editingLawyer, status: val })}
+                                        value={newLawyer.status}
+                                        onValueChange={(val: any) => setNewLawyer({ ...newLawyer, status: val })}
                                     >
                                         <SelectTrigger className="col-span-3">
                                             <SelectValue placeholder="เลือกสถานะ" />
@@ -444,17 +407,93 @@ export default function LawyerRegistryPage() {
                                     </Select>
                                 </div>
                             </div>
-                        )}
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsEditOpen(false)}>ยกเลิก</Button>
-                            <Button onClick={handleUpdateLawyer} disabled={isUpdating}>
-                                {isUpdating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                บันทึกการแก้ไข
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setIsManualDialogOpen(false)}>ยกเลิก</Button>
+                                <Button onClick={handleManualSubmit} disabled={isSubmitting}>
+                                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                    บันทึก
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             </div>
+
+            {/* Edit Dialog */}
+            <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>แก้ไขข้อมูลทนายความ</DialogTitle>
+                        <DialogDescription>
+                            แก้ไขข้อมูลทนายความในฐานข้อมูล
+                        </DialogDescription>
+                    </DialogHeader>
+                    {editingLawyer && (
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="edit-license" className="text-right">เลขใบอนุญาต</Label>
+                                <Input
+                                    id="edit-license"
+                                    value={editingLawyer.licenseNumber}
+                                    onChange={(e) => setEditingLawyer({ ...editingLawyer, licenseNumber: e.target.value })}
+                                    className="col-span-3"
+                                />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="edit-firstname" className="text-right">ชื่อ</Label>
+                                <Input
+                                    id="edit-firstname"
+                                    value={editingLawyer.firstName}
+                                    onChange={(e) => setEditingLawyer({ ...editingLawyer, firstName: e.target.value })}
+                                    className="col-span-3"
+                                />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="edit-lastname" className="text-right">นามสกุล</Label>
+                                <Input
+                                    id="edit-lastname"
+                                    value={editingLawyer.lastName}
+                                    onChange={(e) => setEditingLawyer({ ...editingLawyer, lastName: e.target.value })}
+                                    className="col-span-3"
+                                />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="edit-province" className="text-right">จังหวัด</Label>
+                                <Input
+                                    id="edit-province"
+                                    value={editingLawyer.province}
+                                    onChange={(e) => setEditingLawyer({ ...editingLawyer, province: e.target.value })}
+                                    className="col-span-3"
+                                />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="edit-status" className="text-right">สถานะ</Label>
+                                <Select
+                                    value={editingLawyer.status}
+                                    onValueChange={(val: any) => setEditingLawyer({ ...editingLawyer, status: val })}
+                                >
+                                    <SelectTrigger className="col-span-3">
+                                        <SelectValue placeholder="เลือกสถานะ" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="active">ปกติ (Active)</SelectItem>
+                                        <SelectItem value="pending">รอตรวจสอบ (Pending)</SelectItem>
+                                        <SelectItem value="suspended">ถูกระงับ (Suspended)</SelectItem>
+                                        <SelectItem value="struck_off">ลบชื่อออก (Struck Off)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsEditOpen(false)}>ยกเลิก</Button>
+                        <Button onClick={handleUpdateLawyer} disabled={isUpdating}>
+                            {isUpdating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                            บันทึกการแก้ไข
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             <div className="grid gap-8 md:grid-cols-3">
                 {/* Upload Section */}
@@ -578,6 +617,6 @@ export default function LawyerRegistryPage() {
                     </CardContent>
                 </Card>
             </div>
-        </div>
+        </div >
     );
 }

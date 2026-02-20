@@ -121,6 +121,17 @@ export interface Article {
   tags?: string[];
 }
 
+export interface ArticleComment {
+  id: string;
+  articleId: string;
+  userId: string;
+  userName: string;
+  userAvatar?: string;
+  content: string;
+  createdAt: any;
+  updatedAt: any;
+}
+
 export interface Case {
   id: string;
   title: string;

@@ -15,6 +15,8 @@ import { Article } from '@/lib/types';
 import { format } from 'date-fns';
 import { th, enUS, zhCN } from 'date-fns/locale';
 import { useLocale, useTranslations } from 'next-intl';
+import { ShareButtons } from '@/components/share-buttons';
+import { ArticleComments } from '@/components/article-comments';
 
 export default function ArticlePage() {
   const params = useParams();
@@ -139,6 +141,17 @@ export default function ArticlePage() {
                   return <p key={index} className="mb-4">{paragraph}</p>
                 })}
               </div>
+
+              <div className="mt-12 pt-8 border-t border-slate-100 italic">
+                <ShareButtons
+                  title={title}
+                  description={description}
+                  className="justify-end"
+                />
+              </div>
+
+              {/* Comments Section */}
+              <ArticleComments articleId={article.id} />
 
               {/* CTA Button */}
               {article.cta?.enabled && article.cta.text && article.cta.url && (

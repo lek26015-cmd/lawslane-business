@@ -19,6 +19,7 @@ import { collection, query, where, getDocs, orderBy, doc, getDoc } from 'firebas
 import profileLawyerImg from '@/pic/profile-lawyer.jpg';
 import { useTranslations, useLocale } from 'next-intl';
 import { getSpecialtyKey } from '@/lib/specialties';
+import { ShareButtons } from '@/components/share-buttons';
 
 export default function LawyerProfilePage() {
     const params = useParams();
@@ -256,6 +257,21 @@ export default function LawyerProfilePage() {
                                                 <p className="text-2xl font-bold">{stats.completedCases}</p>
                                                 <p className="text-sm text-muted-foreground">{t('completedCases')}</p>
                                             </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                                <Card className="mt-6 rounded-3xl shadow-sm border-none">
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-foreground">แนะนำทนายท่านนี้</h3>
+                                                <p className="text-sm text-muted-foreground">ร่วมแชร์ประสบการณ์ดีๆ หรือแนะนำทนายความท่านนี้ให้กับเพื่อนของคุณ</p>
+                                            </div>
+                                            <ShareButtons
+                                                title={`ทนายความ ${lawyer.name}`}
+                                                description={description}
+                                            />
                                         </div>
                                     </CardContent>
                                 </Card>

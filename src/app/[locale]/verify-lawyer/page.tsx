@@ -78,27 +78,54 @@ function VerifyLawyerContent() {
         setIsResultOpen(false);
 
         try {
+            // Check both collections: lawyerProfiles (registered users) and verifiedLawyers (uploaded registry)
             const lawyersRef = collection(firestore, 'lawyerProfiles');
-            let q;
+            const verifiedRef = collection(firestore, 'verifiedLawyers');
+
+            let q1, q2;
 
             if (licenseNumber) {
-                q = query(lawyersRef, where('licenseNumber', '==', licenseNumber), where('status', '==', 'approved'));
+                const sanitizedLicense = licenseNumber.replace(/\//g, '-');
+                q1 = query(lawyersRef, where('licenseNumber', '==', licenseNumber), where('status', '==', 'approved'));
+                q2 = query(verifiedRef, where('licenseNumber', '==', licenseNumber), where('status', '==', 'active'));
             } else if (lawyerName) {
-                q = query(lawyersRef, where('name', '==', lawyerName), where('status', '==', 'approved'));
-            }
+                q1 = query(lawyersRef, where('name', '==', lawyerName), where('status', '==', 'approved'));
 
-            if (q) {
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                    const lawyerDoc = querySnapshot.docs[0];
-                    setVerifiedLawyer({ id: lawyerDoc.id, ...lawyerDoc.data() } as LawyerProfile);
-                    setVerificationResult('found');
+                const names = lawyerName.split(' ');
+                if (names.length >= 2) {
+                    q2 = query(verifiedRef, where('firstName', '==', names[0]), where('lastName', '==', names.slice(1).join(' ')), where('status', '==', 'active'));
                 } else {
-                    setVerificationResult('not_found');
+                    q2 = query(verifiedRef, where('firstName', '==', lawyerName), where('status', '==', 'active'));
                 }
-                setIsResultOpen(true);
             }
+
+            const [snap1, snap2] = await Promise.all([
+                q1 ? getDocs(q1) : Promise.resolve({ empty: true, docs: [] }),
+                q2 ? getDocs(q2) : Promise.resolve({ empty: true, docs: [] })
+            ]);
+
+            if (!snap1.empty) {
+                const lawyerDoc = snap1.docs[0];
+                setVerifiedLawyer({ id: lawyerDoc.id, ...lawyerDoc.data() } as LawyerProfile);
+                setVerificationResult('found');
+            } else if (!snap2.empty) {
+                const verifiedDoc = snap2.docs[0];
+                const data = verifiedDoc.data();
+                // Map verifiedLawyer to LawyerProfile shape for the UI
+                setVerifiedLawyer({
+                    id: verifiedDoc.id,
+                    name: `${data.firstName} ${data.lastName}`,
+                    licenseNumber: data.licenseNumber,
+                    specialty: ['ทนายความผู้เชี่ยวชาญ'], // Default for registry
+                    status: 'approved',
+                    imageUrl: '', // Registry doesn't have images
+                    joinedAt: data.registeredDate,
+                } as any);
+                setVerificationResult('found');
+            } else {
+                setVerificationResult('not_found');
+            }
+            setIsResultOpen(true);
         } catch (error) {
             console.error("Verification error:", error);
             setVerificationResult('error');
