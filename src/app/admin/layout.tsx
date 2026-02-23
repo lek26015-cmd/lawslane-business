@@ -5,6 +5,8 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { ChatProvider } from '@/context/chat-context';
 import { Toaster } from '@/components/ui/toaster';
 import { AdminClientLayout } from './admin-client-layout';
+import { NextIntlClientProvider } from 'next-intl';
+import messages from '../../../messages/th.json';
 
 export const metadata: Metadata = {
     title: 'Lawslane Admin',
@@ -29,10 +31,12 @@ export default function AdminLayout({
             <body className="font-body antialiased">
                 <FirebaseClientProvider>
                     <ChatProvider>
-                        <React.Suspense fallback={<div className="flex h-screen items-center justify-center text-slate-500">Loading Layout...</div>}>
-                            <AdminClientLayout>{children}</AdminClientLayout>
-                        </React.Suspense>
-                        <Toaster />
+                        <NextIntlClientProvider locale="th" messages={messages}>
+                            <React.Suspense fallback={<div className="flex h-screen items-center justify-center text-slate-500">Loading Layout...</div>}>
+                                <AdminClientLayout>{children}</AdminClientLayout>
+                            </React.Suspense>
+                            <Toaster />
+                        </NextIntlClientProvider>
                     </ChatProvider>
                 </FirebaseClientProvider>
             </body>

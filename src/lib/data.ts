@@ -597,11 +597,25 @@ export async function getAllTickets(db: Firestore): Promise<any[]> {
 
   const tickets = querySnapshot.docs.map((d) => {
     const data = d.data();
+    const reportedAt = data.reportedAt;
+    let reportedAtStr = 'N/A';
+    try {
+      if (reportedAt?.toDate) {
+        reportedAtStr = reportedAt.toDate().toLocaleDateString('th-TH');
+      } else if (reportedAt instanceof Date) {
+        reportedAtStr = reportedAt.toLocaleDateString('th-TH');
+      } else if (typeof reportedAt === 'string') {
+        reportedAtStr = reportedAt;
+      }
+    } catch (e) {
+      console.warn("Error formatting reportedAt for ticket:", d.id, e);
+    }
+
     return {
       id: d.id,
       ...data,
       clientName: userProfiles[data.userId]?.name || 'Unknown User',
-      reportedAt: data.reportedAt?.toDate().toLocaleDateString('th-TH') || 'N/A',
+      reportedAt: reportedAtStr,
     };
   });
   return tickets;

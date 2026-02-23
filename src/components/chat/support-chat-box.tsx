@@ -132,13 +132,28 @@ export function SupportChatBox({ ticket, isDisabled = false, isAdmin = false }: 
       </CardHeader>
 
       <CardContent className="flex-grow p-0 flex flex-col min-h-0">
-        <ScrollArea className="flex-grow p-6" ref={scrollAreaRef}>
+        <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
           <div className="space-y-6">
+            {/* Initial Description */}
+            {ticket.description && (
+              <div className="flex justify-start mb-6">
+                <div className="max-w-[85%] bg-slate-100 rounded-2xl rounded-tl-none p-4 shadow-sm border border-slate-200">
+                  <p className="text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">รายละเอียดปัญหาเริ่มต้น</p>
+                  <p className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed">
+                    {ticket.description}
+                  </p>
+                  <p className="text-[10px] text-slate-400 mt-2 text-right">
+                    {formatTime(ticket.reportedAt)}
+                  </p>
+                </div>
+              </div>
+            )}
+
             {isLoading ? (
               <div className="flex justify-center items-center h-full">
                 <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
               </div>
-            ) : messages.length === 0 ? (
+            ) : messages.length === 0 && !ticket.description ? (
               <div className="text-center text-muted-foreground py-10">
                 {t('noMessages')}
               </div>

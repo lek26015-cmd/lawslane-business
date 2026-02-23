@@ -69,12 +69,28 @@ function AdminTicketDetailPageContent() {
             if (docSnap.exists()) {
                 const data = docSnap.data();
 
+                let reportedAtDate = new Date();
+                try {
+                    if (data.reportedAt?.toDate) {
+                        reportedAtDate = data.reportedAt.toDate();
+                    } else if (data.reportedAt instanceof Date) {
+                        reportedAtDate = data.reportedAt;
+                    } else if (typeof data.reportedAt === 'string') {
+                        const parsedDate = new Date(data.reportedAt);
+                        if (!isNaN(parsedDate.getTime())) {
+                            reportedAtDate = parsedDate;
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Date parsing error for ticket:", ticketId, e);
+                }
+
                 setTicket({
                     id: docSnap.id,
                     ...data,
-                    reportedAt: data.reportedAt ? data.reportedAt.toDate() : new Date(),
+                    reportedAt: reportedAtDate,
                     // Ensure required fields for UI
-                    clientName: data.clientName || 'Unknown',
+                    clientName: data.clientName || 'Unknown User',
                     problemType: data.problemType || 'General',
                     caseId: data.caseId || 'N/A'
                 });
@@ -198,9 +214,17 @@ function AdminTicketDetailPageContent() {
                             <span className="font-semibold">{ticket.problemType}</span>
                         </div>
                         <div className="flex justify-between">
-                            <span className="text-muted-foreground">วันที่แจ้ง:</span>
-                            <span>{ticket.reportedAt.toLocaleDateString('th-TH')}</span>
+                            <span className="text-muted-foreground">เคสไอดี:</span>
+                            <span>{ticket.caseId}</span>
                         </div>
+                        {ticket.description && (
+                            <div className="pt-2">
+                                <span className="text-muted-foreground block mb-2 font-medium">รายละเอียดปัญหา:</span>
+                                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 italic text-slate-700 whitespace-pre-wrap">
+                                    "{ticket.description}"
+                                </div>
+                            </div>
+                        )}
                         <Separator />
                         <div className="flex justify-between items-center">
                             <span className="text-muted-foreground flex items-center gap-2"><User /> ผู้แจ้งปัญหา</span>

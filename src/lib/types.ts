@@ -170,6 +170,7 @@ export interface ReportedTicket {
   status: 'pending' | 'resolved';
   reportedAt: Date;
   clientName?: string;
+  description?: string;
 }
 
 // Types for Lawyer Dashboard
