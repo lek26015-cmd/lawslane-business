@@ -1,4 +1,5 @@
 'use client';
+export const runtime = 'edge';
 
 import React, { useEffect, useState } from 'react';
 import { B2BProfileProvider, useB2BProfile } from '@/context/b2b-profile-context';

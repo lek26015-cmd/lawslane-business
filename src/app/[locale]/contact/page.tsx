@@ -1,4 +1,5 @@
 'use client';
+export const runtime = 'edge';
 
 import React from 'react';
 import { BusinessHeader } from '@/components/layout/business-header';

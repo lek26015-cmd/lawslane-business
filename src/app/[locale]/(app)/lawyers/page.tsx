@@ -1,4 +1,5 @@
 'use client';
+export const runtime = 'edge';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';

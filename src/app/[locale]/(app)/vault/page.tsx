@@ -1,4 +1,5 @@
 'use client';
+export const runtime = 'edge';
 // Force reload after icon cleanup
 
 import React, { useState } from 'react';

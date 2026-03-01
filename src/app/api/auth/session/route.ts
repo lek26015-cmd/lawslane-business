@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { cookies, headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
