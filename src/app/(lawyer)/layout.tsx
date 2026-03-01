@@ -29,7 +29,7 @@ export default async function LawyerLayout({
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet" />
             </head>
-            <body className="font-body antialiased">
+            <body className="font-body antialiased" suppressHydrationWarning>
                 <NextIntlClientProvider messages={messages} locale={locale}>
                     <ClientProviders>
                         {children}

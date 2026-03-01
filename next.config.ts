@@ -58,6 +58,30 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '50mb',
     },
   },
+  async redirects() {
+    return [
+      {
+        source: '/dashboard',
+        destination: '/overview',
+        permanent: true,
+      },
+      {
+        source: '/:locale/dashboard',
+        destination: '/:locale/overview',
+        permanent: true,
+      },
+      {
+        source: '/contracts',
+        destination: '/clm',
+        permanent: true,
+      },
+      {
+        source: '/:locale/contracts',
+        destination: '/:locale/clm',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       // Cache static assets for 1 year (immutable)

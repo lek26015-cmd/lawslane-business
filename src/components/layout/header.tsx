@@ -181,7 +181,7 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
           href={getMainLink('/', domainType, !isMounted)}
           variant={useTransparentHeader ? "white" : "color"}
           className={cn(useTransparentHeader ? 'text-white' : 'text-[#0B3979]')}
-          subtitle={domainType === 'business' ? "Business ELM" : undefined}
+          subtitle={domainType === 'business' ? "legal os" : undefined}
         />
 
 
@@ -197,7 +197,7 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
                   <DropdownMenuLabel className="text-blue-700 font-bold bg-blue-50/50 rounded-md">Corporate Plans</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild className="cursor-pointer">
-                    <a href={getBusinessLink('/dashboard', domainType)} className="font-bold text-blue-700 w-full flex items-center px-2 py-1.5">{t('b2bMenu.dashboard')}</a>
+                    <a href={getBusinessLink('/overview', domainType)} className="font-bold text-blue-700 w-full flex items-center px-2 py-1.5">{t('b2bMenu.dashboard')}</a>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild className="cursor-pointer">
@@ -291,7 +291,7 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
 
                   {(!isAdmin && !isLawyer || isSuperUser) && (
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard">
+                      <Link href="/overview">
                         <LayoutDashboard className="mr-2" />
                         {t('dashboard')} {isSuperUser ? '(ผู้ใช้)' : ''}
                       </Link>
@@ -365,7 +365,7 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
             </Link>
           ) : (
             <Link href="/login">
-              <Button variant="ghost" size="icon" className={cn(useTransparentHeader ? 'text-foreground' : 'text-background')}>
+              <Button variant="ghost" size="icon" className={cn(useTransparentHeader ? 'text-white' : 'text-foreground')}>
                 <User className="w-5 h-5" />
                 <span className="sr-only">{t('login')}</span>
               </Button>
@@ -373,7 +373,7 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
           )}
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className={cn(useTransparentHeader ? 'text-foreground' : 'text-background')}>
+              <Button variant="ghost" size="icon" className={cn(useTransparentHeader ? 'text-white' : 'text-foreground')}>
                 <Menu />
                 <span className="sr-only">เปิดเมนู</span>
               </Button>
@@ -384,7 +384,7 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
                   <Logo
                     href={getMainLink('/', domainType, !isMounted)}
                     variant="color"
-                    subtitle={domainType === 'business' ? "Business ELM" : undefined}
+                    subtitle={domainType === 'business' ? "legal os" : undefined}
                   />
                 </SheetTitle>
               </SheetHeader>
@@ -439,7 +439,7 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
                           </NextLink>
                         )}
                         {!isAdmin && !isLawyer && (
-                          <Link href="/dashboard" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                          <Link href="/overview" className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
                             <LayoutDashboard className="w-4 h-4" /> {t('dashboard')}
                           </Link>
                         )}

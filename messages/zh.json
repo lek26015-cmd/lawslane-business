@@ -836,14 +836,698 @@
         }
     },
     "B2BDashboard": {
+        "dashboardV2": {
+            "greeting": "您好，{name} 👋",
+            "welcomeMsg": "欢迎使用您的法律操作系統。在一个地方管理所有事务。",
+            "subtitle": "法律操作系统 — 您的组织今日概览",
+            "defaultUser": "用户",
+            "notifications": "通知",
+            "stats": {
+                "activeContracts": "有效合同",
+                "thisMonth": "本月",
+                "vaultDocs": "文档库文件",
+                "pendingReview": "待审核",
+                "spendYearly": "年度支出",
+                "fromLastYear": "同比去年",
+                "deadlines": "即将到期",
+                "thisWeek": "本周"
+            },
+            "workflows": {
+                "title": "活跃工作流",
+                "viewAll": "查看所有工作流 →",
+                "items": {
+                    "crm": "从 CRM 生成合同",
+                    "crmStatus": "正在起草...",
+                    "expiry": "到期提醒",
+                    "expiryStatus": "已发送 3 封邮件",
+                    "vendor": "新供应商尽职调查",
+                    "vendorStatus": "等待 AI 分析"
+                }
+            },
+            "insights": {
+                "title": "AI 洞察",
+                "i1": "3 份合同将在 30 天内到期",
+                "i1Action": "续签 →",
+                "i2": "法律支出比去年下降 8%",
+                "i2Action": "查看报告 →",
+                "i3": "2 个供应商未通过尽职调查",
+                "i3Action": "审查 →",
+                "i4": "建议：3月1日前与 ABC Corp 续签保密协议 (NDA)",
+                "i4Action": "处理 →"
+            },
+            "activity": {
+                "title": "近期动态",
+                "items": {
+                    "a1": "与 ABC 签署在保密协议",
+                    "a1Time": "2 小时前",
+                    "a2": "服务协议已上传至文档库",
+                    "a2Time": "4 小时前",
+                    "a3": "雇佣合同待审核",
+                    "a3Time": "1 天前",
+                    "a4": "发票 #INV-2025001 已通过 ERP 发送",
+                    "a4Time": "2 天前",
+                    "a5": "供应商 XYZ 通过尽职调查",
+                    "a5Time": "3 天前"
+                }
+            },
+            "contractStatus": {
+                "title": "合同状态",
+                "active": "生效中",
+                "review": "待审核",
+                "expiring": "即将到期",
+                "draft": "草稿"
+            },
+            "security": {
+                "title": "系统安全",
+                "passed": "通过"
+            }
+        },
+        "vaultV2": {
+            "title": "文档库",
+            "subtitle": "使用 256 位加密安全地存储和管理法律文件",
+            "uploadBtn": "上传文件",
+            "stats": {
+                "totalDocs": "总文件数",
+                "storage": "存储使用量 ({limit} GB 套餐)",
+                "used": "已用 {percent}%",
+                "left": "剩余 {gb} GB",
+                "shared": "与团队共享"
+            },
+            "search": "按文件名称、日期或标签搜索...",
+            "filter": "筛选",
+            "allDocs": "所有文件",
+            "filesCount": "{count} 个文件",
+            "sharedBadge": "已分享",
+            "toastCopyTitle": "链接已复制",
+            "toastCopyDesc": "您现在可以与外部人员共享此链接。",
+            "shareModal": {
+                "title": "分享文件",
+                "desc": "授予内部权限或创建外部共享链接用于:",
+                "tabTeam": "团队成员",
+                "tabExternal": "外部链接",
+                "searchTeam": "添加电子邮件或搜索团队...",
+                "revokeTitle": "访问权限已撤销",
+                "revokeDesc": "{name} 将不再能访问此文件。",
+                "revokeBtn": "撤销",
+                "grantTitle": "访问权限已授予",
+                "grantDesc": "{name} 现在可以访问此文件了。",
+                "grantBtn": "授予访问权限",
+                "fullAccess": "完全访问权",
+                "noAccess": "无访问权",
+                "enableExternal": "启用外部链接",
+                "externalHint": "任何获得链接的人都可以查看此文件。",
+                "sharingLink": "分享链接",
+                "active": "有效",
+                "securitySettings": "安全设置",
+                "passwordProtection": "密码保护",
+                "setPassword": "设置分享密码",
+                "enterPassword": "输入安全密码...",
+                "generate": "生成",
+                "passwordHint": "* 此密钥将用于在访问文件前进行身份验证。",
+                "doneBtn": "完成分享"
+            }
+        },
+        "teamV2": {
+            "title": "团队视图",
+            "enterprise": "企业版",
+            "subtitle": "管理您的法律团队，分配角色并监控工作区安全。",
+            "addMemberBtn": "添加团队成员",
+            "stats": {
+                "totalMembers": "成员总数",
+                "activeNow": "当前活跃",
+                "pendingInvites": "待处理邀请",
+                "twoFaCoverage": "2FA 覆盖率"
+            },
+            "tabs": {
+                "memberDir": "成员名录",
+                "roleMatrix": "角色矩阵"
+            },
+            "search": "按姓名或电子邮件搜索...",
+            "filter": "筛选",
+            "status": {
+                "invited": "已邀请",
+                "lastActivity": "最后活动"
+            },
+            "noMembers": "未找到与 \"{query}\" 匹配的成员",
+            "encryptionSecure": "您的团队访问权限受到企业级加密保护。",
+            "roleTags": {
+                "billing": "账单",
+                "teamMgmt": "团队管理",
+                "editing": "编辑",
+                "reporting": "报告"
+            },
+            "roles": {
+                "owner": "所有者",
+                "ownerDesc": "完全访问所有功能、账单和团队管理。",
+                "admin": "管理员",
+                "adminDesc": "可以管理团队成员和所有工作区设置。",
+                "editor": "编辑",
+                "editorDesc": "可以创建和编辑文档及工作流。",
+                "viewer": "查看者",
+                "viewerDesc": "文档和报告的只读访问权限。"
+            },
+            "activity": {
+                "title": "团队动态",
+                "viewFullLog": "查看完整审计日志"
+            },
+            "proTip": {
+                "title": "安全建议",
+                "desc": "确保所有管理员都启用了 <b>硬件密钥 (YubiKey)</b> 认证，以最大限度地保护您的企业金库。",
+                "configureMfa": "配置多因素身份验证 (MFA)"
+            }
+        },
+        "calendarV2": {
+            "pageTitle": "法律日历 (Compliance)",
+            "pageSubtitle": "跟踪重要的法律日期和日程，以减轻组织风险",
+            "settings": "通知设置",
+            "addEvent": "添加新日程",
+            "summary": {
+                "title": "法律健康摘要",
+                "critical": "关键任务",
+                "count": "{count} 项",
+                "overdueDesc": "您有 {count} 项逾期任务。请检查这些任务以避免法律处罚。",
+                "noOverdueDesc": "您的组织目前没有逾期任务。请继续保持！"
+            },
+            "upcoming": "即将到来的日程",
+            "filterAll": "全部",
+            "filterCritical": "仅限关键",
+            "empty": {
+                "title": "尚无日程",
+                "desc": "您可以开始添加重要日期以立即接收通知",
+                "button": "添加第一个日程"
+            },
+            "overdueBadge": "逾期！",
+            "priority": "优先级: {priority}",
+            "overdue": "已逾期",
+            "daysLeft": "剩余 {days} 天",
+            "fromToday": "从今天起",
+            "tip": {
+                "title": "法律小贴士：股东周年大会 (AGM)",
+                "desc": "有限公司必须在会计期间结束后的 4 个月内召开股东周年大会 (AGM)，并在会议后的 14 天内提交股东名册 (Bor.Jor.5)。延迟提交可能会导致对实体和董事的罚款。",
+                "more": "更多详情"
+            },
+            "error": {
+                "loadTitle": "加载数据失败",
+                "retry": "重试",
+                "indexPending": "系统正在准备数据库（缺失索引）。请稍等片刻（约 1-3 分钟），或者点击控制台中的链接创建索引（如果您尚未创建）。"
+            },
+            "btnPreset": "重要法律日期",
+            "btnAdd": "添加事件",
+            "btnToday": "今天",
+            "months": {
+                "0": "一月",
+                "1": "二月",
+                "2": "三月",
+                "3": "四月",
+                "4": "五月",
+                "5": "六月",
+                "6": "七月",
+                "7": "八月",
+                "8": "九月",
+                "9": "十月",
+                "10": "十一月",
+                "11": "十二月"
+            },
+            "daysShort": [
+                "日",
+                "一",
+                "二",
+                "三",
+                "四",
+                "五",
+                "六"
+            ],
+            "eventTypes": {
+                "deadline": "截止日",
+                "meeting": "会议",
+                "renewal": "续约",
+                "review": "审查",
+                "legal": "法律",
+                "tax": "税务",
+                "filing": "归档",
+                "other": "其他"
+            },
+            "eventsMonth": "本月所有事件",
+            "noEventsToday": "今天没有事件",
+            "noEventsMonth": "本月没有事件",
+            "dialogAdd": {
+                "title": "添加新事件",
+                "desc": "填写要添加到日历的事件详情",
+                "nameLabel": "事件名称",
+                "namePlaceholder": "例如，合同审查会议",
+                "dateLabel": "日期",
+                "typeLabel": "类型",
+                "descLabel": "描述",
+                "descPlaceholder": "附加说明...",
+                "cancelBtn": "取消",
+                "submitBtn": "添加事件"
+            },
+            "dialogPreset": {
+                "title": "重要法律与税务日期",
+                "desc": "自动将重要的法律日期添加到您的日历，或逐个添加",
+                "addAllBtn": "全部添加",
+                "addedBadge": "已添加",
+                "addBtn": "添加",
+                "items": "项"
+            },
+            "toast": {
+                "errorIncomplete": "请提供名称和日期",
+                "successAdd": "✅ 成功添加事件",
+                "successAddPreset": "✅ 成功添加重要日期",
+                "successAddAllPresets": "✅ 成功添加所有重要日期"
+            },
+            "presets": {
+                "tax1": {
+                    "title": "📋 提交 P.N.D. 1（员工预扣税）",
+                    "desc": "提交截止日期为每月 7 日"
+                },
+                "tax3": {
+                    "title": "📋 提交 P.N.D. 3（个人预扣税）",
+                    "desc": "提交截止日期为每月 7 日"
+                },
+                "tax53": {
+                    "title": "📋 提交 P.N.D. 53（企业预扣税）",
+                    "desc": "提交截止日期为每月 7 日"
+                },
+                "taxVat": {
+                    "title": "📋 提交 P.P. 30（增值税）",
+                    "desc": "提交截止日期为每月 15 日"
+                },
+                "taxSso": {
+                    "title": "📋 社保缴费",
+                    "desc": "社保金于每月 15 日前缴纳"
+                },
+                "tax50": {
+                    "title": "📆 提交 P.N.D. 50（年度企业所得税）",
+                    "desc": "必须在会计期结束后 150 天内提交（例如 5 月 31 日）"
+                },
+                "tax51": {
+                    "title": "📆 提交 P.N.D. 51（半年度企业所得税）",
+                    "desc": "必须在半年度会计期结束后 2 个月内提交（例如 8 月 31 日）"
+                },
+                "tax90": {
+                    "title": "📆 提交 P.N.D. 90/91（年度个人所得税）",
+                    "desc": "年度个人所得税提交截止日期"
+                },
+                "filingFin": {
+                    "title": "🏢 年度财务报表（DBD）",
+                    "desc": "必须在会计周期结束后 5 个月内提交给 DBD"
+                },
+                "filingAgm": {
+                    "title": "🏢 年度股东大会 (AGM)",
+                    "desc": "必须在会计周期结束后 4 个月内举行 AGM"
+                },
+                "filingBoj5": {
+                    "title": "🏢 BOJ. 5 申报（股东名单）",
+                    "desc": "在 AGM 后 14 天内提交"
+                },
+                "legalLabor": {
+                    "title": "⚖️ 就业条件报告 (Kor. Ror. 11)",
+                    "desc": "1月到期的年度就业条件报告"
+                },
+                "legalPdpa": {
+                    "title": "⚖️ PDPA 日（隐私政策审查）",
+                    "desc": "对个人数据保护政策进行年度审查"
+                },
+                "holidayNewYear": {
+                    "title": "🇹🇭 元旦",
+                    "desc": "公共假日"
+                },
+                "holidayLabor": {
+                    "title": "🇹🇭 国家劳动节",
+                    "desc": "公共假日 — 与劳动法相关"
+                },
+                "holidayConstitution": {
+                    "title": "🇹🇭 宪法日",
+                    "desc": "公共假日"
+                }
+            }
+        },
+        "integrations": {
+            "pageSubtitle": "将 Lawslane 与您的公司软件连接 — CRM、ERP、HRIS、电子签名",
+            "btnNew": "新建连接",
+            "banner": {
+                "title": "需要即用型工作流？",
+                "subtitle": "在此处探讨销售、财务和人力资源的连接模板",
+                "btnNext": "探索模板"
+            },
+            "diagram": {
+                "title": "数据传输架构",
+                "clientBackend": "客户后端",
+                "clientBackendDetail": "(CRM / ERP / HR)",
+                "externalSystem": "外部系统",
+                "externalSystemDetail": "(e-Sign / DPD / DBD)",
+                "lawslaneApp": "Lawslane",
+                "lawslaneAppDetail": "Legal OS API"
+            },
+            "catalogTitle": "应用程序目录",
+            "lastSyncPrefix": "上次同步:",
+            "btnDisconnect": "断开连接",
+            "slackDialog": {
+                "title": "设置 Slack Webhook",
+                "desc": "输入来自 Slack 的 Incoming Webhook URL 以接收合同状态通知",
+                "hint": "在您的 Slack 频道的应用程序目录中创建 Webhook",
+                "saving": "保存中...",
+                "connect": "连接",
+                "cancel": "取消"
+            },
+            "messages": {
+                "error": "错误",
+                "webhookRequired": "保存前请输入 Webhook URL",
+                "saveError": "无法保存设置",
+                "disconnectError": "无法断开连接",
+                "success": "成功",
+                "slackConnected": "已成功连接 Slack",
+                "slackDisconnected": "已成功断开 Slack 连接"
+            },
+            "status": {
+                "connected": "已连接",
+                "disconnected": "未连接",
+                "pending": "设置中"
+            },
+            "category": {
+                "sales": "销售",
+                "finance": "财务",
+                "hr": "人力资源",
+                "notification": "通知",
+                "esign": "电子签名"
+            },
+            "apps": {
+                "salesforce": {
+                    "name": "Salesforce CRM",
+                    "desc": "同步客户和交易 → 自动生成合同"
+                },
+                "sap": {
+                    "name": "SAP Business One",
+                    "desc": "连接会计系统 → 合同签署后开具发票"
+                },
+                "bamboohr": {
+                    "name": "BambooHR",
+                    "desc": "管理员工文档 → 自动生成雇佣合同"
+                },
+                "slack": {
+                    "name": "Slack",
+                    "desc": "提醒团队 → 当合同状态改变时"
+                },
+                "docusign": {
+                    "name": "DocuSign",
+                    "desc": "自动发送文档进行电子签名"
+                }
+            },
+            "newConnection": {
+                "backToIntegrations": "返回集成页面",
+                "marketplace": "应用程序市场",
+                "marketplaceSubtitle": "发现并连接您已使用的应用程序，以自动化 Lawslane",
+                "searchPlaceholder": "搜索应用程序...",
+                "alreadyConnected": "已连接",
+                "slackAlreadyConnected": "您的 Slack 帐户已成功连接",
+                "comingSoonTitle": "敬请期待",
+                "comingSoonDesc": "此连接将在下一次更新中提供",
+                "manageConnection": "管理连接",
+                "connectApp": "连接应用",
+                "comingSoonBadge": "即将推出",
+                "empty": {
+                    "title": "未找到应用程序",
+                    "desc": "找不到您要搜索的应用程序。请尝试使用其他搜索词。",
+                    "clearSearch": "清除搜索"
+                },
+                "category": {
+                    "all": "全部",
+                    "salesCRM": "销售 (CRM)",
+                    "financeERP": "财务 (ERP)",
+                    "hrHRIS": "人力资源 (HRIS)",
+                    "notify": "通知",
+                    "esign": "电子签名"
+                },
+                "apps": {
+                    "salesforce": {
+                        "name": "Salesforce CRM",
+                        "desc": "同步客户数据和销售交易以自动起草合同"
+                    },
+                    "hubspot": {
+                        "name": "HubSpot",
+                        "desc": "连接联系人和公司以提取合同数据"
+                    },
+                    "sap": {
+                        "name": "SAP Business One",
+                        "desc": "发送已签合同数据以创建发票负债"
+                    },
+                    "bamboohr": {
+                        "name": "BambooHR",
+                        "desc": "提取新员工数据以自动创建雇佣合同"
+                    },
+                    "slack": {
+                        "name": "Slack",
+                        "desc": "当合同状态发生变化时向团队聊天发送提醒"
+                    },
+                    "line": {
+                        "name": "LINE Notify",
+                        "desc": "通过 LINE 应用接收合同状态更新"
+                    },
+                    "docusign": {
+                        "name": "DocuSign",
+                        "desc": "连接全球标准的电子签名系统"
+                    }
+                }
+            }
+        },
+        "legalSpend": {
+            "pageSubtitle": "实时跟踪法律预算和费用",
+            "proBadge": "专业版",
+            "btnFilter": "筛选",
+            "btnExport": "导出",
+            "cards": {
+                "totalSpend": "总支出（今年）",
+                "remainingBudget": "剩余预算",
+                "avgSpend": "平均每月支出"
+            },
+            "category": {
+                "title": "按类别支出",
+                "lawyerFee": "律师费",
+                "filingFee": "归档和执照",
+                "courtFee": "法庭费",
+                "consultingFee": "顾问费",
+                "otherFee": "其他"
+            },
+            "trend": {
+                "title": "月度趋势（预算 vs. 实际）",
+                "months": {
+                    "Sep": "9月",
+                    "Oct": "10月",
+                    "Nov": "11月",
+                    "Dec": "12月",
+                    "Jan": "1月",
+                    "Feb": "2月"
+                },
+                "status": {
+                    "overBudget": "超支",
+                    "underBudget": "结余"
+                }
+            }
+        },
+        "dueDiligence": {
+            "pageSubtitle": "验证供应商，评估风险，管理商业伙伴合规性",
+            "btnNew": "新供应商检查",
+            "newItemBadge": "新",
+            "stats": {
+                "total": "所有供应商",
+                "approved": "已批准",
+                "reviewing": "审核中",
+                "actionRequired": "需采取行动"
+            },
+            "risk": {
+                "low": "低风险",
+                "medium": "中风险",
+                "high": "高风险"
+            },
+            "vendorList": "供应商列表",
+            "checksCount": "{count} 项检查",
+            "country": {
+                "th": "泰国",
+                "sg": "新加坡",
+                "cn": "中国"
+            }
+        },
+        "teamInvite": {
+            "title": "邀请新成员",
+            "subtitle": "向您的团队发送邀请以加入此工作区。",
+            "memberInfo": "成员信息",
+            "emailLabel": "电子邮件",
+            "emailPlaceholder": "name@company.com",
+            "roleLabel": "角色",
+            "rolePlaceholder": "选择权限级别",
+            "roles": {
+                "admin": "管理员 (完全访问权限)",
+                "editor": "编辑 (可以编辑文档)",
+                "viewer": "查看者 (只读)"
+            },
+            "appAccessTitle": "应用访问权限",
+            "apps": {
+                "overview": {
+                    "name": "概览 (Overview)",
+                    "desc": "查看仪表板摘要"
+                },
+                "clm": {
+                    "name": "合同管理 (CLM)",
+                    "desc": "创建和编辑合同"
+                },
+                "vault": {
+                    "name": "文档库 (Vault)",
+                    "desc": "访问所有文档"
+                },
+                "billing": {
+                    "name": "财务 (Billing)",
+                    "desc": "查看法律费用"
+                },
+                "workflow": {
+                    "name": "自动化工作流",
+                    "desc": "设置和运行 AI 工作流"
+                },
+                "dueDiligence": {
+                    "name": "尽职调查",
+                    "desc": "进行评估和检查"
+                },
+                "legalSpend": {
+                    "name": "法律支出",
+                    "desc": "查看支出仪表板"
+                },
+                "auditTrail": {
+                    "name": "审计跟踪",
+                    "desc": "查看系统访问日志"
+                },
+                "integrations": {
+                    "name": "集成设置",
+                    "desc": "配置外部应用连接"
+                }
+            },
+            "cancelBtn": "取消",
+            "invitingBtn": "发送邀请中...",
+            "inviteBtn": "发送邀请",
+            "toast": {
+                "errorTitle": "错误",
+                "errorDesc": "请输入要邀请的电子邮件地址。",
+                "successTitle": "邀请已发送",
+                "successDesc": "已成功向 {email} 发送邀请。"
+            }
+        },
+        "billingV2": {
+            "pageTitle": "财务与税务发票",
+            "pageTitleCreate": "创建发票",
+            "pageSubtitle": "管理您公司的税务发票和预扣税 (WHT)。",
+            "currentPlan": "当前计划",
+            "invoicesThisYear": "发票 (今年)",
+            "whtTax": "预扣税 (WHT)",
+            "recentInvoices": "最近的发票",
+            "status": {
+                "unpaid": "待付款",
+                "paid": "已付"
+            },
+            "createBtn": "创建发票",
+            "invoice": {
+                "title": "税务发票",
+                "invLabel": "发票",
+                "no": "编号",
+                "issueDate": "开票日期",
+                "dueDate": "到期日期",
+                "issuer": "开票人 / 卖方",
+                "customer": "客户 / 买方",
+                "taxId": "税号",
+                "phone": "电话",
+                "table": {
+                    "item": "项目",
+                    "qty": "数量",
+                    "unitPrice": "单价",
+                    "total": "总计"
+                },
+                "subtotal": "小计",
+                "vat": "增值税 (7%)",
+                "wht": "预扣税 ({rate}%)",
+                "netTotal": "净总计",
+                "notes": "备注",
+                "signatures": {
+                    "issuer": "开票方签名",
+                    "customer": "客户签名",
+                    "date": "日期 ____/____/____"
+                }
+            },
+            "preview": {
+                "back": "返回",
+                "print": "打印 / 保存 PDF"
+            },
+            "form": {
+                "title": "创建新发票",
+                "back": "返回",
+                "seller": {
+                    "title": "开票人 (您的公司)",
+                    "nameLabel": "公司名称",
+                    "namePlaceholder": "Lawslane 有限公司",
+                    "addressLabel": "地址",
+                    "addressPlaceholder": "曼谷素坤逸路 123 号 10110",
+                    "taxIdLabel": "税号",
+                    "taxIdPlaceholder": "0-1234-56789-01-2",
+                    "phoneLabel": "电话",
+                    "phonePlaceholder": "02-xxx-xxxx"
+                },
+                "buyer": {
+                    "title": "客户 / 买方",
+                    "nameLabel": "客户 / 公司名称",
+                    "namePlaceholder": "ABC 有限公司",
+                    "addressLabel": "地址",
+                    "addressPlaceholder": "曼谷是隆路 456 号 10500",
+                    "taxIdLabel": "税号",
+                    "taxIdPlaceholder": "0-9876-54321-01-2",
+                    "phoneLabel": "电话",
+                    "phonePlaceholder": "02-xxx-xxxx"
+                },
+                "items": {
+                    "title": "项目 / 服务",
+                    "descLabel": "详细信息",
+                    "descPlaceholder": "例如，法律咨询费",
+                    "qtyLabel": "数量",
+                    "priceLabel": "单价 (฿)",
+                    "totalLabel": "总计 (฿)",
+                    "addBtn": "添加项目"
+                },
+                "tax": {
+                    "title": "税务与条款设置",
+                    "vatLabel": "增值税 (VAT 7%)",
+                    "whtLabel": "预扣税 (WHT)",
+                    "whtRateLabel": "预扣税率 (%)",
+                    "whtRates": {
+                        "1": "1% — 运输",
+                        "2": "2% — 广告",
+                        "3": "3% — 服务/人工",
+                        "5": "5% — 租金"
+                    },
+                    "dueDateLabel": "到期日期",
+                    "notesLabel": "备注",
+                    "notesPlaceholder": "请在到期日前付款"
+                },
+                "summary": {
+                    "title": "摘要",
+                    "subtotal": "小计",
+                    "vat": "增值税 7%",
+                    "wht": "预扣税 {rate}%",
+                    "netTotal": "净总额",
+                    "createBtn": "创建发票",
+                    "cancelBtn": "取消"
+                },
+                "toast": {
+                    "errSeller": "请输入开票人信息。",
+                    "errBuyer": "请输入客户名称。",
+                    "errItems": "请正确填写所有项目。",
+                    "success": "发票创建成功 ✅"
+                }
+            }
+        },
         "overview": {
             "errorLoading": "加载数据时发生错误",
             "retry": "重试",
-            "welcomeTitle": "欢迎使用 Lawslane 企业数字化法律管理 (ELM)",
+            "welcomeTitle": "欢迎使用 Lawslane 企业数字化法律管理 (Legal OS)",
             "welcomeSubtitle": "开始创建您的组织，以专业地管理合同和团队",
             "creating": "正在创建...",
             "createProfile": "创建公司档案",
-            "title": "ELM 控制面板",
+            "title": "Legal OS 控制面板",
             "welcomeBack": "欢迎回来, {name}",
             "manageAccount": "管理账户",
             "stats": {
@@ -969,51 +1653,6 @@
                 "fileTooLargeDesc": "文件大小不能超过 20 MB"
             }
         },
-        "calendar": {
-            "pageTitle": "法律日历 (Compliance)",
-            "pageSubtitle": "跟踪重要的法律日期和日程，以减轻组织风险",
-            "settings": "通知设置",
-            "addEvent": "添加新日程",
-            "summary": {
-                "title": "法律健康摘要",
-                "critical": "关键任务",
-                "count": "{count} 项",
-                "overdueDesc": "您有 {count} 项逾期任务。请检查这些任务以避免法律处罚。",
-                "noOverdueDesc": "您的组织目前没有逾期任务。请继续保持！"
-            },
-            "upcoming": "即将到来的日程",
-            "filterAll": "全部",
-            "filterCritical": "仅限关键",
-            "empty": {
-                "title": "尚无日程",
-                "desc": "您可以开始添加重要日期以立即接收通知",
-                "button": "添加第一个日程"
-            },
-            "overdueBadge": "逾期！",
-            "priority": "优先级: {priority}",
-            "overdue": "已逾期",
-            "daysLeft": "剩余 {days} 天",
-            "fromToday": "从今天起",
-            "tip": {
-                "title": "法律小贴士：股东周年大会 (AGM)",
-                "desc": "有限公司必须在会计期间结束后的 4 个月内召开股东周年大会 (AGM)，并在会议后的 14 天内提交股东名册 (Bor.Jor.5)。延迟提交可能会导致对实体和董事的罚款。",
-                "more": "更多详情"
-            },
-            "error": {
-                "loadTitle": "加载数据失败",
-                "retry": "重试",
-                "indexPending": "系统正在准备数据库（缺失索引）。请稍等片刻（约 1-3 分钟），或者点击控制台中的链接创建索引（如果您尚未创建）。"
-            },
-            "daysShort": [
-                "日",
-                "一",
-                "二",
-                "三",
-                "四",
-                "五",
-                "六"
-            ]
-        },
         "billing": {
             "pageTitle": "财务与税务管理",
             "pageSubtitle": "管理税务发票、预扣税和组织付款历史",
@@ -1050,8 +1689,11 @@
                 "email": "billing@lawslane.com"
             },
             "planLabels": {
-                "starter": "Starter — 2,500 泰铢/月",
-                "pro": "Pro — 5,900 泰铢/月",
+                "lite": "Lite — 990 泰铢/月",
+                "starter": "Starter — 2,900 泰铢/月",
+                "professional": "Professional — 5,900 泰铢/月",
+                "business": "Business — 8,900 泰铢/月",
+                "elite": "Elite — 18,900 泰铢/月",
                 "enterprise": "Enterprise — 定制"
             },
             "invoiceTypes": {
@@ -1072,7 +1714,7 @@
             },
             "stats": {
                 "title": "系统概览 (管理员)",
-                "subtitle": "当前 B2B ELM 在整个平台的使用摘要",
+                "subtitle": "当前 Legal OS 在整个平台的使用摘要",
                 "systemStats": "系统统计",
                 "totalCompanies": "公司总数",
                 "usersInSystem": "系统用户数",
@@ -1081,6 +1723,166 @@
                 "latestActivities": "最新活动 (全局日志)",
                 "activitiesSubtitle": "所有公司的近期动态",
                 "noActivities": "尚无中央活动日志记录"
+            }
+        },
+        "clm": {
+            "title": "合同",
+            "subtitle": "在整个生命周期中创建、跟踪和管理合同",
+            "createNew": "创建新合同",
+            "searchPlaceholder": "搜索合同...",
+            "allContracts": "所有合同",
+            "loading": "正在加载合同...",
+            "deadline": "截止日期",
+            "status": {
+                "active": "生效中",
+                "review": "审查中",
+                "draft": "草稿",
+                "canceled": "已取消"
+            },
+            "messages": {
+                "error": "错误",
+                "loadError": "加载合同失败"
+            },
+            "category": {
+                "nda": "保密协议 (NDA)",
+                "employment": "雇佣",
+                "service": "服务",
+                "sales": "销售",
+                "vendor": "供应商",
+                "lease": "租赁",
+                "partnership": "合作伙伴",
+                "franchise": "特许经营",
+                "loan": "贷款",
+                "procurement": "采购",
+                "consulting": "咨询",
+                "license": "许可",
+                "distribution": "分销",
+                "construction": "施工",
+                "other": "其他"
+            },
+            "empty": {
+                "titleFound": "未找到合同",
+                "titleEmpty": "还没有合同",
+                "descFound": "找不到符合 \"{searchQuery}\" 的合同",
+                "descEmpty": "点击 \"创建新合同\" 开始使用"
+            },
+            "form": {
+                "title": "创建新合同",
+                "subtitle": "填写合同详情以创建新草稿",
+                "sections": {
+                    "general": "基本信息",
+                    "parties": "合同方",
+                    "signatories": "签署人",
+                    "details": "合同详情",
+                    "finance": "财务",
+                    "dates": "日期",
+                    "notes": "备注"
+                },
+                "fields": {
+                    "contractName": "合同名称",
+                    "contractNamePlaceholder": "例如：NDA - ABC有限公司",
+                    "category": "合同类型",
+                    "categoryPlaceholder": "选择类型",
+                    "priority": "优先级",
+                    "department": "部门",
+                    "departmentPlaceholder": "例如：法务部、采购部",
+                    "tags": "标签",
+                    "tagPlaceholder": "输入标签后按添加",
+                    "btnAdd": "添加"
+                },
+                "groups": {
+                    "general": "一般合同",
+                    "business": "商业合同",
+                    "specific": "特定合同"
+                },
+                "parties": {
+                    "partyA": "甲方",
+                    "partyADesc": "雇主 / 委托方",
+                    "partyB": "乙方",
+                    "partyBDesc": "承包商 / 对方",
+                    "name": "名称",
+                    "namePlaceholder": "公司 / 个人名称",
+                    "email": "电子邮件",
+                    "emailPlaceholder": "email@company.com",
+                    "idCard": "身份证 / 税号",
+                    "idCardPlaceholder": "例如：0-1234-56789-01-2",
+                    "idCardPlaceholder2": "例如：1-2345-67890-12-3",
+                    "address": "地址",
+                    "addressPlaceholder": "联系地址"
+                },
+                "signatories": {
+                    "btnAdd": "添加签署人",
+                    "empty": "尚无签署人 - 点击\"添加签署人\"以添加",
+                    "namePlaceholder": "签署人姓名",
+                    "rolePlaceholder": "职位 / 角色"
+                },
+                "details": {
+                    "scope": "工作范围 / 责任",
+                    "scopePlaceholder": "描述各方的工作范围、职责和任务...",
+                    "content": "合同内容 / 附加条款",
+                    "contentPlaceholder": "合同的特别条款、条件或详细信息..."
+                },
+                "finance": {
+                    "value": "合同价值",
+                    "deposit": "押金 / 预付款",
+                    "currency": "货币",
+                    "paymentTerms": "付款条件",
+                    "paymentTermsPlaceholder": "例如：分3期付款、30天内付款、净60天..."
+                },
+                "dates": {
+                    "startDate": "开始日期",
+                    "endDate": "结束日期 / 截止日期",
+                    "renewalDate": "续约日期"
+                },
+                "notes": {
+                    "placeholder": "备注、观察结果或附加参考资料..."
+                },
+                "actions": {
+                    "cancel": "取消",
+                    "submit": "创建合同",
+                    "submitting": "创建中..."
+                },
+                "priorities": {
+                    "low": "低",
+                    "medium": "中",
+                    "high": "高",
+                    "urgent": "紧急"
+                },
+                "categories": {
+                    "nda": "NDA (保密协议)",
+                    "service": "服务协议",
+                    "sales": "销售合同",
+                    "employment": "雇佣合同",
+                    "consulting": "咨询协议",
+                    "vendor": "供应商协议",
+                    "partnership": "合伙 / 合资协议",
+                    "franchise": "特许经营协议",
+                    "distribution": "分销 / 代理协议",
+                    "procurement": "采购合同",
+                    "lease": "租赁 / 房地产合同",
+                    "loan": "贷款 / 信贷协议",
+                    "license": "许可协议",
+                    "construction": "施工协议",
+                    "other": "其他"
+                },
+                "messages": {
+                    "errName": "请输入合同名称",
+                    "errParties": "请输入双方的名称",
+                    "successTitle": "✅ 合同已创建",
+                    "successDesc": "合同 \"{title}\" 已作为草稿创建。",
+                    "slackTitle": "Slack Webhook",
+                    "slackDesc": "已发送通知至 Slack",
+                    "errorTitle": "错误",
+                    "errorDesc": "无法创建合同，请重试。",
+                    "slackMsgTitle": "📄 *新合同已创建!*",
+                    "slackMsgName": "🏷️ 合同名称: {title}",
+                    "slackMsgEmp": "🏢 甲方: {employer}",
+                    "slackMsgCont": "💼 乙方: {contractor}",
+                    "slackMsgPrice": "💰 价值: {price}",
+                    "slackMsgPriceNone": "💰 价值: 未指定",
+                    "slackMsgUser": "👤 创建者: {user}",
+                    "slackMsgLink": "<https://lawslane-demo.com/clm|点击在系统中查看详细信息>"
+                }
             }
         }
     },
@@ -1118,42 +1920,134 @@
             "title": "选择适合您的计划",
             "subtitle": "免费试用14天。无需信用卡。",
             "perMonth": "/月",
+            "lite": {
+                "title": "入门版 (Lite)",
+                "desc": "适合个人或初创起步阶段",
+                "price": "฿990",
+                "btn": "立即开始",
+                "f1": "每月下载 5 份 B2B 模板",
+                "f2": "2GB 文档存储空间",
+                "f3": "支持 1 个用户账户",
+                "f4": "开具全套税务发票",
+                "f5": "邮件支持"
+            },
             "starter": {
-                "title": "入门版 (Starter)",
-                "desc": "中小型企业和早期初创公司的理想选择",
+                "title": "基础版 (Starter)",
+                "desc": "中小型企业和小型团队的理想选择",
                 "price": "฿2,900",
                 "btn": "免费试用 14 天",
                 "f1": "每月下载 10 份 B2B 模板",
-                "f2": "表单生成合同",
-                "f3": "支持 1 个用户账户",
-                "f4": "开具全套税务发票",
-                "f5": "非工作时间邮件支持"
+                "f2": "10GB 文档存储空间",
+                "f3": "合同管理系统 (基础版 CLM)",
+                "f4": "支持 2 个用户账户",
+                "f5": "邮件支持"
             },
-            "pro": {
-                "title": "专业版 (Pro)",
+            "professional": {
+                "title": "专业版 (Professional)",
                 "badge": "最受欢迎",
-                "desc": "适合成长型企业，倍增信心",
+                "desc": "适合需要全面管理的成长型企业",
+                "price": "฿5,900",
+                "btn": "立即开始",
+                "f1": "每月下载 25 份 B2B 模板",
+                "f2": "50GB 文档存储空间",
+                "f3": "合同管理系统 (标准版 CLM)",
+                "f4": "律师每月审核 2 份合同",
+                "f5": "支持 5 个用户账户 (含权限设置)",
+                "f6": "在线聊天支持"
+            },
+            "business": {
+                "title": "企业版 (Business)",
+                "desc": "专为追求高效与增长的组织设计",
                 "price": "฿8,900",
                 "btn": "立即开始",
                 "f1": "无限量下载 B2B 模板",
-                "f2": "合同生命周期管理 (CLM)",
-                "f3": "律师每月审核 5 份合同",
-                "f4": "支持 5 个用户账户 (含权限设置)",
-                "f5": "税务发票与代扣代缴",
-                "f6": "电子签名系统 (基础版)"
+                "f2": "200GB 文档存储空间",
+                "f3": "合同管理系统 (高级版 CLM)",
+                "f4": "律师每月审核 5 份合同",
+                "f5": "支持 10 个用户账户 (含权限设置)",
+                "f6": "优先支持与电子签名"
+            },
+            "elite": {
+                "title": "精英版 (Elite)",
+                "desc": "为大型企业提供顶级的法律管理方案",
+                "price": "฿18,900",
+                "btn": "立即开始",
+                "f1": "无限量下载 B2B 模板",
+                "f2": "500GB 文档存储空间",
+                "f3": "合同管理系统 (旗舰版 CLM)",
+                "f4": "律师每月审核 10 份合同",
+                "f5": "支持 25 个用户账户",
+                "f6": "专属支持与 API 访问"
             },
             "enterprise": {
-                "title": "企业版 (Enterprise)",
+                "title": "至尊版 (Enterprise)",
                 "desc": "为大型组织提供灵活定制",
                 "price": "定制",
                 "btn": "联系销售",
-                "f1": "包含专业版所有功能",
+                "f1": "包含精英版所有功能",
                 "f2": "专属企业咨询律师",
                 "f3": "无限量合同审核",
                 "f4": "无限用户及存储空间",
-                "f5": "API 集成 (ELM/HRIS)",
-                "f6": "2小时SLA响应保证",
-                "f7": "电子签名系统 (高级版)"
+                "f5": "API 集成 (Legal OS/HRIS)",
+                "f6": "2小时 SLA 响应保证"
+            }
+        },
+        "modules": {
+            "badge": "模块化架构",
+            "title1": "只选择您需要的",
+            "title2": "随时扩展",
+            "subtitle": "模块化系统 — 无需购买庞大套件。仅开启必要的模块，并在以后进行扩展。",
+            "items": {
+                "clm": "合同管理 (CLM)",
+                "vault": "文档库",
+                "finance": "财务与税务",
+                "calendar": "法律日历",
+                "workflow": "自动化工作流",
+                "dd": "尽职调查",
+                "budget": "法律支出",
+                "api": "系统集成"
+            }
+        },
+        "integration": {
+            "badge": "跨部门整合",
+            "title1": "连接组织内的",
+            "title2": "每个部门",
+            "title3": "",
+            "subtitle": "Lawslane 作为中央枢纽，与您公司已使用的 CRM、ERP 和 HRIS 连接，使整个组织受益。",
+            "departments": {
+                "sales": {
+                    "dept": "销售部",
+                    "flow": "在 CRM 中关闭交易 → Lawslane 自动起草合同"
+                },
+                "accounting": {
+                    "dept": "财务部",
+                    "flow": "合同签署完成 → 通知 ERP 立即开具发票"
+                },
+                "hr": {
+                    "dept": "人力资源",
+                    "flow": "管理员工文档及供应商尽职调查"
+                },
+                "executive": {
+                    "dept": "高管",
+                    "flow": "实时查看风险和法律支出的概览"
+                }
+            },
+            "values": {
+                "speed": {
+                    "label": "速度",
+                    "value": "几天 → 几分钟",
+                    "desc": "减少处理文档的时间"
+                },
+                "accuracy": {
+                    "label": "准确性",
+                    "value": "0% 人为错误",
+                    "desc": "消除打字错误"
+                },
+                "transparency": {
+                    "label": "透明度",
+                    "value": "100% 审计跟踪",
+                    "desc": "每一步可追溯"
+                }
             }
         },
         "cta": {
@@ -1174,9 +2068,21 @@
                 "title": "最高机密性",
                 "desc": "您发送的所有信息和文档将严格遵循保密和 PDPA 标准进行保管。"
             }
+        },
+        "footer": {
+            "company": {
+                "title": "公司",
+                "about": "关于我们",
+                "services": "服务项目",
+                "lawyers": "寻找律师",
+                "contact": "联系销售"
+            }
         }
     },
     "B2BSidebar": {
+        "coreTitle": "核心菜单",
+        "automationTitle": "自动化",
+        "intelligenceTitle": "智能系统",
         "adminTitle": "系统管理 (Admin)",
         "adminCompanies": "管理所有公司",
         "adminStats": "系统概览",
@@ -1187,9 +2093,23 @@
         "vault": "文档库 (Vault)",
         "calendar": "法律日历",
         "team": "团队管理 (Team)",
+        "messages": "消息",
+        "workflow": "AI 工作流",
+        "workflowFeatured": "推荐工作流",
+        "dueDiligence": "尽职调查 (DD)",
+        "legalSpend": "法律支出",
+        "findLawyer": "寻找律师",
+        "integrations": "集成",
+        "auditTrail": "审计追踪",
         "settings": "设置 (Settings)",
         "displayMode": "显示模式",
         "language": "语言",
         "logout": "登出"
+    },
+    "NotFound": {
+        "title": "找不到页面",
+        "description": "抱歉，我们找不到您要寻找的页面。它可能已被移动、删除或从未存在过。",
+        "backHome": "返回首页",
+        "contactSupport": "联系支持"
     }
 }

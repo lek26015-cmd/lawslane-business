@@ -869,140 +869,425 @@
         }
     },
     "B2BDashboard": {
-        "overview": {
-            "errorLoading": "An error occurred while loading data",
-            "retry": "Retry",
-            "welcomeTitle": "Welcome to Lawslane Business ELM",
-            "welcomeSubtitle": "Start creating your organization to manage contracts and teams professionally",
-            "creating": "Creating...",
-            "createProfile": "Create Company Profile",
-            "title": "ELM Dashboard",
-            "welcomeBack": "Welcome back, {name}",
-            "manageAccount": "Manage Account",
+        "dashboardV2": {
+            "greeting": "Hello, {name} 👋",
+            "welcomeMsg": "Welcome to your legal operating system. Manage everything in one place.",
+            "subtitle": "Legal Operating System — Your organization overview today",
+            "defaultUser": "User",
+            "notifications": "Notifications",
             "stats": {
-                "contracts": "Contracts in System",
-                "team": "Team Members",
-                "urgent": "Urgent Schedules",
-                "compliance": "Document Compliance"
+                "activeContracts": "Active Contracts",
+                "thisMonth": "This month",
+                "vaultDocs": "Vault Documents",
+                "pendingReview": "Pending review",
+                "spendYearly": "Yearly Spend",
+                "fromLastYear": "From last year",
+                "deadlines": "Upcoming deadlines",
+                "thisWeek": "This week"
             },
-            "upcoming": {
-                "title": "Legal Schedules (Upcoming)",
-                "subtitle": "Compliance tasks your organization needs to perform soon",
-                "viewAll": "View All Calendar",
-                "annualReport": "Annual Financial Statement (DBD)",
-                "overdue": "{days} days overdue",
-                "actionNow": "Handle Immediately",
-                "agm": "Annual General Meeting (AGM)",
-                "daysLeft": "{days} days left",
-                "notify": "Notify"
+            "workflows": {
+                "title": "Active Workflows",
+                "viewAll": "View all workflows →",
+                "items": {
+                    "crm": "Generate contract from CRM",
+                    "crmStatus": "Drafting...",
+                    "expiry": "Expiry reminder",
+                    "expiryStatus": "3 emails sent",
+                    "vendor": "New vendor due diligence",
+                    "vendorStatus": "Waiting for AI analysis"
+                }
+            },
+            "insights": {
+                "title": "AI Insights",
+                "i1": "3 contracts are expiring in 30 days",
+                "i1Action": "Renew now →",
+                "i2": "Legal spend is down 8% from last year",
+                "i2Action": "View report →",
+                "i3": "2 vendors failed due diligence check",
+                "i3Action": "Review →",
+                "i4": "Suggestion: Renew NDA with ABC Corp by March 1st",
+                "i4Action": "Handle →"
             },
             "activity": {
-                "title": "Corporate Activity",
-                "uploadCert": "Uploaded company certificate",
-                "autoNDA": "Automatically created new NDA draft",
-                "newMember": "Added new team member",
-                "byAt": "By {user} • {time}"
+                "title": "Recent Activity",
+                "items": {
+                    "a1": "Signed NDA with ABC",
+                    "a1Time": "2 hours ago",
+                    "a2": "Service Agreement uploaded to Vault",
+                    "a2Time": "4 hours ago",
+                    "a3": "Employment contract pending review",
+                    "a3Time": "1 day ago",
+                    "a4": "Invoice #INV-2025001 sent via ERP",
+                    "a4Time": "2 days ago",
+                    "a5": "Vendor XYZ passed due diligence",
+                    "a5Time": "3 days ago"
+                }
             },
-            "vault": {
-                "title": "Vault Status",
-                "subtitle": "Important Corporate Documents",
-                "quickUpload": "Quick Upload Document",
-                "limit": "PDF, JPG (Max 5MB)",
-                "dbd": "DBD Summary List",
-                "licenses": "Various Licenses",
-                "manageAll": "Manage All Vault Documents"
+            "contractStatus": {
+                "title": "Contract Status",
+                "active": "Active",
+                "review": "Pending Review",
+                "expiring": "Expiring Soon",
+                "draft": "Draft"
             },
-            "support": {
-                "title": "Legal Corporate Support",
-                "desc": "Consult expert corporate lawyers instantly via private organization chat",
-                "btn": "Start Consulting Expert",
-                "toastTitle": "Opening Support Chat",
-                "toastDesc": "Connecting to an expert lawyer..."
+            "security": {
+                "title": "System Security",
+                "passed": "Passed"
             }
         },
-        "team": {
-            "loading": "Loading team data...",
-            "title": "Team Management",
-            "subtitle": "Manage admins who can access documents and manage contracts on behalf of the company",
+        "vaultV2": {
+            "title": "Vault",
+            "subtitle": "Securely store and manage legal documents with 256-bit encryption",
+            "uploadBtn": "Upload document",
             "stats": {
-                "adminCount": "{count} Admins"
+                "totalDocs": "Total documents",
+                "storage": "Storage used ({limit} GB plan)",
+                "used": "{percent}% used",
+                "left": "{gb} GB left",
+                "shared": "Shared with team"
             },
-            "list": {
-                "title": "All Members",
-                "subtitle": "List of currently authorized system administrators"
-            },
-            "invite": {
-                "title": "Add New Member",
-                "successTitle": "Admin added successfully",
-                "successDesc": "Added {email} to the team successfully",
-                "errorDesc": "Could not add admin",
-                "processing": "Processing...",
-                "button": "Send Team Invitation"
-            },
-            "remove": {
-                "successTitle": "Member removed successfully"
-            },
-            "errorTitle": "An error occurred",
-            "limit": {
-                "title": "Admin Limit Reached",
-                "desc": "Your {plan} plan allows up to {max} admins. Please upgrade your plan to add more members.",
-                "btn": "Upgrade Plan",
-                "toastDesc": "Preparing service plan information for you..."
-            },
-            "permissions": {
-                "p1": "Access and create all corporate contracts",
-                "p2": "Download and print contract documents",
-                "p3": "Manage other admin options (if authorized)"
+            "search": "Search by filename, date, or tags...",
+            "filter": "Filter",
+            "allDocs": "All documents",
+            "filesCount": "{count} files",
+            "sharedBadge": "Shared",
+            "toastCopyTitle": "Link copied",
+            "toastCopyDesc": "You can now share this link with external parties.",
+            "shareModal": {
+                "title": "Share document",
+                "desc": "Grant internal access or create an external sharing link for:",
+                "tabTeam": "Team members",
+                "tabExternal": "External link",
+                "searchTeam": "Add email or search team...",
+                "revokeTitle": "Access revoked",
+                "revokeDesc": "{name} will no longer have access to this file.",
+                "revokeBtn": "Revoke",
+                "grantTitle": "Access granted",
+                "grantDesc": "{name} can now access this file.",
+                "grantBtn": "Grant access",
+                "fullAccess": "Full access",
+                "noAccess": "No access",
+                "enableExternal": "Enable external link",
+                "externalHint": "Anyone with the link can view this file.",
+                "sharingLink": "Sharing link",
+                "active": "Active",
+                "securitySettings": "Security settings",
+                "passwordProtection": "Password protection",
+                "setPassword": "Set sharing password",
+                "enterPassword": "Enter security password...",
+                "generate": "Generate",
+                "passwordHint": "* This key will be used to authenticate before accessing the file.",
+                "doneBtn": "Done sharing"
             }
         },
-        "vaultPage": {
-            "pageTitle": "Vault",
-            "pageSubtitle": "Securely store and manage your organization's important legal documents",
-            "searchPlaceholder": "Search documents...",
-            "categories": {
-                "all": "All",
-                "registry": "Registry Documents",
-                "tax": "Tax (PP.20)",
-                "licenses": "Licenses",
-                "important": "Key Contracts",
-                "others": "Others"
+        "teamV2": {
+            "title": "Team View",
+            "enterprise": "Enterprise",
+            "subtitle": "Manage your legal team, assign roles, and monitor workspace security.",
+            "addMemberBtn": "Add team member",
+            "stats": {
+                "totalMembers": "Total members",
+                "activeNow": "Active now",
+                "pendingInvites": "Pending invites",
+                "twoFaCoverage": "2FA Coverage"
             },
+            "tabs": {
+                "memberDir": "Member directory",
+                "roleMatrix": "Role matrix"
+            },
+            "search": "Search by name or email...",
+            "filter": "Filter",
             "status": {
-                "verified": "Verified",
-                "pending": "Pending"
+                "invited": "Invited",
+                "lastActivity": "Last activity"
             },
-            "upload": {
-                "button": "Upload Document",
-                "processing": "Uploading...",
-                "successTitle": "Upload Successful ✅",
-                "successDesc": "{name} has been saved to the system",
-                "errorTitle": "Upload Failed",
-                "errorDesc": "Please try again"
+            "noMembers": "No members found matching \"{query}\"",
+            "encryptionSecure": "Your team access is protected by enterprise-grade encryption.",
+            "roleTags": {
+                "billing": "Billing",
+                "teamMgmt": "Team Mgmt",
+                "editing": "Editing",
+                "reporting": "Reporting"
             },
-            "delete": {
-                "confirm": "Delete \"{name}\" from the system?",
-                "successTitle": "Document deleted successfully",
-                "errorTitle": "Delete failed",
-                "button": "Delete Document"
+            "roles": {
+                "owner": "Owner",
+                "ownerDesc": "Full access to all features, billing, and team management.",
+                "admin": "Admin",
+                "adminDesc": "Can manage team members and all workspace settings.",
+                "editor": "Editor",
+                "editorDesc": "Can create and edit documents and workflows.",
+                "viewer": "Viewer",
+                "viewerDesc": "Read-only access to documents and reports."
             },
-            "kyb": {
-                "title": "Corporate Identity Verification (KYB)",
-                "desc": "Upload company certificate to verify legal status and gain full feature access",
-                "button": "Start Verification"
+            "activity": {
+                "title": "Team activity",
+                "viewFullLog": "View full audit log"
+            },
+            "proTip": {
+                "title": "Security Tip",
+                "desc": "Ensure all admins have enabled <b>Hardware Key (YubiKey)</b> authentication for maximum protection of your corporate vault.",
+                "configureMfa": "Configure MFA"
+            }
+        },
+        "teamInvite": {
+            "title": "Invite Team Member",
+            "subtitle": "Send an invitation to your team to join this workspace.",
+            "memberInfo": "Member Information",
+            "emailLabel": "Email",
+            "emailPlaceholder": "name@company.com",
+            "roleLabel": "Role",
+            "rolePlaceholder": "Select permission level",
+            "roles": {
+                "admin": "Admin (Full Access)",
+                "editor": "Editor (Can edit documents)",
+                "viewer": "Viewer (Read-only)"
+            },
+            "appAccessTitle": "App Access Permissions",
+            "apps": {
+                "overview": {
+                    "name": "Overview",
+                    "desc": "View dashboard summary"
+                },
+                "clm": {
+                    "name": "Contract Management (CLM)",
+                    "desc": "Create and edit contracts"
+                },
+                "vault": {
+                    "name": "Vault",
+                    "desc": "Access all documents"
+                },
+                "billing": {
+                    "name": "Billing",
+                    "desc": "View legal spend"
+                },
+                "workflow": {
+                    "name": "Automated Workflows",
+                    "desc": "Set up and run AI workflows"
+                },
+                "dueDiligence": {
+                    "name": "Due Diligence",
+                    "desc": "Perform assessments and checks"
+                },
+                "legalSpend": {
+                    "name": "Legal Spend",
+                    "desc": "View spend dashboards"
+                },
+                "auditTrail": {
+                    "name": "Audit Trail",
+                    "desc": "View system access logs"
+                },
+                "integrations": {
+                    "name": "Integrations",
+                    "desc": "Configure external app connections"
+                }
+            },
+            "cancelBtn": "Cancel",
+            "invitingBtn": "Sending invite...",
+            "inviteBtn": "Send Invitation",
+            "toast": {
+                "errorTitle": "Error",
+                "errorDesc": "Please enter an email address to invite.",
+                "successTitle": "Invite Sent",
+                "successDesc": "Invitation successfully sent to {email}."
+            }
+        },
+        "clm": {
+            "title": "Contract Management",
+            "subtitle": "Create, track, and manage contracts throughout their lifecycle",
+            "createNew": "Create New Contract",
+            "searchPlaceholder": "Search contracts...",
+            "allContracts": "All Contracts",
+            "loading": "Loading contracts...",
+            "deadline": "Deadline",
+            "status": {
+                "active": "Active",
+                "review": "In Review",
+                "draft": "Draft",
+                "canceled": "Canceled"
+            },
+            "messages": {
+                "error": "Error",
+                "loadError": "Failed to load contracts"
+            },
+            "category": {
+                "nda": "NDA",
+                "employment": "Employment",
+                "service": "Service",
+                "sales": "Sales",
+                "vendor": "Vendor",
+                "lease": "Lease",
+                "partnership": "Partnership",
+                "franchise": "Franchise",
+                "loan": "Loan",
+                "procurement": "Procurement",
+                "consulting": "Consulting",
+                "license": "License",
+                "distribution": "Distribution",
+                "construction": "Construction",
+                "other": "Other"
             },
             "empty": {
-                "title": "No Documents Yet",
-                "desc": "Click \"Upload Document\" to add your first file"
+                "titleFound": "No contracts found",
+                "titleEmpty": "No contracts yet",
+                "descFound": "Couldn't find any contracts matching \"{searchQuery}\"",
+                "descEmpty": "Click \"Create New Contract\" to get started"
             },
-            "errors": {
-                "loadFailed": "Failed to load documents",
-                "unsupportedFile": "Unsupported File",
-                "unsupportedFileDesc": "Only PDF, JPEG, PNG, DOC, XLS, TXT are supported",
-                "fileTooLarge": "File Too Large",
-                "fileTooLargeDesc": "File size must not exceed 20 MB"
+            "form": {
+                "title": "Create New Contract",
+                "subtitle": "Fill in the details to create a new contract draft",
+                "sections": {
+                    "general": "General Info",
+                    "parties": "Parties",
+                    "signatories": "Signatories",
+                    "details": "Details",
+                    "finance": "Finance",
+                    "dates": "Dates",
+                    "notes": "Notes"
+                },
+                "fields": {
+                    "contractName": "Contract Name",
+                    "contractNamePlaceholder": "e.g., NDA - ABC Co., Ltd.",
+                    "category": "Contract Type",
+                    "categoryPlaceholder": "Select type",
+                    "priority": "Priority",
+                    "department": "Related Department",
+                    "departmentPlaceholder": "e.g., Legal, Procurement",
+                    "tags": "Tags",
+                    "tagPlaceholder": "Type a tag and press add",
+                    "btnAdd": "Add"
+                },
+                "groups": {
+                    "general": "General Contracts",
+                    "business": "Business Contracts",
+                    "specific": "Specific Contracts"
+                },
+                "parties": {
+                    "partyA": "Party A",
+                    "partyADesc": "Employer / Client",
+                    "partyB": "Party B",
+                    "partyBDesc": "Contractor / Vendor",
+                    "name": "Name",
+                    "namePlaceholder": "Company or Person Name",
+                    "email": "Email",
+                    "emailPlaceholder": "email@company.com",
+                    "idCard": "ID / Tax ID",
+                    "idCardPlaceholder": "e.g., 0-1234-56789-01-2",
+                    "idCardPlaceholder2": "e.g., 1-2345-67890-12-3",
+                    "address": "Address",
+                    "addressPlaceholder": "Contact address"
+                },
+                "signatories": {
+                    "btnAdd": "Add Signatory",
+                    "empty": "No signatories yet - Click \"Add Signatory\" to provide",
+                    "namePlaceholder": "Signatory Name",
+                    "rolePlaceholder": "Title / Role"
+                },
+                "details": {
+                    "scope": "Scope of Work / Responsibilities",
+                    "scopePlaceholder": "Describe the scope of work, duties, and responsibilities of each party...",
+                    "content": "Contract Content / Additional Terms",
+                    "contentPlaceholder": "Special terms, conditions, or in-depth details of the contract..."
+                },
+                "finance": {
+                    "value": "Contract Value",
+                    "deposit": "Deposit / Advance",
+                    "currency": "Currency",
+                    "paymentTerms": "Payment Terms",
+                    "paymentTermsPlaceholder": "e.g., 3 installments, payout within 30 days, Net 60..."
+                },
+                "dates": {
+                    "startDate": "Start Date",
+                    "endDate": "End Date / Deadline",
+                    "renewalDate": "Renewal Date"
+                },
+                "notes": {
+                    "placeholder": "Memos, observations, or additional reference materials..."
+                },
+                "actions": {
+                    "cancel": "Cancel",
+                    "submit": "Create Contract",
+                    "submitting": "Creating..."
+                },
+                "priorities": {
+                    "low": "Low",
+                    "medium": "Medium",
+                    "high": "High",
+                    "urgent": "Urgent"
+                },
+                "categories": {
+                    "nda": "NDA",
+                    "service": "Service Agreement",
+                    "sales": "Sales Contract",
+                    "employment": "Employment Contract",
+                    "consulting": "Consulting Agreement",
+                    "vendor": "Vendor Agreement",
+                    "partnership": "Partnership/JV Agreement",
+                    "franchise": "Franchise Agreement",
+                    "distribution": "Distribution Agreement",
+                    "procurement": "Procurement Contract",
+                    "lease": "Lease/Real Estate Contract",
+                    "loan": "Loan Agreement",
+                    "license": "License Agreement",
+                    "construction": "Construction Agreement",
+                    "other": "Other"
+                },
+                "messages": {
+                    "errName": "Please enter contract name",
+                    "errParties": "Please enter both parties' names",
+                    "successTitle": "✅ Contract Created",
+                    "successDesc": "Contract \"{title}\" has been created as a draft.",
+                    "slackTitle": "Slack Webhook",
+                    "slackDesc": "Notification sent to Slack successfully",
+                    "errorTitle": "Error",
+                    "errorDesc": "Failed to create contract. Please try again.",
+                    "slackMsgTitle": "📄 *New Contract Created!*",
+                    "slackMsgName": "🏷️ Contract Name: {title}",
+                    "slackMsgEmp": "🏢 Party A: {employer}",
+                    "slackMsgCont": "💼 Party B: {contractor}",
+                    "slackMsgPrice": "💰 Value: {price}",
+                    "slackMsgPriceNone": "💰 Value: Not specified",
+                    "slackMsgUser": "👤 Created by: {user}",
+                    "slackMsgLink": "<https://lawslane-demo.com/clm|Click to view details in system>"
+                }
             }
         },
-        "calendar": {
+        "billingV2": {
+            "pageTitle": "Financial & Tax Invoices",
+            "pageTitleCreate": "Create Invoice",
+            "pageSubtitle": "Manage your company's tax invoices and withholding tax (WHT) records.",
+            "currentPlan": "Current Plan",
+            "invoicesThisYear": "Invoices (This year)",
+            "whtTax": "Withholding Tax (WHT)",
+            "recentInvoices": "Recent Invoices",
+            "status": {
+                "unpaid": "Unpaid",
+                "paid": "Paid"
+            },
+            "createBtn": "Create Invoice",
+            "invoice": {
+                "title": "Tax Invoice",
+                "invLabel": "Invoice",
+                "no": "No.",
+                "issueDate": "Issue Date",
+                "dueDate": "Due Date",
+                "description": "Description",
+                "qty": "Qty",
+                "price": "Price/Unit",
+                "total": "Total",
+                "subtotal": "Subtotal",
+                "vat": "VAT (7%)",
+                "grandTotal": "Grand Total",
+                "grandTotalWords": "({words})",
+                "signedBy": "Signed By",
+                "customer": "Customer / Bill To",
+                "paymentMethod": "Payment Method",
+                "bankTransfer": "Bank Transfer",
+                "bankName": "Kasikorn Bank",
+                "accountName": "Lawslane (Thailand) Co., Ltd.",
+                "accountNumber": "123-4-56789-0"
+            }
+        },
+        "calendarV2": {
             "pageTitle": "Legal Calendar (Compliance)",
             "pageSubtitle": "Track important legal dates and schedules to mitigate organizational risks",
             "settings": "Notification Settings",
@@ -1037,6 +1322,23 @@
                 "retry": "Retry",
                 "indexPending": "The system is preparing the database (Missing Index). Please wait a moment (about 1-3 minutes) or click the link in the Console to create the Index if you haven't yet."
             },
+            "btnPreset": "Important Legal Dates",
+            "btnAdd": "Add Event",
+            "btnToday": "Today",
+            "months": {
+                "0": "January",
+                "1": "February",
+                "2": "March",
+                "3": "April",
+                "4": "May",
+                "5": "June",
+                "6": "July",
+                "7": "August",
+                "8": "September",
+                "9": "October",
+                "10": "November",
+                "11": "December"
+            },
             "daysShort": [
                 "Sun",
                 "Mon",
@@ -1045,51 +1347,111 @@
                 "Thu",
                 "Fri",
                 "Sat"
-            ]
-        },
-        "billing": {
-            "pageTitle": "Billing & Tax Management",
-            "pageSubtitle": "Manage tax invoices, withholding tax, and organizational payment history",
-            "summaryReport": "Summary Report",
-            "preparingReport": "Preparing Summary Report",
-            "processingReport": "The system is processing your annual financial data...",
-            "taxPayerInfo": "Tax Invoice Details",
-            "entityName": "Entity Name",
-            "taxId": "Tax Identification Number",
-            "notSpecified": "Not Specified",
-            "address": "Address",
-            "currentPlan": "Current Plan",
-            "noCompanyInfo": "No company information yet",
-            "editTaxInfo": "Edit Tax Details",
-            "wht": {
-                "title": "Withholding Tax (WHT)",
-                "desc": "The company is certified for 3% automatic withholding tax on legal service fees."
+            ],
+            "eventTypes": {
+                "deadline": "Deadline",
+                "meeting": "Meeting",
+                "renewal": "Renewal",
+                "review": "Review",
+                "legal": "Legal",
+                "tax": "Tax",
+                "filing": "Filing",
+                "other": "Other"
             },
-            "history": {
-                "title": "Tax Invoice History",
-                "desc": "Past payments and tax documents",
-                "year": "Year {year}",
-                "invoiceId": "Invoice No.",
-                "date": "Date",
-                "type": "Type",
-                "amount": "Amount (฿)",
-                "document": "Document",
-                "downloadDoc": "Invoice",
-                "downloading": "Downloading Document",
-                "downloadingDesc": "Downloading tax invoice {id}..."
+            "eventsMonth": "All events this month",
+            "noEventsToday": "No events today",
+            "noEventsMonth": "No events this month",
+            "dialogAdd": {
+                "title": "Add New Event",
+                "desc": "Fill in the details for the event you want to add to your calendar",
+                "nameLabel": "Event Name",
+                "namePlaceholder": "e.g., Contract Review Meeting",
+                "dateLabel": "Date",
+                "typeLabel": "Type",
+                "descLabel": "Description",
+                "descPlaceholder": "Additional notes...",
+                "cancelBtn": "Cancel",
+                "submitBtn": "Add Event"
             },
-            "support": {
-                "text": "For past invoices or financial inquiries, contact",
-                "email": "billing@lawslane.com"
+            "dialogPreset": {
+                "title": "Important Legal & Tax Dates",
+                "desc": "Automatically add important legal dates to your calendar, or add them individually",
+                "addAllBtn": "Add All",
+                "addedBadge": "Added",
+                "addBtn": "Add",
+                "items": "items"
             },
-            "planLabels": {
-                "starter": "Starter — 2,500 THB/Month",
-                "pro": "Pro — 5,900 THB/Month",
-                "enterprise": "Enterprise — Custom"
+            "toast": {
+                "errorIncomplete": "Please provide a name and date",
+                "successAdd": "✅ Event added successfully",
+                "successAddPreset": "✅ Important dates added successfully",
+                "successAddAllPresets": "✅ All important dates added successfully"
             },
-            "invoiceTypes": {
-                "Subscription": "Subscription",
-                "Consultation": "Consultation"
+            "presets": {
+                "tax1": {
+                    "title": "📋 Filing P.N.D. 1 (Employee Income Tax)",
+                    "desc": "Due within the 7th of every month"
+                },
+                "tax3": {
+                    "title": "📋 Filing P.N.D. 3 (Withholding Tax - Individuals)",
+                    "desc": "Due within the 7th of every month"
+                },
+                "tax53": {
+                    "title": "📋 Filing P.N.D. 53 (Withholding Tax - Entities)",
+                    "desc": "Due within the 7th of every month"
+                },
+                "taxVat": {
+                    "title": "📋 Filing P.P. 30 (VAT)",
+                    "desc": "Due within the 15th of every month"
+                },
+                "taxSso": {
+                    "title": "📋 Social Security Contribution",
+                    "desc": "Due within the 15th of every month"
+                },
+                "tax50": {
+                    "title": "📆 Filing P.N.D. 50 (Annual Corporate Income Tax)",
+                    "desc": "Due within 150 days from the end of accounting period"
+                },
+                "tax51": {
+                    "title": "📆 Filing P.N.D. 51 (Half-year Corporate Income Tax)",
+                    "desc": "Due within 2 months from the end of half-year period"
+                },
+                "tax90": {
+                    "title": "📆 Filing P.N.D. 90/91 (Personal Income Tax)",
+                    "desc": "Annual personal income tax filing deadline"
+                },
+                "filingFin": {
+                    "title": "🏢 Annual Financial Statement Filing (DBD)",
+                    "desc": "Submit to DBD within 5 months from end of period"
+                },
+                "filingAgm": {
+                    "title": "🏢 Hold Annual General Meeting (AGM)",
+                    "desc": "Must hold within 4 months from end of accounting period"
+                },
+                "filingBoj5": {
+                    "title": "🏢 Submit Bor.Jor. 5 (List of Shareholders)",
+                    "desc": "Submit within 14 days after AGM meeting"
+                },
+                "legalLabor": {
+                    "title": "⚖️ Employment Conditions Report (Kor. Ror. 11)",
+                    "desc": "Submit annual report within January"
+                },
+                "legalPdpa": {
+                    "title": "⚖️ PDPA Audit Day",
+                    "desc": "Annual review of Privacy Policy and data protection compliance"
+                },
+                "holidayNewYear": {
+                    "title": "🇹🇭 New Year's Day",
+                    "desc": "Public Holiday"
+                },
+                "holidayLabor": {
+                    "title": "🇹🇭 National Labor Day",
+                    "desc": "Legal labor holiday"
+                },
+                "holidayConstitution": {
+                    "title": "🇹🇭 Constitution Day",
+                    "desc": "Public Holiday"
+                }
             }
         },
         "admin": {
@@ -1151,42 +1513,134 @@
             "title": "Choose the Right Plan for You",
             "subtitle": "Start free for 14 days. No credit card required.",
             "perMonth": "/month",
+            "lite": {
+                "title": "Lite",
+                "desc": "Suitable for individuals or early-stage startups",
+                "price": "฿990",
+                "btn": "Get Started",
+                "f1": "Download 5 B2B templates/month",
+                "f2": "2GB document storage",
+                "f3": "Supports 1 user account",
+                "f4": "Full tax invoice issuance",
+                "f5": "Email Support"
+            },
             "starter": {
                 "title": "Starter",
-                "desc": "Ideal for SMEs and early-stage startups",
+                "desc": "Ideal for SMEs and small teams",
                 "price": "฿2,900",
                 "btn": "Try Free for 14 Days",
                 "f1": "Download 10 B2B templates/month",
-                "f2": "Form-to-Contract generator",
-                "f3": "Supports 1 user account",
-                "f4": "Full tax invoice issuance",
-                "f5": "Off-hours Email Support"
+                "f2": "10GB document storage",
+                "f3": "Contract Management (Basic CLM)",
+                "f4": "Supports 2 user accounts",
+                "f5": "Email Support"
             },
-            "pro": {
-                "title": "Pro",
+            "professional": {
+                "title": "Professional",
                 "badge": "Popular",
-                "desc": "For growing businesses needing confidence",
+                "desc": "For growing businesses needing full management",
+                "price": "฿5,900",
+                "btn": "Get Started",
+                "f1": "Download 25 B2B templates/month",
+                "f2": "50GB document storage",
+                "f3": "Contract Management (Standard CLM)",
+                "f4": "Lawyer review 2 contracts/month",
+                "f5": "Supports 5 user accounts (with permissions)",
+                "f6": "Chat Support"
+            },
+            "business": {
+                "title": "Business",
+                "desc": "Designed for efficiency and growth-focused organizations",
                 "price": "฿8,900",
                 "btn": "Get Started",
                 "f1": "Unlimited B2B template downloads",
-                "f2": "Contract Lifecycle Management (CLM)",
-                "f3": "Lawyer review 5 contracts/month",
-                "f4": "Supports 5 user accounts (with permissions)",
-                "f5": "Tax invoice & Withholding tax",
-                "f6": "E-Signature System (Basic)"
+                "f2": "200GB document storage",
+                "f3": "Contract Management (Advanced CLM)",
+                "f4": "Lawyer review 5 contracts/month",
+                "f5": "Supports 10 user accounts (with permissions)",
+                "f6": "Priority Support & E-Signature"
+            },
+            "elite": {
+                "title": "Elite",
+                "desc": "Top-tier legal management for large enterprises",
+                "price": "฿18,900",
+                "btn": "Get Started",
+                "f1": "Unlimited B2B template downloads",
+                "f2": "500GB document storage",
+                "f3": "Contract Management (Flagship CLM)",
+                "f4": "Lawyer review 10 contracts/month",
+                "f5": "Supports 25 user accounts",
+                "f6": "Dedicated Support & API Access"
             },
             "enterprise": {
                 "title": "Enterprise",
-                "desc": "Flexible and customizable for large organizations",
+                "desc": "Flexible and customizable for massive organizations",
                 "price": "Custom",
                 "btn": "Contact Sales",
-                "f1": "All features in Pro plan",
+                "f1": "All features in Elite plan",
                 "f2": "Dedicated corporate consulting lawyer",
                 "f3": "Unlimited contract reviews",
                 "f4": "Unlimited users & storage",
                 "f5": "API integration (ELM/HRIS)",
-                "f6": "2-hour SLA response guarantee",
-                "f7": "E-Signature System (Advanced)"
+                "f6": "2-hour SLA response guarantee"
+            }
+        },
+        "modules": {
+            "badge": "Modular Architecture",
+            "title1": "Choose only what you need,",
+            "title2": "expand anytime",
+            "subtitle": "Legal Operating System — No need to buy a massive suite. Turn on only the modules you need and scale up later.",
+            "items": {
+                "clm": "Contract Management",
+                "vault": "Document Vault",
+                "finance": "Finance & Tax",
+                "calendar": "Legal Calendar",
+                "workflow": "Automated Workflow",
+                "dd": "Due Diligence",
+                "budget": "Legal Spend",
+                "api": "API Integration"
+            }
+        },
+        "integration": {
+            "badge": "Cross-Department Integration",
+            "title1": "Connect every department",
+            "title2": "within your organization",
+            "title3": "",
+            "subtitle": "Lawslane acts as a central hub, connecting with the CRM, ERP, and HRIS your company already uses.",
+            "departments": {
+                "sales": {
+                    "dept": "Sales",
+                    "flow": "Close deal in CRM → Auto-draft contract in Lawslane"
+                },
+                "accounting": {
+                    "dept": "Accounting",
+                    "flow": "Contract signed → Notify ERP to issue invoice immediately"
+                },
+                "hr": {
+                    "dept": "Human Resources",
+                    "flow": "Manage employee docs & Vendor Due Diligence"
+                },
+                "executive": {
+                    "dept": "Executive",
+                    "flow": "Real-time overview of risk and legal spend"
+                }
+            },
+            "values": {
+                "speed": {
+                    "label": "Speed",
+                    "value": "Days → Minutes",
+                    "desc": "Reduce document processing time"
+                },
+                "accuracy": {
+                    "label": "Accuracy",
+                    "value": "0% Human Error",
+                    "desc": "Eliminate manual typing errors"
+                },
+                "transparency": {
+                    "label": "Transparency",
+                    "value": "100% Audit Trail",
+                    "desc": "Traceable at every step"
+                }
             }
         },
         "cta": {
@@ -1207,9 +1661,21 @@
                 "title": "Maximum Confidentiality",
                 "desc": "All information and documents you send will be strictly kept under Confidentiality and PDPA standards."
             }
+        },
+        "footer": {
+            "company": {
+                "title": "Company",
+                "about": "About Us",
+                "services": "Services",
+                "lawyers": "Find Lawyers",
+                "contact": "Contact Sales"
+            }
         }
     },
     "B2BSidebar": {
+        "coreTitle": "Core Menu",
+        "automationTitle": "Automation",
+        "intelligenceTitle": "Intelligence",
         "adminTitle": "Admin Management",
         "adminCompanies": "Manage Companies",
         "adminStats": "System Overview",
@@ -1220,6 +1686,14 @@
         "vault": "Document Vault",
         "calendar": "Legal Calendar",
         "team": "Team Management",
+        "messages": "Messages",
+        "workflow": "AI Workflow",
+        "workflowFeatured": "Featured Workflows",
+        "dueDiligence": "Due Diligence (DD)",
+        "legalSpend": "Legal Spend",
+        "findLawyer": "Find Lawyers",
+        "integrations": "Integrations",
+        "auditTrail": "Audit Trail",
         "settings": "Settings",
         "displayMode": "Display Mode",
         "language": "Language",

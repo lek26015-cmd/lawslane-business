@@ -39,7 +39,9 @@ export default function ClientLayout({
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const host = window.location.hostname;
-      let detectedType: any = 'main';
+      // Default to the server-provided domainType instead of 'main'
+      let detectedType: any = domainType; 
+      
       if (host.includes('admin.')) detectedType = 'admin';
       else if (host.includes('business.')) detectedType = 'business';
       else if (host.includes('lawyer.')) detectedType = 'lawyer';

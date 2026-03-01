@@ -28,7 +28,7 @@ export interface ContractData {
     // B2B & CLM Fields
     companyId?: string; // For B2B isolation
     ownerId: string;    // Creator of the contract
-    category?: 'employment' | 'sales' | 'nda' | 'service' | 'other';
+    category?: 'employment' | 'sales' | 'nda' | 'service' | 'vendor' | 'lease' | 'partnership' | 'franchise' | 'loan' | 'procurement' | 'consulting' | 'license' | 'distribution' | 'construction' | 'other';
     notes?: string;
 
     // Structured Data from the Screenshot Parser
@@ -40,6 +40,16 @@ export interface ContractData {
     deposit?: number;
     deadline: string;
     paymentTerms?: string;
+
+    // Extended CLM fields
+    priority?: 'low' | 'medium' | 'high' | 'urgent';
+    tags?: string[];
+    currency?: string;
+    startDate?: string;
+    renewalDate?: string;
+    department?: string;
+    signatories?: { name: string; role: string; email?: string }[];
+    attachments?: { name: string; url: string }[];
 
     status: 'draft' | 'pending' | 'signed' | 'completed' | 'canceled';
     createdAt: Timestamp;
@@ -170,6 +180,27 @@ export const contractService = {
         const results = querySnapshot.docs.map(doc => doc.data() as ContractData);
 
         // Sort client-side to avoid requiring a composite index from the user
+        return results.sort((a, b) => {
+            const timeA = a.createdAt?.toMillis?.() || 0;
+            const timeB = b.createdAt?.toMillis?.() || 0;
+            return timeB - timeA;
+        });
+    },
+
+    // Get contracts by owner (for personal/B2B use when no companyId)
+    async getContractsByOwner(ownerId: string): Promise<ContractData[]> {
+        const { firestore } = initializeFirebase();
+        if (!firestore) throw new Error('Firestore not initialized');
+
+        const { query, where, getDocs } = await import('firebase/firestore');
+        const q = query(
+            collection(firestore, COLLECTION_NAME),
+            where('ownerId', '==', ownerId)
+        );
+
+        const querySnapshot = await getDocs(q);
+        const results = querySnapshot.docs.map(doc => doc.data() as ContractData);
+
         return results.sort((a, b) => {
             const timeA = a.createdAt?.toMillis?.() || 0;
             const timeB = b.createdAt?.toMillis?.() || 0;

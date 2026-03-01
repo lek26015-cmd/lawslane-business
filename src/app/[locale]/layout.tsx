@@ -36,16 +36,10 @@ export default async function RootLayout({
 }>) {
   const { locale } = await params;
 
-  const headersList = await headers();
-  const domain = headersList.get('host') || "";
-  let domainType = 'main';
-
-  if (domain.includes('admin.')) domainType = 'admin';
-  else if (domain.includes('business.')) domainType = 'business';
-  else if (domain.includes('lawyer.')) domainType = 'lawyer';
+  const domainType = 'business';
 
   if (process.env.NODE_ENV !== 'production') {
-    console.log(`[RootLayout] Domain: ${domain}, Detected Type: ${domainType}, Locale: ${locale}`);
+    console.log(`[RootLayout] Detected Type: ${domainType}, Locale: ${locale}`);
   }
 
   const messages = await getMessages();
