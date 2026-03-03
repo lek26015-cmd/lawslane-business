@@ -14,7 +14,7 @@ export const getMainLink = (path: string, currentDomain: string = 'main', forceS
 
     if (!forceStatic && process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
         const currentHost = window.location.host;
-        const mainHost = currentHost.replace('lawyer.', '').replace('admin.', '').replace('business.', '');
+        const mainHost = currentHost.replace('lawyer.', '').replace('admin.', '').replace('business.', '').replace('system.', '');
         return `${window.location.protocol}//${mainHost}${path}`;
     }
 
@@ -30,7 +30,7 @@ export const getBusinessLink = (path: string, currentDomain: string = 'main', fo
 
     if (!forceStatic && process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
         const currentHost = window.location.host;
-        const mainHost = currentHost.replace('lawyer.', '').replace('admin.', '').replace('business.', '');
+        const mainHost = currentHost.replace('lawyer.', '').replace('admin.', '').replace('business.', '').replace('system.', '');
         return `${window.location.protocol}//business.${mainHost}${path}`;
     }
 
@@ -45,9 +45,24 @@ export const getAdminLink = (path: string, currentDomain: string = 'main', force
 
     if (!forceStatic && process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
         const currentHost = window.location.host;
-        const mainHost = currentHost.replace('lawyer.', '').replace('admin.', '').replace('business.', '');
+        const mainHost = currentHost.replace('lawyer.', '').replace('admin.', '').replace('business.', '').replace('system.', '');
         return `${window.location.protocol}//admin.${mainHost}${path}`;
     }
 
     return `${protocol}://admin.${rootDomain}${path}`;
+};
+
+export const getSystemLink = (path: string, currentDomain: string = 'main', forceStatic: boolean = false) => {
+    if (currentDomain === 'system') return path;
+
+    const rootDomain = getRootDomain();
+    const protocol = getProtocol();
+
+    if (!forceStatic && process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+        const currentHost = window.location.host;
+        const mainHost = currentHost.replace('lawyer.', '').replace('admin.', '').replace('business.', '').replace('system.', '');
+        return `${window.location.protocol}//system.${mainHost}${path}`;
+    }
+
+    return `${protocol}://system.${rootDomain}${path}`;
 };

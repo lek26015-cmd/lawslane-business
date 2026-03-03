@@ -9,6 +9,7 @@ import Logo from '@/components/logo';
 import logoColor from '@/pic/logo-lawslane-transparent-color.png';
 import logoWhite from '@/pic/logo-lawslane-transparent-white.png';
 import { cn } from '@/lib/utils';
+import { getBusinessLink } from '@/lib/domain-utils';
 import { useUser, useFirebase } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
@@ -134,7 +135,7 @@ export default function B2BSidebar() {
         try {
             await signOut(auth);
             await fetch('/api/auth/session', { method: 'DELETE' });
-            window.location.href = '/';
+            window.location.href = getBusinessLink('/');
         } catch {
             toast({ title: 'Error', description: 'Logout failed', variant: 'destructive' });
         }

@@ -21,6 +21,7 @@ import {
 import { useB2BProfile } from '@/context/b2b-profile-context';
 import { NotificationBell } from '@/components/admin/notification-bell';
 import Link from 'next/link';
+import { getBusinessLink } from '@/lib/domain-utils';
 
 export default function B2BNavbar() {
     const t = useTranslations('B2BSidebar'); // Reuse sidebar translations
@@ -38,7 +39,7 @@ export default function B2BNavbar() {
         try {
             await fetch('/api/auth/session', { method: 'DELETE' });
             await signOut(auth);
-            window.location.href = '/';
+            window.location.href = getBusinessLink('/');
         } catch {
             toast({ title: 'Error', description: 'Logout failed', variant: 'destructive' });
         }
