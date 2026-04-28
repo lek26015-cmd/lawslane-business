@@ -2,85 +2,15 @@
 'use server';
 /**
  * @fileOverview A simple chat flow that uses the Gemini model with RAG.
- *
- * - chat - A function that handles the chat process.
  */
 
-import { ai } from '@/ai/genkit';
-import { MessageData } from 'genkit';
+import { GoogleGenerativeAI, Content } from '@google/generative-ai';
 import { z } from 'zod';
-import { getAllArticles } from '@/lib/data';
-import { Article } from '@/lib/types';
-
+import { retrieveDocuments } from '@/lib/rag';
+import { callTyphoonAI } from '@/lib/typhoon';
 import { initializeFirebase } from '@/firebase';
 
-// Define the tool for searching articles
-import { retrieveContext, retrieveDocuments } from '@/lib/rag';
-import { callTyphoonAI } from '@/lib/typhoon';
-
-// Define the tool for searching articles and RAG context
-const searchArticlesTool = ai.defineTool(
-  {
-    name: 'searchArticles',
-    description: 'Search for relevant legal information from the knowledge base (PDFs and Articles).',
-    inputSchema: z.object({
-      query: z.string().describe('The search query to find relevant information.'),
-    }),
-    outputSchema: z.object({
-      results: z.array(
-        z.object({
-          title: z.string(),
-          content: z.string(),
-        })
-      ),
-    }),
-  },
-  async (input) => {
-    console.log(`[searchArticlesTool] Searching for: ${input.query}`);
-
-    // 1. Search RAG (Cloudflare)
-    let ragDocs: Array<{ source: string, content: string, score: number }> = [];
-    try {
-      const allDocs = await retrieveDocuments(input.query);
-      // Filter by similarity score (threshold 0.6)
-      ragDocs = allDocs.filter(doc => doc.score > 0.6);
-      console.log(`[searchArticlesTool] RAG found ${allDocs.length} docs, ${ragDocs.length} passed threshold.`);
-    } catch (err) {
-      console.error("RAG search failed:", err);
-    }
-
-    const results = [];
-
-    if (ragDocs.length > 0) {
-      // Case A: Found specific legal documents
-      ragDocs.forEach(doc => {
-        results.push({
-          title: "ข้อมูลจากเอกสารกฎหมาย (PDF)",
-          content: doc.content
-        });
-      });
-    } else {
-      // Case B: No documents found -> Ask Typhoon (General Knowledge Fallback)
-      console.log("[searchArticlesTool] No relevant RAG docs. Asking Typhoon...");
-      const typhoonResponse = await callTyphoonAI(input.query);
-      if (typhoonResponse) {
-        results.push({
-          title: "ข้อมูลความรู้ทั่วไป (จาก Typhoon AI)",
-          content: typhoonResponse
-        });
-      }
-    }
-
-    // 2. Search Articles (Firestore) - Keep as secondary source if RAG failed? 
-    // For now, let's prioritize RAG/Typhoon to keep it clean, or append if RAG found nothing.
-    // Let's append Firestore only if we have results, to avoid noise? 
-    // Actually, existing logic appended it. Let's keep it but maybe filter strictly.
-
-    return { results };
-  }
-);
-
-
+// Schema definitions
 const ChatRequestSchema = z.object({
   history: z.array(
     z.object({
@@ -94,21 +24,20 @@ const ChatRequestSchema = z.object({
 
 const ChatResponseSchema = z.object({
   sections: z.array(z.object({
-    title: z.string().describe('The title of the section.'),
-    content: z.string().describe('The content of the section.'),
-    link: z.string().optional().describe('An optional URL for a call-to-action button.'),
-    linkText: z.string().optional().describe('The text to display on the call-to-action button.'),
-  })).describe('An array of sections to structure the response.'),
+    title: z.string(),
+    content: z.string(),
+    link: z.string().optional(),
+    linkText: z.string().optional(),
+  })),
 });
 
 export type ChatResponse = z.infer<typeof ChatResponseSchema>;
 
-const chatPrompt = ai.definePrompt({
-  name: 'chatPrompt',
-  input: { schema: ChatRequestSchema },
-  output: { schema: ChatResponseSchema },
-  tools: [searchArticlesTool],
-  system: `You are an AI legal assistant for Lawslane, a legal tech platform in Thailand.
+// Initialize Gemini API
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_API_KEY || '');
+const model = genAI.getGenerativeModel({
+  model: 'gemini-1.5-flash',
+  systemInstruction: `You are an AI legal assistant for Lawslane, a legal tech platform in Thailand.
     Your role is to provide preliminary analysis and information, not definitive legal advice.
     
     Always follow these steps:
@@ -128,10 +57,50 @@ const chatPrompt = ai.definePrompt({
             -   **DO NOT** recommend finding a lawyer for every single query. Use it sparingly.
     7.  **CRITICAL**: In the **very first response** of the conversation, you **MUST** introduce yourself as the AI assistant for Lawslane AND explicitly state that your advice is preliminary and not a substitute for a lawyer (Limitation of Liability).
     8.  For all **subsequent messages** (after the first one), **DO NOT** introduce yourself, **DO NOT** say "Hello" or "Sawasdee", and **DO NOT** repeat the disclaimer. Answer the user's question directly and immediately.
-    `,
-  prompt: `User prompt: {{{prompt}}}`,
+    9.  Return the response strictly as a JSON object matching this structure: {"sections": [{"title": "string", "content": "string", "link": "string (optional)", "linkText": "string (optional)"}]}`,
+  generationConfig: {
+    responseMimeType: 'application/json',
+  }
 });
 
+/**
+ * Native implementation of searchArticles for Gemini tool calling
+ */
+async function searchArticles(query: string) {
+  console.log(`[searchArticles] Searching for: ${query}`);
+
+  // 1. Search RAG (Cloudflare)
+  let ragDocs: Array<{ source: string, content: string, score: number }> = [];
+  try {
+    const allDocs = await retrieveDocuments(query);
+    ragDocs = allDocs.filter(doc => doc.score > 0.6);
+    console.log(`[searchArticles] RAG found ${allDocs.length} docs, ${ragDocs.length} passed threshold.`);
+  } catch (err) {
+    console.error("RAG search failed:", err);
+  }
+
+  if (ragDocs.length > 0) {
+    return {
+      results: ragDocs.map(doc => ({
+        title: "ข้อมูลจากเอกสารกฎหมาย (PDF)",
+        content: doc.content
+      }))
+    };
+  } else {
+    console.log("[searchArticles] No relevant RAG docs. Asking Typhoon...");
+    const typhoonResponse = await callTyphoonAI(query);
+    if (typhoonResponse) {
+      return {
+        results: [{
+          title: "ข้อมูลความรู้ทั่วไป (จาก Typhoon AI)",
+          content: typhoonResponse
+        }]
+      };
+    }
+  }
+
+  return { results: [] };
+}
 
 export async function chat(
   request: z.infer<typeof ChatRequestSchema>
@@ -139,61 +108,81 @@ export async function chat(
   const { history, prompt, locale = 'th' } = request;
 
   try {
-    // Check if API key is set (basic check)
     if (!process.env.GOOGLE_GENAI_API_KEY && !process.env.GOOGLE_API_KEY) {
-      console.warn("[ChatFlow] No Google API Key found. Falling back to manual mode.");
       throw new Error("No API Key");
     }
 
-    // Determine language instruction
     let languageInstruction = "Answer in Thai.";
     if (locale.startsWith('en')) {
       languageInstruction = "Answer in English. IMPORTANT: For any specific legal terms, laws, or sensitive legal advice, you MUST provide the original Thai text alongside the English translation (e.g., 'Civil Code (ประมวลกฎหมายแพ่ง)').";
-    }
-    if (locale.startsWith('zh')) {
+    } else if (locale.startsWith('zh')) {
       languageInstruction = "Answer in Chinese (Simplified). IMPORTANT: For any specific legal terms, laws, or sensitive legal advice, you MUST provide the original Thai text alongside the Chinese translation.";
     }
 
-    // Check if this is a subsequent message (history exists)
     let finalPrompt = `${prompt}\n\n[System Instruction: ${languageInstruction}]`;
-
     if (history && history.length > 0) {
       finalPrompt += `\n\n[System Note: This is a continuing conversation. Do NOT introduce yourself again. Do NOT say 'Hello' or 'Sawasdee'. Answer the question directly.]`;
     }
 
-    const { output } = await chatPrompt({
-      history,
-      prompt: finalPrompt,
+    // Convert history to Gemini format
+    const geminiHistory: Content[] = history.map(h => ({
+      role: h.role,
+      parts: h.content.map(c => ({ text: c.text }))
+    }));
+
+    // Tool calling logic manual loop (simple version)
+    // First, check if we need to call searchArticles
+    const toolPrompt = `Analyze if this user query needs legal information lookup. If yes, respond with ONLY the search query. If no, respond with "NONE". Query: ${prompt}`;
+    const toolSelection = await model.generateContent(toolPrompt);
+    const searchQuery = toolSelection.response.text().trim();
+
+    let context = "";
+    if (searchQuery !== "NONE" && searchQuery.length > 2) {
+      const toolResult = await searchArticles(searchQuery);
+      context = JSON.stringify(toolResult);
+    }
+
+    const chatSession = model.startChat({
+      history: geminiHistory,
     });
 
-    return output!;
+    const result = await chatSession.sendMessage([
+      { text: context ? `Context from knowledge base: ${context}\n\nUser Question: ${finalPrompt}` : finalPrompt }
+    ]);
+
+    const responseText = result.response.text();
+    try {
+      const parsed = JSON.parse(responseText);
+      return ChatResponseSchema.parse(parsed);
+    } catch (e) {
+      console.error("[ChatFlow] JSON Parse Error:", responseText);
+      return {
+        sections: [{
+          title: "AI Response",
+          content: responseText
+        }]
+      };
+    }
   } catch (error) {
     console.error("[ChatFlow] AI generation failed:", error);
-
-    // Fallback: Manual RAG (Search + Template)
-    // This ensures the chat "works" even without a valid API key or if the model is overloaded.
     return await fallbackChat(prompt, locale);
   }
 }
 
 import { collection, getDocs, limit, query } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
 
 async function fallbackChat(prompt: string, locale: string = 'th'): Promise<ChatResponse> {
   console.log("[ChatFlow] Running fallback chat logic...");
   try {
-    const { firestore, auth } = initializeFirebase();
+    const { firestore } = initializeFirebase();
 
-    // Determine language instruction for Typhoon
     let languageInstruction = "ตอบเป็นภาษาไทย";
     if (locale.startsWith('en')) {
       languageInstruction = "Answer in English. IMPORTANT: For any specific legal terms, laws, or sensitive legal advice, you MUST provide the original Thai text alongside the English translation (e.g., 'Civil Code (ประมวลกฎหมายแพ่ง)').";
-    }
-    if (locale.startsWith('zh')) {
+    } else if (locale.startsWith('zh')) {
       languageInstruction = "Answer in Chinese (Simplified). IMPORTANT: For any specific legal terms, laws, or sensitive legal advice, you MUST provide the original Thai text alongside the Chinese translation.";
     }
 
-    // Localized strings
     const t = {
       th: {
         greetingTitle: "สวัสดีครับ (โหมดสำรอง)",
@@ -211,8 +200,6 @@ async function fallbackChat(prompt: string, locale: string = 'th'): Promise<Chat
         consultLawyerTitle: "แนะนำปรึกษาทนายความ",
         consultLawyerContent: (p: string) => `สำหรับหัวข้อ "${p}" เป็นประเด็นทางกฎหมายที่อาจมีรายละเอียดซับซ้อนเฉพาะบุคคล\n\nเพื่อให้คุณได้รับคำแนะนำที่ถูกต้องและรัดกุมที่สุด ระบบขอแนะนำให้พูดคุยกับทนายความผู้เชี่ยวชาญโดยตรง เพื่อวิเคราะห์ข้อเท็จจริงในเชิงลึกครับ`,
         consultLawyerBtn: "ปรึกษาทนายความ",
-        errorTitle: "ระบบขัดข้องชั่วคราว",
-        errorContent: (msg: string) => `ขออภัยครับ ไม่สามารถเข้าถึงฐานข้อมูลได้ในขณะนี้ (${msg}) กรุณาลองใหม่อีกครั้ง หรือติดต่อเจ้าหน้าที่`
       },
       en: {
         greetingTitle: "Hello (Backup Mode)",
@@ -230,12 +217,10 @@ async function fallbackChat(prompt: string, locale: string = 'th'): Promise<Chat
         consultLawyerTitle: "Consult a Lawyer",
         consultLawyerContent: (p: string) => `Regarding "${p}", this is a legal issue that may have complex, case-specific details.\n\nTo receive the most accurate and comprehensive advice, we recommend speaking directly with a specialized lawyer to analyze the facts in depth.`,
         consultLawyerBtn: "Consult a Lawyer",
-        errorTitle: "Temporary System Error",
-        errorContent: (msg: string) => `Sorry, we cannot access the database at this time (${msg}). Please try again or contact support.`
       },
       zh: {
         greetingTitle: "你好 (备份模式)",
-        greetingContent: "你好！我是 AI 助手（备份模式）。由于主系统暂时不可用，我可以帮助您从我们的数据库中搜索初步的法律信息。尝试输入简短的关键词，如“继承”、“离婚”或“合同”。",
+        greetingContent: "你好！我是 AI 助手（备份模式）。由于主系统暂时不可用，我可以帮助您จาก我们的数据库中搜索初步的法律信息。尝试输入简短的关键词，如“继承”、“离婚”หรือ“合同”。",
         knowledgeTitle: "知识库结果 (备份模式)",
         knowledgeIntro: (terms: string) => `根据您搜索的 "${terms}"，以下是找到的相关信息：`,
         relatedInfo: "相关信息",
@@ -247,32 +232,27 @@ async function fallbackChat(prompt: string, locale: string = 'th'): Promise<Chat
         typhoonAdviceTitle: "建议",
         typhoonAdviceContent: "此回答由 AI (Typhoon) 基于一般知识生成，可能不涵盖具体的法律细节。我们建议咨询律师。",
         consultLawyerTitle: "咨询律师",
-        consultLawyerContent: (p: string) => `关于 "${p}"，这是一个可能涉及复杂具体细节的法律问题。\n\n为了获得最准确和全面的建议，我们建议直接与专业律师交谈，深入分析事实。`,
+        consultLawyerContent: (p: string) => `关于 "${p}"，这是一个可能涉及复杂具体细节的法律问题。\n\n为了获得最准确和全面的建议， we recommend speaking directly with a specialized lawyer to analyze the facts in depth.`,
         consultLawyerBtn: "咨询律师",
-        errorTitle: "系统暂时故障",
-        errorContent: (msg: string) => `抱歉，我们目前无法访问数据库 (${msg})。请重试或联系支持人员。`
       }
     };
 
     const strings = locale.startsWith('en') ? t.en : (locale.startsWith('zh') ? t.zh : t.th);
 
-    // Use Client SDK with simple query
     const articlesRef = collection(firestore, 'articles');
-    const q = query(articlesRef, limit(20));
-    const snapshot = await getDocs(q);
+    const qSnap = query(articlesRef, limit(20));
+    const snapshot = await getDocs(qSnap);
 
     const articles = snapshot.docs.map(doc => {
       const data = doc.data();
       return {
         id: doc.id,
-        title: data.title || '',
-        content: data.content || '',
+        title: (data.title as string) || '',
+        content: (data.content as string) || '',
       };
     });
 
     const lowerCaseQuery = prompt.toLowerCase();
-
-    // 1. Handle Greetings
     const greetings = ['สวัสดี', 'หวัดดี', 'hello', 'hi', 'ทักทาย', '你好'];
     if (greetings.some(g => lowerCaseQuery.includes(g))) {
       return {
@@ -283,37 +263,25 @@ async function fallbackChat(prompt: string, locale: string = 'th'): Promise<Chat
       };
     }
 
-    // 2. Smart Keyword Search
-    // Remove common Thai prefixes to find the core keyword
-    // e.g. "คดีมรดก" -> "มรดก", "กฎหมายที่ดิน" -> "ที่ดิน"
-    const cleanPrompt = lowerCaseQuery
-      .replace(/^(คดี|กฎหมาย|เรื่อง|การ|ความ|ข้อหา)/, '')
-      .trim();
-
+    const cleanPrompt = lowerCaseQuery.replace(/^(คดี|กฎหมาย|เรื่อง|การ|ความ|ข้อหา)/, '').trim();
     const searchTerms = cleanPrompt.split(/\s+/).filter(w => w.length > 1);
-    // Add the original prompt back just in case
-    if (cleanPrompt !== lowerCaseQuery) {
-      searchTerms.push(lowerCaseQuery);
-    }
+    if (cleanPrompt !== lowerCaseQuery) searchTerms.push(lowerCaseQuery);
 
     const relevantArticles = articles
       .filter(article => {
         const title = article.title.toLowerCase();
         const content = article.content.toLowerCase();
-        // Match if ANY search term is found in title or content
         return searchTerms.some(term => title.includes(term) || content.includes(term));
       })
       .slice(0, 3);
 
     const sections = [];
 
-    // 3. Search RAG (Cloudflare) for Fallback
+    // Search RAG for fallback
     let ragDocs: Array<{ source: string, content: string, score: number }> = [];
     try {
       const allDocs = await retrieveDocuments(cleanPrompt);
-      // Filter by similarity score (threshold 0.6 to avoid irrelevant garbage)
       ragDocs = allDocs.filter(doc => doc.score > 0.6);
-      console.log(`[ChatFlow] RAG found ${allDocs.length} docs, ${ragDocs.length} passed threshold.`);
     } catch (err) {
       console.error("Fallback RAG search failed:", err);
     }
@@ -324,22 +292,19 @@ async function fallbackChat(prompt: string, locale: string = 'th'): Promise<Chat
         content: strings.knowledgeIntro(searchTerms.join('", "'))
       });
 
-      if (ragDocs.length > 0) {
-        ragDocs.forEach((doc, index) => {
-          const cleanContent = doc.content.trim();
-          if (cleanContent) {
-            sections.push({
-              title: `${strings.relatedInfo} (${index + 1})`,
-              content: cleanContent
-            });
-          }
-        });
-      }
+      ragDocs.forEach((doc, index) => {
+        if (doc.content.trim()) {
+          sections.push({
+            title: `${strings.relatedInfo} (${index + 1})`,
+            content: doc.content.trim()
+          });
+        }
+      });
 
       relevantArticles.forEach(article => {
         sections.push({
           title: `${strings.article}: ${article.title}`,
-          content: article.content.substring(0, 300) + "..." // Summary
+          content: article.content.substring(0, 300) + "..."
         });
       });
 
@@ -350,15 +315,9 @@ async function fallbackChat(prompt: string, locale: string = 'th'): Promise<Chat
         linkText: strings.findLawyer
       });
     } else {
-      // 4. If no RAG/Articles, try Typhoon AI (General Knowledge)
-      console.log("[ChatFlow] No RAG results, asking Typhoon...");
       const typhoonResponse = await callTyphoonAI(prompt, languageInstruction);
-
       if (typhoonResponse) {
-        sections.push({
-          title: strings.typhoonTitle,
-          content: typhoonResponse
-        });
+        sections.push({ title: strings.typhoonTitle, content: typhoonResponse });
         sections.push({
           title: strings.typhoonAdviceTitle,
           content: strings.typhoonAdviceContent,
@@ -375,26 +334,17 @@ async function fallbackChat(prompt: string, locale: string = 'th'): Promise<Chat
       }
     }
 
-
     return { sections };
   } catch (error: any) {
     console.error("[ChatFlow] Fallback logic failed:", error);
-    console.error("[ChatFlow] Error details:", JSON.stringify(error, null, 2));
-    // Ultimate fallback if even Firestore fails
-    // Simple fallback string since we can't easily access t here without re-defining or passing
     const errorMsg = locale.startsWith('en')
-      ? `Sorry, we cannot access the database at this time (${error?.message || 'Unknown Error'}). Please try again.`
+      ? `Sorry, we cannot access the database at this time. Please try again.`
       : (locale.startsWith('zh')
-        ? `抱歉，我们目前无法访问数据库 (${error?.message || 'Unknown Error'})。请重试。`
-        : `ขออภัยครับ ไม่สามารถเข้าถึงฐานข้อมูลได้ในขณะนี้ (${error?.message || 'Unknown Error'}) กรุณาลองใหม่อีกครั้ง หรือติดต่อเจ้าหน้าที่`);
+        ? `抱歉，我们目前无法访问数据库。请重试。`
+        : `ขออภัยครับ ไม่สามารถเข้าถึงฐานข้อมูลได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง หรือติดต่อเจ้าหน้าที่`);
 
     return {
-      sections: [
-        {
-          title: "System Error",
-          content: errorMsg
-        }
-      ]
+      sections: [{ title: "System Error", content: errorMsg }]
     };
   }
 }

@@ -869,6 +869,40 @@
         }
     },
     "B2BDashboard": {
+        "legalSpend": {
+            "proBadge": "PRO",
+            "pageSubtitle": "ติดตามและวิเคราะห์งบประมาณด้านกฎหมายขององค์กร",
+            "btnFilter": "ตัวกรอง",
+            "btnExport": "ส่งออกรายงาน",
+            "cards": {
+                "totalSpend": "ค่าใช้จ่ายทั้งหมด",
+                "remainingBudget": "งบประมาณคงเหลือ",
+                "avgSpend": "ค่าใช้จ่ายเฉลี่ยต่อเดือน"
+            },
+            "category": {
+                "title": "ค่าใช้จ่ายแยกตามหมวดหมู่",
+                "lawyerFee": "ค่าธรรมเนียมทนายความ",
+                "filingFee": "ค่าธรรมเนียมการยื่นเอกสาร",
+                "courtFee": "ค่าธรรมเนียมศาล / คดีความ",
+                "consultingFee": "ค่าที่ปรึกษาทั่วไป",
+                "otherFee": "ค่าใช้จ่ายอื่นๆ"
+            },
+            "trend": {
+                "title": "แนวโน้มรายเดือน (เทียบกับงบประมาณ)",
+                "months": {
+                    "Sep": "ก.ย.",
+                    "Oct": "ต.ค.",
+                    "Nov": "พ.ย.",
+                    "Dec": "ธ.ค.",
+                    "Jan": "ม.ค.",
+                    "Feb": "ก.พ."
+                },
+                "status": {
+                    "overBudget": "เกินงบ",
+                    "underBudget": "ตามงบ"
+                }
+            }
+        },
         "dashboardV2": {
             "greeting": "สวัสดีครับคุณ {name} 👋",
             "welcomeMsg": "ยินดีต้อนรับสู่ระบบจัดการกฎหมายของคุณ ครบจบในที่เดียว",
@@ -1676,6 +1710,7 @@
         "coreTitle": "เมนูหลัก",
         "automationTitle": "ระบบอัตโนมัติ",
         "intelligenceTitle": "ระบบอัจฉริยะ",
+        "legalAITitle": "ระบบ AI กฎหมาย",
         "adminTitle": "การจัดการระบบ (Admin)",
         "adminCompanies": "จัดการทุกบริษัท",
         "adminStats": "ภาพรวมระบบ",
@@ -1687,6 +1722,9 @@
         "calendar": "ปฏิทินงานกฎหมาย",
         "team": "จัดการทีม (Team)",
         "messages": "ข้อความ",
+        "lawSearch": "สืบค้นข้อกฎหมาย",
+        "contractReview": "ตรวจสอบสัญญาด้วย AI",
+        "ragStatus": "สถานะ RAG",
         "workflow": "เวิร์กโฟลว์ AI",
         "workflowFeatured": "เวิร์กโฟลว์แนะนำ",
         "dueDiligence": "ตรวจสอบสถานะ (DD)",

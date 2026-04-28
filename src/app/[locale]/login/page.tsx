@@ -1,5 +1,5 @@
 'use client';
-export const runtime = 'edge';
+// Export runtime = 'nodejs' (default) to ensure stability in development
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';

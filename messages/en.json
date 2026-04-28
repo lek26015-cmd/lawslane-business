@@ -869,6 +869,40 @@
         }
     },
     "B2BDashboard": {
+        "legalSpend": {
+            "proBadge": "PRO",
+            "pageSubtitle": "Track and analyze legal expenditures for your organization",
+            "btnFilter": "Filter",
+            "btnExport": "Export",
+            "cards": {
+                "totalSpend": "Total Spend",
+                "remainingBudget": "Remaining Budget",
+                "avgSpend": "Avg. Monthly Spend"
+            },
+            "category": {
+                "title": "Spend by Category",
+                "lawyerFee": "Lawyer Fees",
+                "filingFee": "Filing Fees",
+                "courtFee": "Court Fees",
+                "consultingFee": "Consulting Fees",
+                "otherFee": "Other Fees"
+            },
+            "trend": {
+                "title": "Monthly Trend",
+                "months": {
+                    "Sep": "Sep",
+                    "Oct": "Oct",
+                    "Nov": "Nov",
+                    "Dec": "Dec",
+                    "Jan": "Jan",
+                    "Feb": "Feb"
+                },
+                "status": {
+                    "overBudget": "Over Budget",
+                    "underBudget": "Under Budget"
+                }
+            }
+        },
         "dashboardV2": {
             "greeting": "Hello, {name} 👋",
             "welcomeMsg": "Welcome to your legal operating system. Manage everything in one place.",
@@ -1676,6 +1710,7 @@
         "coreTitle": "Core Menu",
         "automationTitle": "Automation",
         "intelligenceTitle": "Intelligence",
+        "legalAITitle": "Legal AI",
         "adminTitle": "Admin Management",
         "adminCompanies": "Manage Companies",
         "adminStats": "System Overview",
@@ -1687,6 +1722,9 @@
         "calendar": "Legal Calendar",
         "team": "Team Management",
         "messages": "Messages",
+        "lawSearch": "Law Search",
+        "contractReview": "AI Contract Review",
+        "ragStatus": "RAG Status",
         "workflow": "AI Workflow",
         "workflowFeatured": "Featured Workflows",
         "dueDiligence": "Due Diligence (DD)",

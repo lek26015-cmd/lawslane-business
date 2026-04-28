@@ -836,6 +836,40 @@
         }
     },
     "B2BDashboard": {
+        "legalSpend": {
+            "proBadge": "PRO",
+            "pageSubtitle": "为您的组织跟踪和分析法律支出",
+            "btnFilter": "筛选",
+            "btnExport": "导出",
+            "cards": {
+                "totalSpend": "总支出",
+                "remainingBudget": "剩余预算",
+                "avgSpend": "月均支出"
+            },
+            "category": {
+                "title": "分项支出",
+                "lawyerFee": "律师费",
+                "filingFee": "归档费",
+                "courtFee": "诉讼费",
+                "consultingFee": "咨询费",
+                "otherFee": "其他费用"
+            },
+            "trend": {
+                "title": "月度趋势",
+                "months": {
+                    "Sep": "九月",
+                    "Oct": "十月",
+                    "Nov": "十一月",
+                    "Dec": "十二月",
+                    "Jan": "一月",
+                    "Feb": "二月"
+                },
+                "status": {
+                    "overBudget": "超出预算",
+                    "underBudget": "在预算内"
+                }
+            }
+        },
         "dashboardV2": {
             "greeting": "您好，{name} 👋",
             "welcomeMsg": "欢迎使用您的法律操作系統。在一个地方管理所有事务。",
@@ -1288,40 +1322,6 @@
                         "name": "DocuSign",
                         "desc": "连接全球标准的电子签名系统"
                     }
-                }
-            }
-        },
-        "legalSpend": {
-            "pageSubtitle": "实时跟踪法律预算和费用",
-            "proBadge": "专业版",
-            "btnFilter": "筛选",
-            "btnExport": "导出",
-            "cards": {
-                "totalSpend": "总支出（今年）",
-                "remainingBudget": "剩余预算",
-                "avgSpend": "平均每月支出"
-            },
-            "category": {
-                "title": "按类别支出",
-                "lawyerFee": "律师费",
-                "filingFee": "归档和执照",
-                "courtFee": "法庭费",
-                "consultingFee": "顾问费",
-                "otherFee": "其他"
-            },
-            "trend": {
-                "title": "月度趋势（预算 vs. 实际）",
-                "months": {
-                    "Sep": "9月",
-                    "Oct": "10月",
-                    "Nov": "11月",
-                    "Dec": "12月",
-                    "Jan": "1月",
-                    "Feb": "2月"
-                },
-                "status": {
-                    "overBudget": "超支",
-                    "underBudget": "结余"
                 }
             }
         },
@@ -2083,6 +2083,7 @@
         "coreTitle": "核心菜单",
         "automationTitle": "自动化",
         "intelligenceTitle": "智能系统",
+        "legalAITitle": "法律 AI",
         "adminTitle": "系统管理 (Admin)",
         "adminCompanies": "管理所有公司",
         "adminStats": "系统概览",
@@ -2094,6 +2095,9 @@
         "calendar": "法律日历",
         "team": "团队管理 (Team)",
         "messages": "消息",
+        "lawSearch": "语义法律搜索",
+        "contractReview": "AI 合同审查",
+        "ragStatus": "RAG 状态",
         "workflow": "AI 工作流",
         "workflowFeatured": "推荐工作流",
         "dueDiligence": "尽职调查 (DD)",

@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+// Export runtime = 'nodejs' (default) for better compatibility in development and to avoid potential hangs
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import '../globals.css';

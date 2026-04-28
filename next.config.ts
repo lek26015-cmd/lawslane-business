@@ -52,7 +52,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverExternalPackages: ['pdf-parse'],
+  serverExternalPackages: ['pdf-parse', 'firebase-admin'],
   experimental: {
     serverActions: {
       bodySizeLimit: '50mb',

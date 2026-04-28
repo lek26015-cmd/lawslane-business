@@ -1,11 +1,21 @@
 'use server';
 
-import { ai } from '@/ai/genkit';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export interface TranslationResult {
     english: string;
     chinese: string;
 }
+
+// Initialize Gemini API
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_API_KEY || '');
+const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+    generationConfig: {
+        responseMimeType: 'application/json',
+        temperature: 0.3,
+    }
+});
 
 export async function translateToMultipleLanguages(
     thaiText: string
@@ -15,8 +25,6 @@ export async function translateToMultipleLanguages(
     }
 
     try {
-        // Escape check: Ensure text doesn't break prompt, though standard string interpolation is usually fine.
-        // We removed the quotes around thaiText to avoid breaking on internal quotes.
         const prompt = `You are a professional translator. Translate the following Thai text to English and Chinese (Simplified).
 
 Input Text:
@@ -25,41 +33,21 @@ ${thaiText}
 Instructions:
 1. Translate to English.
 2. Translate to Chinese (Simplified).
-3. Return ONLY a valid JSON object. Do not include markdown formatting (like \`\`\`json).
-4. JSON Format: {"english": "...", "chinese": "..."}
+3. Return ONLY a valid JSON object matching this schema: {"english": "...", "chinese": "..."}
 `;
 
-        const response = await ai.generate({
-            prompt,
-            config: {
-                temperature: 0.3,
-            },
-        });
+        const result = await model.generateContent(prompt);
+        const text = result.response.text().trim();
+        console.log('AI Response:', text);
 
-        const text = response.text.trim();
-        console.log('AI Response:', text); // Debugging
-
-        // Improved JSON parsing
         try {
-            // Remove potential markdown code blocks and whitespace
-            const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
-            const start = cleanText.indexOf('{');
-            const end = cleanText.lastIndexOf('}');
-
-            if (start === -1 || end === -1) {
-                throw new Error('No JSON object found in response');
-            }
-
-            const jsonString = cleanText.substring(start, end + 1);
-            const result = JSON.parse(jsonString);
-
+            const parsed = JSON.parse(text);
             return {
-                english: result.english || '',
-                chinese: result.chinese || '',
+                english: parsed.english || '',
+                chinese: parsed.chinese || '',
             };
         } catch (parseError) {
             console.error('Failed to parse translation response:', text, parseError);
-            // Fallback: If simple parse fails, try to just extract lines if the LLM failed instructions (unlikely with this prompt but safety net)
             return { english: '', chinese: '' };
         }
     } catch (error) {

@@ -38,6 +38,9 @@ import {
     BarChart3,
     Building2,
     MessageSquare,
+    Scale,
+    Gavel,
+    History,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -64,6 +67,14 @@ const navGroups: NavGroup[] = [
             { key: 'calendar', icon: CalendarDays, href: '/calendar' },
             { key: 'team', icon: Users, href: '/team' },
             { key: 'messages', icon: MessageSquare, href: '/messages' },
+        ],
+    },
+    {
+        titleKey: 'legalAITitle',
+        items: [
+            { key: 'lawSearch', icon: Scale, href: '/ai/law-search', badge: { label: 'BETA', color: 'violet' } },
+            { key: 'contractReview', icon: Gavel, href: '/ai/contract-review', badge: { label: 'NEW', color: 'emerald' } },
+            { key: 'ragStatus', icon: BarChart3, href: '/ai/rag' },
         ],
     },
     {
