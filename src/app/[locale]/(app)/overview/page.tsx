@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslations, useLocale } from 'next-intl';
-import { useUser } from '@/firebase';
+import { useUser, db } from '@/firebase';
+import { collection, query, where, getCountFromServer } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import {
     FileText,
@@ -55,10 +56,52 @@ export default function B2BOverviewPage() {
     const { unreadCount } = useNotifications(user?.uid);
     const router = useRouter();
     const [isNotifOpen, setIsNotifOpen] = useState(false);
+    const [contractCount, setContractCount] = useState<number | null>(null);
+    const [deadlineCount, setDeadlineCount] = useState<number | null>(null);
+    const [contractStats, setContractStats] = useState({ active: 0, review: 0, draft: 0, expiring: 0, total: 0 });
 
     useEffect(() => {
         if (!isUserLoading && !user) router.push('/login');
     }, [isUserLoading, user, router]);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            if (!user) return;
+            try {
+                // Fetch active contracts count
+                const qContracts = query(collection(db, 'contracts'), where('ownerId', '==', user.uid));
+                const snapContracts = await getCountFromServer(qContracts);
+                const total = snapContracts.data().count;
+                setContractCount(total);
+
+                // Fetch by status
+                const qActive = query(collection(db, 'contracts'), where('ownerId', '==', user.uid), where('status', '==', 'active'));
+                const snapActive = await getCountFromServer(qActive);
+                const qReview = query(collection(db, 'contracts'), where('ownerId', '==', user.uid), where('status', '==', 'review'));
+                const snapReview = await getCountFromServer(qReview);
+                const qDraft = query(collection(db, 'contracts'), where('ownerId', '==', user.uid), where('status', '==', 'draft'));
+                const snapDraft = await getCountFromServer(qDraft);
+                const qExpiring = query(collection(db, 'contracts'), where('ownerId', '==', user.uid), where('status', '==', 'expiring'));
+                const snapExpiring = await getCountFromServer(qExpiring);
+                
+                setContractStats({
+                    active: snapActive.data().count,
+                    review: snapReview.data().count,
+                    draft: snapDraft.data().count,
+                    expiring: snapExpiring.data().count,
+                    total: total || 1 // Avoid division by zero
+                });
+
+                // Fetch upcoming deadlines (compliance events) count
+                const qEvents = query(collection(db, 'compliance_events'), where('ownerId', '==', user.uid));
+                const snapEvents = await getCountFromServer(qEvents);
+                setDeadlineCount(snapEvents.data().count);
+            } catch (error) {
+                console.error("Error fetching stats:", error);
+            }
+        };
+        fetchStats();
+    }, [user]);
 
     if (isUserLoading || isProfileLoading || !user) {
         return (
@@ -115,7 +158,9 @@ export default function B2BOverviewPage() {
                                 </div>
                                 <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
-                            <p className="text-3xl font-bold text-foreground">24</p>
+                            <p className="text-3xl font-bold text-foreground">
+                                {contractCount !== null ? contractCount : <Loader2 className="w-6 h-6 animate-spin mt-2 mb-1" />}
+                            </p>
                             <p className="text-sm text-muted-foreground font-medium">{tOverview('stats.activeContracts')}</p>
                             <div className="flex items-center gap-1.5 mt-2">
                                 <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-[#002f4b] dark:bg-slate-800 dark:text-blue-400">+3</span>
@@ -172,7 +217,9 @@ export default function B2BOverviewPage() {
                                 </div>
                                 <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
-                            <p className="text-3xl font-bold text-foreground">5</p>
+                            <p className="text-3xl font-bold text-foreground">
+                                {deadlineCount !== null ? deadlineCount : <Loader2 className="w-6 h-6 animate-spin mt-2 mb-1" />}
+                            </p>
                             <p className="text-sm text-muted-foreground font-medium">{tOverview('stats.deadlines')}</p>
                             <div className="flex items-center gap-1.5 mt-2">
                                 <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">2</span>
@@ -363,10 +410,10 @@ export default function B2BOverviewPage() {
                         </CardHeader>
                         <CardContent className="space-y-3">
                             {[
-                                { label: tOverview('contractStatus.active'), count: 12, total: 24, color: 'bg-emerald-500' },
-                                { label: tOverview('contractStatus.review'), count: 5, total: 24, color: 'bg-amber-500' },
-                                { label: tOverview('contractStatus.expiring'), count: 3, total: 24, color: 'bg-red-500' },
-                                { label: tOverview('contractStatus.draft'), count: 4, total: 24, color: 'bg-slate-400' },
+                                { label: tOverview('contractStatus.active'), count: contractStats.active, total: contractStats.total, color: 'bg-emerald-500' },
+                                { label: tOverview('contractStatus.review'), count: contractStats.review, total: contractStats.total, color: 'bg-amber-500' },
+                                { label: tOverview('contractStatus.expiring'), count: contractStats.expiring, total: contractStats.total, color: 'bg-red-500' },
+                                { label: tOverview('contractStatus.draft'), count: contractStats.draft, total: contractStats.total, color: 'bg-slate-400' },
                             ].map((item, i) => (
                                 <div key={i}>
                                     <div className="flex items-center justify-between mb-1">

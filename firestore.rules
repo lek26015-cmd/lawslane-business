@@ -100,6 +100,11 @@ service cloud.firestore {
         allow read, update, delete: if isAdmin();
     }
 
+    match /b2b_survey_responses/{document=**} {
+        allow write: if true; // Public survey submission
+        allow read: if request.auth != null; // Authenticated users only
+    }
+
     match /email_logs/{logId} {
         allow read, write: if isAdmin();
     }
