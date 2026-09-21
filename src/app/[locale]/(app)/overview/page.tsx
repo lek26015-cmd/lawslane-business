@@ -1,12 +1,11 @@
 'use client';
-export const runtime = 'edge';
-
+ 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslations, useLocale } from 'next-intl';
-import { useUser, db } from '@/firebase';
+import { useUser, useFirebase } from '@/firebase';
 import { collection, query, where, getCountFromServer } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import {
@@ -27,15 +26,12 @@ import {
     Bell,
     Zap,
     Scale,
-    Workflow,
     Bot,
-    SearchCheck,
-    Blocks,
-    PiggyBank,
     ArrowRight,
     AlertTriangle,
     Sparkles,
     Building2,
+    PiggyBank,
 } from 'lucide-react';
 import { useB2BProfile } from '@/context/b2b-profile-context';
 import { useNotifications } from '@/hooks/use-notifications';
@@ -52,6 +48,7 @@ export default function B2BOverviewPage() {
     const tOverview = useTranslations('B2BDashboard.dashboardV2');
     const locale = useLocale();
     const { user, isUserLoading } = useUser();
+    const { firestore } = useFirebase();
     const { profile, isLoading: isProfileLoading } = useB2BProfile();
     const { unreadCount } = useNotifications(user?.uid);
     const router = useRouter();
@@ -66,22 +63,46 @@ export default function B2BOverviewPage() {
 
     useEffect(() => {
         const fetchStats = async () => {
-            if (!user) return;
+            // Extra strict check for Firestore instance
+            const isFirestoreValid = firestore && 
+                                     typeof firestore === 'object' && 
+                                     !Array.isArray(firestore) &&
+                                     ((firestore as any).type === 'firestore' || (firestore as any)._databaseId);
+
+            if (!user || !firestore || !isFirestoreValid) {
+                console.log("[DEBUG] Skipping fetchStats - missing or invalid firestore", { 
+                    hasUser: !!user, 
+                    hasFirestore: !!firestore,
+                    isFirestoreValid 
+                });
+                return;
+            }
+
+            console.log("[DEBUG] Firestore instance check:", {
+                type: typeof firestore,
+                constructor: (firestore as any)?.constructor?.name,
+                isFirestore: (firestore as any)?._databaseId ? "Probable Firestore" : "Unknown"
+            });
+            
             try {
                 // Fetch active contracts count
-                const qContracts = query(collection(db, 'contracts'), where('ownerId', '==', user.uid));
+                const contractsRef = collection(firestore, 'contracts');
+                const qContracts = query(contractsRef, where('ownerId', '==', user.uid));
                 const snapContracts = await getCountFromServer(qContracts);
                 const total = snapContracts.data().count;
                 setContractCount(total);
 
                 // Fetch by status
-                const qActive = query(collection(db, 'contracts'), where('ownerId', '==', user.uid), where('status', '==', 'active'));
+                const qActive = query(contractsRef, where('ownerId', '==', user.uid), where('status', '==', 'active'));
                 const snapActive = await getCountFromServer(qActive);
-                const qReview = query(collection(db, 'contracts'), where('ownerId', '==', user.uid), where('status', '==', 'review'));
+                
+                const qReview = query(contractsRef, where('ownerId', '==', user.uid), where('status', '==', 'review'));
                 const snapReview = await getCountFromServer(qReview);
-                const qDraft = query(collection(db, 'contracts'), where('ownerId', '==', user.uid), where('status', '==', 'draft'));
+                
+                const qDraft = query(contractsRef, where('ownerId', '==', user.uid), where('status', '==', 'draft'));
                 const snapDraft = await getCountFromServer(qDraft);
-                const qExpiring = query(collection(db, 'contracts'), where('ownerId', '==', user.uid), where('status', '==', 'expiring'));
+                
+                const qExpiring = query(contractsRef, where('ownerId', '==', user.uid), where('status', '==', 'expiring'));
                 const snapExpiring = await getCountFromServer(qExpiring);
                 
                 setContractStats({
@@ -93,7 +114,8 @@ export default function B2BOverviewPage() {
                 });
 
                 // Fetch upcoming deadlines (compliance events) count
-                const qEvents = query(collection(db, 'compliance_events'), where('ownerId', '==', user.uid));
+                const eventsRef = collection(firestore, 'compliance_events');
+                const qEvents = query(eventsRef, where('ownerId', '==', user.uid));
                 const snapEvents = await getCountFromServer(qEvents);
                 setDeadlineCount(snapEvents.data().count);
             } catch (error) {
@@ -101,7 +123,7 @@ export default function B2BOverviewPage() {
             }
         };
         fetchStats();
-    }, [user]);
+    }, [user, firestore]);
 
     if (isUserLoading || isProfileLoading || !user) {
         return (
@@ -230,37 +252,47 @@ export default function B2BOverviewPage() {
                 </Link>
             </div>
 
-            {/* Active Workflows & AI Insights */}
+            {/* Legal AI Tools & AI Insights */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Active Workflows */}
+                {/* Legal AI Quick Tools */}
                 <Card className="rounded-2xl shadow-sm border">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-foreground flex items-center gap-2 text-base">
-                            <Workflow className="w-5 h-5 text-violet-600" />
-                            {tOverview('workflows.title')}
+                            <Bot className="w-5 h-5 text-violet-600" />
+                            {t('legalAITitle')}
                             <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-400 text-[10px] ml-auto">
-                                <Bot className="w-3 h-3 mr-1" /> AI
+                                AI PRO
                             </Badge>
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                        {[
-                            { name: tOverview('workflows.items.crm'), status: tOverview('workflows.items.crmStatus'), progress: 60, color: 'bg-blue-500' },
-                            { name: tOverview('workflows.items.expiry'), status: tOverview('workflows.items.expiryStatus'), progress: 100, color: 'bg-emerald-500' },
-                            { name: tOverview('workflows.items.vendor'), status: tOverview('workflows.items.vendorStatus'), progress: 40, color: 'bg-amber-500' },
-                        ].map((wf, i) => (
-                            <div key={i} className="p-3 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-semibold text-foreground">{wf.name}</span>
-                                    <span className="text-[11px] text-muted-foreground">{wf.status}</span>
+                        <Link href="/ai/contract-review" className="block">
+                            <div className="p-3 rounded-xl hover:bg-muted/50 transition-colors border border-border/50 flex items-center justify-between group cursor-pointer">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600">
+                                        <FileText className="w-4 h-4" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{t('contractReview')}</p>
+                                        <p className="text-[11px] text-muted-foreground">วิเคราะห์ความเสี่ยงและข้อสัญญาอัตโนมัติ</p>
+                                    </div>
                                 </div>
-                                <div className="h-1.5 bg-muted/50 rounded-full overflow-hidden">
-                                    <div className={`h-full ${wf.color} rounded-full transition-all`} style={{ width: `${wf.progress}%` }} />
-                                </div>
+                                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
                             </div>
-                        ))}
-                        <Link href="/workflow">
-                            <Button variant="ghost" className="w-full mt-1 text-[#002f4b] dark:text-blue-400 text-xs">{tOverview('workflows.viewAll')}</Button>
+                        </Link>
+                        <Link href="/ai/law-search" className="block">
+                            <div className="p-3 rounded-xl hover:bg-muted/50 transition-colors border border-border/50 flex items-center justify-between group cursor-pointer">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-lg bg-violet-50 dark:bg-violet-500/10 text-violet-600">
+                                        <Scale className="w-4 h-4" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{t('lawSearch')}</p>
+                                        <p className="text-[11px] text-muted-foreground">ค้นหากฎหมายไทย คำพิพากษา และแนววินิจฉัย</p>
+                                    </div>
+                                </div>
+                                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                            </div>
                         </Link>
                     </CardContent>
                 </Card>
@@ -274,7 +306,7 @@ export default function B2BOverviewPage() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                        <Link href="/contracts" className="block">
+                        <Link href="/clm" className="block">
                             <div className="flex items-start gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors group cursor-pointer">
                                 <div className="p-1.5 rounded-lg bg-red-50 dark:bg-red-500/10 shrink-0 mt-0.5">
                                     <AlertTriangle className="w-4 h-4 text-red-500" />
@@ -285,7 +317,7 @@ export default function B2BOverviewPage() {
                                 <Button variant="ghost" size="sm" className="text-[11px] text-[#002f4b] dark:text-blue-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">{tOverview('insights.i1Action')}</Button>
                             </div>
                         </Link>
-                        <Link href="/legal-spend" className="block">
+                        <Link href="/billing" className="block">
                             <div className="flex items-start gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors group cursor-pointer">
                                 <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 shrink-0 mt-0.5">
                                     <TrendingDown className="w-4 h-4 text-emerald-500" />
@@ -296,10 +328,10 @@ export default function B2BOverviewPage() {
                                 <Button variant="ghost" size="sm" className="text-[11px] text-[#002f4b] dark:text-blue-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">{tOverview('insights.i2Action')}</Button>
                             </div>
                         </Link>
-                        <Link href="/due-diligence" className="block">
+                        <Link href="/ai/contract-review" className="block">
                             <div className="flex items-start gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors group cursor-pointer">
                                 <div className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-500/10 shrink-0 mt-0.5">
-                                    <SearchCheck className="w-4 h-4 text-amber-500" />
+                                    <Scale className="w-4 h-4 text-amber-500" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm text-foreground">{tOverview('insights.i3')}</p>
@@ -307,7 +339,7 @@ export default function B2BOverviewPage() {
                                 <Button variant="ghost" size="sm" className="text-[11px] text-[#002f4b] dark:text-blue-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">{tOverview('insights.i3Action')}</Button>
                             </div>
                         </Link>
-                        <Link href="/contracts" className="block">
+                        <Link href="/clm" className="block">
                             <div className="flex items-start gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors group cursor-pointer">
                                 <div className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-500/10 shrink-0 mt-0.5">
                                     <Building2 className="w-4 h-4 text-blue-500" />
@@ -334,7 +366,7 @@ export default function B2BOverviewPage() {
                             </CardTitle>
                         </CardHeader>
                         <div className="space-y-1">
-                            <Link href="/contracts" className="block">
+                            <Link href="/clm" className="block">
                                 <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer">
                                     <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 shrink-0">
                                         <CheckCircle2 className="w-4 h-4 text-emerald-500" />
@@ -358,7 +390,7 @@ export default function B2BOverviewPage() {
                                     <Badge variant="outline" className="text-[10px] shrink-0">Vault</Badge>
                                 </div>
                             </Link>
-                            <Link href="/contracts" className="block">
+                            <Link href="/clm" className="block">
                                 <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer">
                                     <div className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-500/10 shrink-0">
                                         <Clock className="w-4 h-4 text-amber-500" />
@@ -382,16 +414,16 @@ export default function B2BOverviewPage() {
                                     <Badge variant="outline" className="text-[10px] shrink-0">Billing</Badge>
                                 </div>
                             </Link>
-                            <Link href="/due-diligence" className="block">
+                            <Link href="/ai/law-search" className="block">
                                 <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer">
                                     <div className="p-1.5 rounded-lg bg-teal-50 dark:bg-teal-500/10 shrink-0">
-                                        <SearchCheck className="w-4 h-4 text-teal-500" />
+                                        <Scale className="w-4 h-4 text-teal-500" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm text-foreground truncate">{tOverview('activity.items.a5')}</p>
                                         <p className="text-[11px] text-muted-foreground">{tOverview('activity.items.a5Time')}</p>
                                     </div>
-                                    <Badge variant="outline" className="text-[10px] shrink-0">DD</Badge>
+                                    <Badge variant="outline" className="text-[10px] shrink-0">AI Search</Badge>
                                 </div>
                             </Link>
                         </div>

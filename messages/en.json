@@ -1290,7 +1290,7 @@
             "pageTitleCreate": "Create Invoice",
             "pageSubtitle": "Manage your company's tax invoices and withholding tax (WHT) records.",
             "currentPlan": "Current Plan",
-            "invoicesThisYear": "Invoices (This year)",
+            "invoicesThisYear": "Invoices (This Year)",
             "whtTax": "Withholding Tax (WHT)",
             "recentInvoices": "Recent Invoices",
             "status": {
@@ -1298,27 +1298,113 @@
                 "paid": "Paid"
             },
             "createBtn": "Create Invoice",
+            "preview": {
+                "back": "Back",
+                "print": "Print / Download PDF"
+            },
             "invoice": {
-                "title": "Tax Invoice",
-                "invLabel": "Invoice",
-                "no": "No.",
+                "title": "Tax Invoice / Invoice",
+                "invLabel": "TAX INVOICE / INVOICE",
+                "no": "Invoice No.",
                 "issueDate": "Issue Date",
                 "dueDate": "Due Date",
+                "issuer": "Issuer (Seller / Service Provider)",
+                "customer": "Customer / Bill To",
+                "taxId": "Tax ID",
+                "phone": "Phone",
+                "table": {
+                    "item": "Item Description",
+                    "qty": "Qty",
+                    "unitPrice": "Unit Price",
+                    "total": "Total Amount"
+                },
+                "subtotal": "Subtotal",
+                "vat": "VAT (7%)",
+                "wht": "WHT ({rate}%)",
+                "netTotal": "Net Total Amount",
+                "notes": "Notes",
+                "signatures": {
+                    "issuer": "Authorized Issuer Signature",
+                    "customer": "Customer Signature / Authorized Receiver",
+                    "date": "Date: ____/____/________"
+                },
                 "description": "Description",
                 "qty": "Qty",
                 "price": "Price/Unit",
                 "total": "Total",
-                "subtotal": "Subtotal",
-                "vat": "VAT (7%)",
                 "grandTotal": "Grand Total",
                 "grandTotalWords": "({words})",
                 "signedBy": "Signed By",
-                "customer": "Customer / Bill To",
                 "paymentMethod": "Payment Method",
                 "bankTransfer": "Bank Transfer",
                 "bankName": "Kasikorn Bank",
                 "accountName": "Lawslane (Thailand) Co., Ltd.",
                 "accountNumber": "123-4-56789-0"
+            },
+            "form": {
+                "back": "Back",
+                "title": "Create New Invoice / Tax Invoice",
+                "seller": {
+                    "title": "1. Issuer Information (Your Company)",
+                    "nameLabel": "Company Name / Business Name",
+                    "namePlaceholder": "e.g. Lawslane Co., Ltd.",
+                    "addressLabel": "Registered Address",
+                    "addressPlaceholder": "Building, Street, District, Province, Postal Code",
+                    "taxIdLabel": "13-digit Tax ID",
+                    "taxIdPlaceholder": "01055xxxxxxxx",
+                    "phoneLabel": "Phone Number",
+                    "phonePlaceholder": "02-xxx-xxxx"
+                },
+                "buyer": {
+                    "title": "2. Customer Information",
+                    "nameLabel": "Customer / Entity Name",
+                    "namePlaceholder": "e.g. Partner Co., Ltd.",
+                    "addressLabel": "Billing Address",
+                    "addressPlaceholder": "Address for tax invoice",
+                    "taxIdLabel": "13-digit Tax ID",
+                    "taxIdPlaceholder": "01055xxxxxxxx",
+                    "phoneLabel": "Phone Number",
+                    "phonePlaceholder": "08x-xxx-xxxx"
+                },
+                "items": {
+                    "title": "3. Items & Services",
+                    "descLabel": "Item Description",
+                    "descPlaceholder": "e.g. Legal Advisory Retainer Fee (Jan)",
+                    "qtyLabel": "Qty",
+                    "priceLabel": "Unit Price (฿)",
+                    "totalLabel": "Total (฿)",
+                    "addBtn": "Add Line Item"
+                },
+                "tax": {
+                    "title": "4. Taxes & Terms",
+                    "vatLabel": "Include VAT (7%)",
+                    "whtLabel": "Withholding Tax (WHT)",
+                    "whtRateLabel": "WHT Rate",
+                    "whtRates": {
+                        "1": "1% (Transportation)",
+                        "2": "2% (Advertising)",
+                        "3": "3% (Services / Professional)",
+                        "5": "5% (Rental)"
+                    },
+                    "dueDateLabel": "Due Date",
+                    "notesLabel": "Payment Terms & Notes",
+                    "notesPlaceholder": "e.g. Kasikorn Bank Acc: xxx-x-xxxxx-x"
+                },
+                "summary": {
+                    "title": "5. Order Summary",
+                    "subtotal": "Subtotal:",
+                    "vat": "VAT (7%):",
+                    "wht": "Withholding Tax ({rate}%):",
+                    "netTotal": "Net Total Amount:",
+                    "createBtn": "Generate & Preview Invoice",
+                    "cancelBtn": "Cancel"
+                },
+                "toast": {
+                    "errSeller": "Please enter issuer company name",
+                    "errBuyer": "Please enter customer name",
+                    "errItems": "Please enter valid item description and price",
+                    "success": "Invoice created successfully"
+                }
             }
         },
         "calendarV2": {

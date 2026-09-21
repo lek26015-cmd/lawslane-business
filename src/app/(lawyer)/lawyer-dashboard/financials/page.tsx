@@ -1,5 +1,4 @@
 'use client';
-export const runtime = 'edge';
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useUser, useFirebase } from '@/firebase';
@@ -11,7 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
-import { ArrowLeft, DollarSign, TrendingUp, Clock, Loader2, Wallet, History, Briefcase, AlertCircle, Menu, X, PenSquare, Save, Building2, FileText } from 'lucide-react';
+import { ArrowLeft, DollarSign, TrendingUp, Clock, Loader2, Wallet, History, Briefcase, AlertCircle, Menu, X, PenSquare, Save, Building2, FileText, CreditCard } from 'lucide-react';
+import LawyerSidebar from '@/components/layout/lawyer-sidebar';
 import { collection, query, where, getDocs, doc, getDoc, addDoc, serverTimestamp, orderBy, updateDoc } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { th } from 'date-fns/locale';
@@ -476,20 +476,20 @@ function LawyerFinancialsContent() {
     }
 
     return (
-        <div className="bg-gray-100/50 min-h-screen p-4 md:p-8">
-            <div className="container mx-auto max-w-5xl">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div className="flex h-screen overflow-hidden bg-background">
+            <LawyerSidebar />
+            <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <Link href={searchParams.get('view') === 'admin' ? "/lawyer-dashboard?view=admin" : "/lawyer-dashboard"} className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-2 mb-2">
-                            <ArrowLeft className="w-4 h-4" />
-                            กลับไปที่แดชบอร์ด
-                        </Link>
-                        <h1 className="text-3xl font-bold font-headline">ข้อมูลการเงิน</h1>
-                        <p className="text-muted-foreground">จัดการรายได้และการถอนเงินของคุณ</p>
+                        <h1 className="text-2xl md:text-3xl font-extrabold text-[#002f4b] dark:text-blue-400 flex items-center gap-2">
+                            <CreditCard className="w-7 h-7" />
+                            ข้อมูลการเงินและใบกำกับภาษี
+                        </h1>
+                        <p className="text-muted-foreground text-sm mt-0.5">จัดการรายรับค่าวิชาชีพ บัญชีธนาคาร ประวัติการถอนเงิน และข้อมูลภาษี</p>
                     </div>
 
-                    <Button className="bg-blue-600 hover:bg-blue-700 rounded-full" onClick={() => setIsWithdrawOpen(true)}>
-                        <Wallet className="mr-2 h-4 w-4" /> แจ้งถอนเงิน
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl gap-2 shadow-md" onClick={() => setIsWithdrawOpen(true)}>
+                        <Wallet className="w-4 h-4" /> แจ้งถอนเงิน
                     </Button>
 
                     <Dialog open={isWithdrawOpen} onOpenChange={setIsWithdrawOpen}>
@@ -916,8 +916,8 @@ function LawyerFinancialsContent() {
                         </Card>
                     </TabsContent>
                 </Tabs>
-            </div>
-        </div >
+            </main>
+        </div>
     );
 }
 

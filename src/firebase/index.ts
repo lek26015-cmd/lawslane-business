@@ -40,8 +40,10 @@ const getFirebaseConfigFromEnv = (): FirebaseOptions | null => {
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
-  if (getApps().length) {
-    return getSdks(getApp());
+  const existingApps = getApps();
+  if (existingApps.length) {
+    const app = existingApps[0];
+    return getSdks(app);
   }
 
   let firebaseApp: FirebaseApp;
@@ -50,18 +52,21 @@ export function initializeFirebase() {
   if (process.env.NODE_ENV === 'production') {
     const prodConfig = getFirebaseConfigFromEnv();
     if (prodConfig) {
-      firebaseApp = initializeApp(prodConfig);
+      try {
+        firebaseApp = initializeApp(prodConfig);
+      } catch (e) {
+        console.error("Firebase production init failed:", e);
+        // Fallback if needed
+        firebaseApp = initializeApp(devFirebaseConfig);
+      }
     } else {
       // Fallback for environments like Firebase App Hosting which inject config automatically
       try {
         firebaseApp = initializeApp();
       } catch (e) {
         console.error(
-          "Firebase initialization failed. Ensure environment variables (NEXT_PUBLIC_FIREBASE_*) are set in your production environment."
+          "Firebase initialization failed. Ensure environment variables (NEXT_PUBLIC_FIREBASE_*) are set."
         );
-        // In a real-world scenario, you might want to throw an error
-        // or handle this case more gracefully.
-        // For now, we'll fall back to the dev config, but this is not recommended for production.
         firebaseApp = initializeApp(devFirebaseConfig);
       }
     }
@@ -70,7 +75,7 @@ export function initializeFirebase() {
     try {
       firebaseApp = initializeApp(devFirebaseConfig);
     } catch (e) {
-      // But we can prevent the white screen by returning nulls for services.
+      console.error("Firebase development init failed:", e);
       return {
         firebaseApp: null,
         auth: null,
@@ -84,26 +89,47 @@ export function initializeFirebase() {
 }
 
 export function getSdks(firebaseApp: FirebaseApp) {
-  let auth;
+  if (!firebaseApp) {
+    return {
+      firebaseApp: null,
+      auth: null,
+      firestore: null,
+      storage: null
+    };
+  }
+
+  let auth = null;
   try {
     auth = getAuth(firebaseApp);
   } catch (e) {
-    // Auth might fail on server side, which is fine if we only need Firestore
     console.warn("Firebase Auth initialization failed:", e);
   }
 
-  let storage;
+  let storage = null;
   try {
     storage = getStorage(firebaseApp);
   } catch (e) {
     console.warn("Firebase Storage initialization failed:", e);
   }
 
+  let firestore = null;
+  try {
+    firestore = getFirestore(firebaseApp);
+    // Basic sanity check to ensure it's a valid object
+    if (firestore && (typeof firestore !== 'object' || Array.isArray(firestore))) {
+      console.error("Invalid Firestore instance returned");
+      firestore = null;
+    }
+  } catch (e) {
+    console.error("Firebase Firestore initialization failed:", e);
+    firestore = null;
+  }
+
   return {
     firebaseApp,
-    auth: auth as any, // Cast to any to avoid type issues for now, or update return type
-    firestore: getFirestore(firebaseApp),
-    storage: storage as any // Cast to any or handle null
+    auth,
+    firestore,
+    storage
   };
 }
 

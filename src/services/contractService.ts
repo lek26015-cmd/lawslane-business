@@ -1,3 +1,4 @@
+'use client';
 import { initializeFirebase } from '@/firebase';
 import {
     collection,
@@ -7,7 +8,10 @@ import {
     updateDoc,
     onSnapshot,
     serverTimestamp,
-    Timestamp
+    Timestamp,
+    query,
+    where,
+    getDocs
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -170,7 +174,6 @@ export const contractService = {
         const { firestore } = initializeFirebase();
         if (!firestore) throw new Error('Firestore not initialized');
 
-        const { query, where, getDocs } = await import('firebase/firestore');
         const q = query(
             collection(firestore, COLLECTION_NAME),
             where('companyId', '==', companyId)
@@ -192,7 +195,6 @@ export const contractService = {
         const { firestore } = initializeFirebase();
         if (!firestore) throw new Error('Firestore not initialized');
 
-        const { query, where, getDocs } = await import('firebase/firestore');
         const q = query(
             collection(firestore, COLLECTION_NAME),
             where('ownerId', '==', ownerId)

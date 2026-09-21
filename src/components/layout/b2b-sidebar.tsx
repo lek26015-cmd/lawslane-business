@@ -28,19 +28,10 @@ import {
     ChevronRight,
     Moon,
     Sun,
-    Workflow,
-    SearchCheck,
-    PiggyBank,
-    Blocks,
-    ClipboardList,
-    Sparkles,
-    Bot,
-    BarChart3,
     Building2,
     MessageSquare,
     Scale,
     Gavel,
-    History,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -74,24 +65,6 @@ const navGroups: NavGroup[] = [
         items: [
             { key: 'lawSearch', icon: Scale, href: '/ai/law-search', badge: { label: 'BETA', color: 'violet' } },
             { key: 'contractReview', icon: Gavel, href: '/ai/contract-review', badge: { label: 'NEW', color: 'emerald' } },
-            { key: 'ragStatus', icon: BarChart3, href: '/ai/rag' },
-        ],
-    },
-    {
-        titleKey: 'automationTitle',
-        items: [
-            { key: 'workflow', icon: Workflow, href: '/workflow', badge: { label: 'AI', color: 'violet' } },
-            { key: 'workflowFeatured', icon: Sparkles, href: '/workflow/featured', badge: { label: 'HOT', color: 'amber' } },
-            { key: 'dueDiligence', icon: SearchCheck, href: '/due-diligence', badge: { label: 'NEW', color: 'emerald' } },
-        ],
-    },
-    {
-        titleKey: 'intelligenceTitle',
-        items: [
-            { key: 'legalSpend', icon: PiggyBank, href: '/legal-spend', badge: { label: 'PRO', color: 'amber' } },
-            { key: 'findLawyer', icon: SearchCheck, href: '/lawyers' },
-            { key: 'integrations', icon: Blocks, href: '/integrations' },
-            { key: 'auditTrail', icon: ClipboardList, href: '/audit-trail' },
         ],
     },
 ];

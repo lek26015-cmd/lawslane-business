@@ -1413,7 +1413,7 @@
         "billingV2": {
             "pageTitle": "财务与税务发票",
             "pageTitleCreate": "创建发票",
-            "pageSubtitle": "管理您公司的税务发票和预扣税 (WHT)。",
+            "pageSubtitle": "管理您公司的税务发票和预扣税 (WHT) 记录。",
             "currentPlan": "当前计划",
             "invoicesThisYear": "发票 (今年)",
             "whtTax": "预扣税 (WHT)",
@@ -1423,10 +1423,14 @@
                 "paid": "已付"
             },
             "createBtn": "创建发票",
+            "preview": {
+                "back": "返回",
+                "print": "打印 / 下载 PDF"
+            },
             "invoice": {
-                "title": "税务发票",
-                "invLabel": "发票",
-                "no": "编号",
+                "title": "税务发票 / 发票",
+                "invLabel": "TAX INVOICE / INVOICE",
+                "no": "发票编号",
                 "issueDate": "开票日期",
                 "dueDate": "到期日期",
                 "issuer": "开票人 / 卖方",
@@ -1439,84 +1443,92 @@
                     "unitPrice": "单价",
                     "total": "总计"
                 },
-                "subtotal": "小计",
-                "vat": "增值税 (7%)",
+                "subtotal": "小计 (Subtotal)",
+                "vat": "增值税 (VAT 7%)",
                 "wht": "预扣税 ({rate}%)",
-                "netTotal": "净总计",
+                "netTotal": "净总计 (Net Total)",
                 "notes": "备注",
                 "signatures": {
                     "issuer": "开票方签名",
                     "customer": "客户签名",
-                    "date": "日期 ____/____/____"
-                }
-            },
-            "preview": {
-                "back": "返回",
-                "print": "打印 / 保存 PDF"
+                    "date": "日期: ____/____/________"
+                },
+                "description": "项目",
+                "qty": "数量",
+                "price": "单价",
+                "total": "总计",
+                "grandTotal": "总金额",
+                "grandTotalWords": "({words})",
+                "signedBy": "收款人",
+                "paymentMethod": "付款方式",
+                "bankTransfer": "银行转账",
+                "bankName": "开泰银行 (Kasikorn Bank)",
+                "accountName": "Lawslane (Thailand) Co., Ltd.",
+                "accountNumber": "123-4-56789-0"
             },
             "form": {
-                "title": "创建新发票",
                 "back": "返回",
+                "title": "创建新发票 / 税务发票",
                 "seller": {
-                    "title": "开票人 (您的公司)",
-                    "nameLabel": "公司名称",
-                    "namePlaceholder": "Lawslane 有限公司",
-                    "addressLabel": "地址",
-                    "addressPlaceholder": "曼谷素坤逸路 123 号 10110",
-                    "taxIdLabel": "税号",
-                    "taxIdPlaceholder": "0-1234-56789-01-2",
-                    "phoneLabel": "电话",
+                    "title": "1. 开票方信息 (您的公司)",
+                    "nameLabel": "公司名称 / 企业名称",
+                    "namePlaceholder": "例如: Lawslane 有限公司",
+                    "addressLabel": "注册地址",
+                    "addressPlaceholder": "大厦, 街道, 区域, 府, 邮编",
+                    "taxIdLabel": "13位税务登记号",
+                    "taxIdPlaceholder": "01055xxxxxxxx",
+                    "phoneLabel": "电话号码",
                     "phonePlaceholder": "02-xxx-xxxx"
                 },
                 "buyer": {
-                    "title": "客户 / 买方",
-                    "nameLabel": "客户 / 公司名称",
-                    "namePlaceholder": "ABC 有限公司",
-                    "addressLabel": "地址",
-                    "addressPlaceholder": "曼谷是隆路 456 号 10500",
-                    "taxIdLabel": "税号",
-                    "taxIdPlaceholder": "0-9876-54321-01-2",
-                    "phoneLabel": "电话",
-                    "phonePlaceholder": "02-xxx-xxxx"
+                    "title": "2. 客户 / 买方信息",
+                    "nameLabel": "客户公司名称 / 实体名称",
+                    "namePlaceholder": "例如: ABC 有限公司",
+                    "addressLabel": "开票地址",
+                    "addressPlaceholder": "用于开具发票的详细地址",
+                    "taxIdLabel": "13位税务登记号",
+                    "taxIdPlaceholder": "01055xxxxxxxx",
+                    "phoneLabel": "电话号码",
+                    "phonePlaceholder": "08x-xxx-xxxx"
                 },
                 "items": {
-                    "title": "项目 / 服务",
-                    "descLabel": "详细信息",
-                    "descPlaceholder": "例如，法律咨询费",
+                    "title": "3. 商品与服务明细",
+                    "descLabel": "项目描述",
+                    "descPlaceholder": "例如: 法律咨询服务费",
                     "qtyLabel": "数量",
                     "priceLabel": "单价 (฿)",
                     "totalLabel": "总计 (฿)",
                     "addBtn": "添加项目"
                 },
                 "tax": {
-                    "title": "税务与条款设置",
-                    "vatLabel": "增值税 (VAT 7%)",
-                    "whtLabel": "预扣税 (WHT)",
-                    "whtRateLabel": "预扣税率 (%)",
+                    "title": "4. 税务与条款设置",
+                    "vatLabel": "计入 7% 增值税 (VAT)",
+                    "whtLabel": "计算预扣税 (WHT)",
+                    "whtRateLabel": "预扣税率",
                     "whtRates": {
-                        "1": "1% — 运输",
-                        "2": "2% — 广告",
-                        "3": "3% — 服务/人工",
-                        "5": "5% — 租金"
+                        "1": "1% (运输)",
+                        "2": "2% (广告)",
+                        "3": "3% (服务/人工)",
+                        "5": "5% (租金)"
                     },
                     "dueDateLabel": "到期日期",
-                    "notesLabel": "备注",
-                    "notesPlaceholder": "请在到期日前付款"
+                    "notesLabel": "付款方式与备注",
+                    "notesPlaceholder": "例如: 开泰银行 账号 xxx-x-xxxxx-x"
                 },
                 "summary": {
-                    "title": "摘要",
-                    "subtotal": "小计",
-                    "vat": "增值税 7%",
-                    "wht": "预扣税 {rate}%",
-                    "netTotal": "净总额",
-                    "createBtn": "创建发票",
+                    "title": "5. 金额汇总",
+                    "subtotal": "商品/服务小计:",
+                    "vat": "增值税 (7%):",
+                    "wht": "预扣税 ({rate}%):",
+                    "netTotal": "实收总额:",
+                    "createBtn": "生成并预览发票",
                     "cancelBtn": "取消"
                 },
                 "toast": {
-                    "errSeller": "请输入开票人信息。",
-                    "errBuyer": "请输入客户名称。",
-                    "errItems": "请正确填写所有项目。",
-                    "success": "发票创建成功 ✅"
+                    "errSeller": "请输入开票人信息",
+                    "errBuyer": "请输入客户名称",
+                    "errItems": "请正确填写所有项目与单价",
+                    "success": "发票创建成功"
                 }
             }
         },

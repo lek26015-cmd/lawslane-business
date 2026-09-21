@@ -1,5 +1,4 @@
 'use client';
-export const runtime = 'edge';
 
 import React, { useEffect, useState } from 'react';
 import { B2BProfileProvider, useB2BProfile } from '@/context/b2b-profile-context';
@@ -28,7 +27,7 @@ function B2BAuthGuardian({ children }: { children: React.ReactNode }) {
         const isSuperAdmin = profile?.superAdmin === true;
 
         if (!isSubscribed && !isSuperAdmin) {
-            router.push('/subscribe?plan=Starter');
+            router.push('/billing');
         } else {
             setIsVerifying(false);
         }

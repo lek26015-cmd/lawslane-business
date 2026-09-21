@@ -129,7 +129,15 @@ export const useAuth = (): Auth => {
 /** Hook to access Firestore instance. */
 export const useFirestore = (): Firestore => {
   const { firestore } = useFirebase();
-  if (!firestore) throw new Error("Firestore service not available");
+  
+  const isValid = firestore && 
+                  typeof firestore === 'object' && 
+                  !Array.isArray(firestore) &&
+                  ((firestore as any).type === 'firestore' || (firestore as any)._databaseId);
+
+  if (!firestore || !isValid) {
+    throw new Error("Firestore service not available or invalid");
+  }
   return firestore;
 };
 

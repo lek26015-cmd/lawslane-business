@@ -5,7 +5,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Loader2, BookOpen, ExternalLink, Scale, Gavel, FileText } from 'lucide-react';
+import { Search, Loader2, BookOpen, ExternalLink, Scale, Gavel, FileText, Bot } from 'lucide-react';
 import { searchLaws } from '@/ai/flows/law-search-flow';
 import ReactMarkdown from 'react-markdown';
 

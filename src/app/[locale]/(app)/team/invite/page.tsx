@@ -1,5 +1,5 @@
 'use client';
-export const runtime = 'edge';
+
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,11 +34,6 @@ export default function InviteMemberPage() {
         clm: false,
         vault: true,
         billing: false,
-        workflow: false,
-        dueDiligence: false,
-        legalSpend: false,
-        auditTrail: false,
-        integrations: false
     });
 
     const appsList = [
@@ -46,20 +41,15 @@ export default function InviteMemberPage() {
         { id: 'clm', name: tInvite('apps.clm.name'), desc: tInvite('apps.clm.desc') },
         { id: 'vault', name: tInvite('apps.vault.name'), desc: tInvite('apps.vault.desc') },
         { id: 'billing', name: tInvite('apps.billing.name'), desc: tInvite('apps.billing.desc') },
-        { id: 'workflow', name: tInvite('apps.workflow.name'), desc: tInvite('apps.workflow.desc') },
-        { id: 'dueDiligence', name: tInvite('apps.dueDiligence.name'), desc: tInvite('apps.dueDiligence.desc') },
-        { id: 'legalSpend', name: tInvite('apps.legalSpend.name'), desc: tInvite('apps.legalSpend.desc') },
-        { id: 'auditTrail', name: tInvite('apps.auditTrail.name'), desc: tInvite('apps.auditTrail.desc') },
-        { id: 'integrations', name: tInvite('apps.integrations.name'), desc: tInvite('apps.integrations.desc') }
     ];
 
     React.useEffect(() => {
         if (inviteRole === 'Admin' || inviteRole === 'Owner') {
             setAppAccess(appsList.reduce((acc, app) => ({ ...acc, [app.id]: true }), {}));
         } else if (inviteRole === 'Editor') {
-            setAppAccess(prev => ({ ...prev, overview: true, clm: true, vault: true, workflow: true }));
+            setAppAccess(prev => ({ ...prev, overview: true, clm: true, vault: true, billing: false }));
         } else {
-            setAppAccess(prev => ({ ...prev, overview: true, vault: true, clm: false, billing: false, workflow: false, dueDiligence: false, legalSpend: false, auditTrail: false, integrations: false }));
+            setAppAccess(prev => ({ ...prev, overview: true, vault: true, clm: false, billing: false }));
         }
     }, [inviteRole]);
 

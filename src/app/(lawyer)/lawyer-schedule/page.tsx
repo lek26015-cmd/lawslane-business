@@ -1,6 +1,5 @@
 
 'use client';
-export const runtime = 'edge';
 
 import { useState, Suspense } from 'react';
 import Link from 'next/link';
@@ -14,6 +13,8 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft, Clock, Calendar as CalendarIcon, PlusCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
+
+import LawyerSidebar from '@/components/layout/lawyer-sidebar';
 
 type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
 
@@ -81,28 +82,20 @@ function LawyerScheduleContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50">
-      {/* Gradient Header */}
-      <div className="w-full bg-gradient-to-r from-[#0f172a] to-[#1e293b] text-white py-12 md:py-16 rounded-b-[3rem] shadow-lg mb-8">
-        <div className="container mx-auto px-4 md:px-6">
-          <Link href={dashboardLink} className="text-blue-200 hover:text-white mb-6 inline-flex items-center gap-2 transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            กลับไปที่แดชบอร์ด
-          </Link>
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-sm">
-              <CalendarIcon className="w-8 h-8 text-blue-200" />
-            </div>
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold font-headline">จัดการตารางนัดหมาย</h1>
-              <p className="text-blue-200 mt-2">ตั้งค่าเวลาทำงาน วันหยุด และจัดการการนัดหมายของคุณ</p>
-            </div>
+    <div className="flex h-screen overflow-hidden bg-background">
+      <LawyerSidebar />
+      <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-extrabold text-[#002f4b] dark:text-blue-400 flex items-center gap-2">
+              <CalendarIcon className="w-7 h-7" />
+              จัดการตารางนัดหมาย & เวลาทำงาน
+            </h1>
+            <p className="text-muted-foreground text-sm mt-0.5">ตั้งค่าเวลาทำงานปกติ วันหยุดพิเศษ และช่วงเวลารับนัดหมายของทนายความ</p>
           </div>
         </div>
-      </div>
 
-      <div className="container mx-auto px-4 md:px-6 pb-20">
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="space-y-6 max-w-5xl">
 
           {/* Working Hours Card */}
           <Card className="rounded-[2.5rem] shadow-xl border-none overflow-hidden">
@@ -219,7 +212,7 @@ function LawyerScheduleContent() {
             </Button>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

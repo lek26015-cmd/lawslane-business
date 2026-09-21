@@ -12,7 +12,12 @@ export function useNotifications(recipientId: string = 'admin') {
     const { firestore } = useFirebase();
 
     useEffect(() => {
-        if (!firestore) {
+        const isFirestoreValid = firestore && 
+                                 typeof firestore === 'object' && 
+                                 !Array.isArray(firestore) &&
+                                 ((firestore as any).type === 'firestore' || (firestore as any)._databaseId);
+
+        if (!firestore || !isFirestoreValid) {
             setIsLoading(false);
             return;
         }

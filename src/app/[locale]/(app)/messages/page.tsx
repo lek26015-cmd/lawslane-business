@@ -1,5 +1,5 @@
 'use client';
-export const runtime = 'edge';
+
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -176,8 +176,8 @@ export default function B2BMessagesPage() {
                             />
                         </div>
                         <Button asChild className="bg-[#002f4b] hover:bg-[#001f35] text-white dark:bg-blue-600 dark:hover:bg-blue-700 rounded-full shrink-0">
-                            <Link href="/lawyers">
-                                แชทใหม่
+                            <Link href="/ai/law-search">
+                                ปรึกษา AI
                             </Link>
                         </Button>
                     </div>
@@ -255,11 +255,11 @@ export default function B2BMessagesPage() {
                         <p className="text-muted-foreground mb-6 max-w-sm text-sm">
                             {searchTerm
                                 ? 'ลองค้นหาด้วยคำอื่น หรือล้างตัวกรอง'
-                                : 'เริ่มต้นแชทกับทนายความเพื่อรับคำปรึกษาทางกฎหมาย'}
+                                : 'ประวัติการสนทนาและการปรึกษากฎหมายจะแสดงที่นี่'}
                         </p>
                         <Button asChild className="bg-[#002f4b] hover:bg-[#001f35] text-white dark:bg-blue-600 dark:hover:bg-blue-700 rounded-xl">
-                            <Link href="/lawyers">
-                                ค้นหาทนายและเริ่มแชท
+                            <Link href="/ai/law-search">
+                                สืบค้นข้อกฎหมายด้วย AI
                             </Link>
                         </Button>
                     </div>
