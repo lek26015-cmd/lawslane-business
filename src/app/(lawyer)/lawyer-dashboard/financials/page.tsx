@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
 import { ArrowLeft, DollarSign, TrendingUp, Clock, Loader2, Wallet, History, Briefcase, AlertCircle, Menu, X, PenSquare, Save, Building2, FileText, CreditCard } from 'lucide-react';
 import LawyerSidebar from '@/components/layout/lawyer-sidebar';
-import { collection, query, where, getDocs, doc, getDoc, addDoc, serverTimestamp, orderBy, updateDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, orderBy, updateDoc } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { th } from 'date-fns/locale';
 import Link from 'next/link';
@@ -47,7 +47,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
-import { notifyAdmins } from '@/app/actions/admin-notifications';
+import { getMainLink } from '@/lib/domain-utils';
 
 type Transaction = {
     id: string;
@@ -115,7 +115,6 @@ function LawyerFinancialsContent() {
     const [bankName, setBankName] = useState('');
     const [accountNumber, setAccountNumber] = useState('');
     const [accountName, setAccountName] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Edit Bank State
     const [isEditingBank, setIsEditingBank] = useState(false);
@@ -566,7 +565,7 @@ function LawyerFinancialsContent() {
                                             <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                                             <span>
                                                 การยื่นคำร้องขอถอนเงินทำได้ที่เว็บหลักเท่านั้น{' '}
-                                                <a href="https://lawslane.com/lawyer-dashboard/financials" target="_blank" rel="noopener noreferrer" className="font-semibold underline">
+                                                <a href={getMainLink('/lawyer-dashboard/financials', 'lawyer')} target="_blank" rel="noopener noreferrer" className="font-semibold underline">
                                                     เปิดหน้าการเงินบนเว็บหลัก
                                                 </a>
                                             </span>

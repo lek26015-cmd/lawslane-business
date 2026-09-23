@@ -51,7 +51,7 @@ function RequestDetailPageContent() {
   const { toast } = useToast();
   const id = params.id as string;
 
-  const { firestore, user } = useFirebase();
+  const { firestore } = useFirebase();
   const [request, setRequest] = useState<LawyerAppointmentRequest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
