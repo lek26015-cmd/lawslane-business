@@ -166,7 +166,7 @@ export default function LawyerExpressSignupPage() {
             if (profileImageFile) {
                 const formData = new FormData();
                 formData.append('file', profileImageFile);
-                profileImageUrl = await uploadToR2(formData, `lawyer-profile-images/${user.uid}`);
+                profileImageUrl = await uploadToR2(formData, `lawyer-profile-images/${user.uid}`, await user.getIdToken());
             }
 
             // 3. Create user profile document in Firestore (users collection)
