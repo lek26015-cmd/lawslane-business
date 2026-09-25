@@ -4,18 +4,14 @@ import { useState, useEffect, useRef } from 'react';
 import {
   collection,
   query,
-  where,
-  getDocs,
   addDoc,
   serverTimestamp,
   onSnapshot,
   orderBy,
   doc,
   getDoc,
-  setDoc,
   updateDoc,
   Firestore,
-  Query,
 } from 'firebase/firestore';
 import { User } from 'firebase/auth';
 import type { LawyerProfile, HumanChatMessage } from '@/lib/types';
@@ -97,35 +93,28 @@ export function ChatBox({
 
     const ensureChatExists = async () => {
       try {
+        // เดิมตรงนี้ setDoc สร้างห้องใหม่เองฝั่ง client (caseTitle ตายตัว 'คดี: มรดก')
+        // ซึ่งต้องพึ่งกฎ `chats: allow create` ที่เปิดให้ client สร้างห้องได้ ตอนนี้
+        // ห้องแชทสร้างผ่าน Admin SDK เท่านั้น (ดู Lawslane/firestore.rules) คอมโพเนนต์นี้
+        // จึงเปิดได้แค่ห้องที่มีอยู่แล้ว
+        //
+        // ⚠️ ถ้าห้องไม่มีอยู่จริง getDoc จะ "ไม่" คืน snapshot ว่างให้ — กฎ
+        // `allow get: if isParticipant() || isAdmin()` อ่าน resource.data.participants
+        // ของเอกสารที่ไม่มีอยู่ไม่ได้ จึงโดน permission-denied ตกไปที่ catch แทน
+        // (ยกเว้นแอดมินที่ผ่านกฎได้และจะได้ exists() === false) ทั้งสองทางจบที่ข้อความ
+        // "ไม่สามารถโหลดข้อมูลแชทได้" เหมือนกัน
         const chatSnap = await getDoc(chatRef);
         if (!chatSnap.exists()) {
-          const newChatData = {
-            participants: [currentUser.uid, otherUser.userId],
-            createdAt: serverTimestamp(),
-            caseTitle: 'คดี: มรดก',
-          };
-          setDoc(chatRef, newChatData)
-            .then(() => {
-              setIsChatReady(true);
-            })
-            .catch(serverError => {
-              const permissionError = new FirestorePermissionError({
-                path: chatRef.path,
-                operation: 'create',
-                requestResourceData: newChatData,
-              });
-              errorEmitter.emit('permission-error', permissionError);
-            });
+          console.warn(`ChatBox: chat ${chatId} does not exist — not creating it client-side`);
+          setIsLoading(false);
         } else {
           setIsChatReady(true);
         }
       } catch (error) {
-        console.error("Error ensuring chat exists:", error);
-        const permissionError = new FirestorePermissionError({
-          path: 'chats',
-          operation: 'get',
-        });
-        errorEmitter.emit('permission-error', permissionError);
+        // ไม่ส่งต่อให้ FirebaseErrorListener — ตัวนั้นโยน error ขึ้น error boundary
+        // ทั้งหน้าพัง ทั้งที่กรณีนี้ (ห้องไม่มี / ไม่ใช่สมาชิกห้อง) แค่แสดงข้อความ
+        // fallback ในกล่องแชทก็พอ (isLoading=false + isChatReady=false)
+        console.warn(`ChatBox: cannot open chat ${chatId}:`, error);
         setIsLoading(false);
       }
     };
