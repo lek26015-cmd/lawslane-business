@@ -22,7 +22,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { PlanAvatar, PlanBadge, type PlanTone } from '@/components/plan-avatar';
+import { getBusinessPlanTone } from '@/lib/business-plan-tone';
 import { doc, getDoc } from 'firebase/firestore';
 import profileLawyerImg from '@/pic/profile-lawyer.jpg';
 import { NotificationBell } from '@/components/admin/notification-bell';
@@ -49,6 +50,26 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
   const isLawyer = role === 'lawyer' || isSuperUser;
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [planTone, setPlanTone] = useState<{ tone: PlanTone; label: string }>({ tone: 'none', label: '' });
+
+  // แพลน Legal OS ของผู้ใช้ (users/{uid}.plan + subscriptionStatus) สำหรับวงสีรอบรูปโปรไฟล์
+  useEffect(() => {
+    if (!user || !firestore) {
+      setPlanTone({ tone: 'none', label: '' });
+      return;
+    }
+    let cancelled = false;
+    getDoc(doc(firestore, 'users', user.uid))
+      .then((snap) => {
+        if (cancelled) return;
+        const data = snap.exists() ? snap.data() : null;
+        setPlanTone(getBusinessPlanTone(data?.plan, data?.subscriptionStatus));
+      })
+      .catch(() => {
+        if (!cancelled) setPlanTone({ tone: 'none', label: '' });
+      });
+    return () => { cancelled = true; };
+  }, [user, firestore]);
 
   useEffect(() => {
     async function fetchRole() {
@@ -255,16 +276,16 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className={cn("flex items-center gap-2", loginButtonClasses)}>
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage src={avatarUrl || profileLawyerImg.src} />
-                      <AvatarFallback>{user.displayName?.charAt(0) || user.email?.charAt(0)}</AvatarFallback>
-                    </Avatar>
+                    <PlanAvatar src={avatarUrl || profileLawyerImg.src} fallback={user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'} tone={planTone.tone} label={planTone.label} size="sm" />
                     <span className="hidden lg:inline">{user.displayName || user.email}</span>
                     <ChevronDown className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>{t('myAccount')}</DropdownMenuLabel>
+                  <DropdownMenuLabel className="flex items-center gap-2">
+                    {t('myAccount')}
+                    <PlanBadge tone={planTone.tone} label={planTone.label} />
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
                   {isAdmin && (
@@ -358,10 +379,7 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
           </div>
           {user ? (
             <Link href="/account">
-              <Avatar className="w-8 h-8 border border-border/50">
-                <AvatarImage src={avatarUrl || profileLawyerImg.src} />
-                <AvatarFallback>{user.displayName?.charAt(0) || user.email?.charAt(0)}</AvatarFallback>
-              </Avatar>
+              <PlanAvatar src={avatarUrl || profileLawyerImg.src} fallback={user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'} tone={planTone.tone} label={planTone.label} size="sm" />
             </Link>
           ) : (
             <Link href="/login">
@@ -418,12 +436,9 @@ export default function Header({ setUserRole, domainType = 'main' }: { setUserRo
                   {user ? (
                     <div className="space-y-4">
                       <div className="flex items-center gap-3 px-2">
-                        <Avatar className="w-10 h-10">
-                          <AvatarImage src={avatarUrl || profileLawyerImg.src} />
-                          <AvatarFallback>{user.displayName?.charAt(0) || user.email?.charAt(0)}</AvatarFallback>
-                        </Avatar>
+                        <PlanAvatar src={avatarUrl || profileLawyerImg.src} fallback={user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'} tone={planTone.tone} label={planTone.label} size="md" showBadge={false} />
                         <div className="flex flex-col">
-                          <span className="font-semibold">{user.displayName || user.email}</span>
+                          <span className="font-semibold flex items-center gap-2">{user.displayName || user.email}<PlanBadge tone={planTone.tone} label={planTone.label} /></span>
                           <span className="text-xs text-muted-foreground capitalize">{role === 'lawyer' ? 'ทนายความ' : role === 'admin' ? 'ผู้ดูแลระบบ' : 'ลูกค้า'}</span>
                         </div>
                       </div>
