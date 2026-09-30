@@ -246,7 +246,7 @@ export default function VaultPage() {
                     </DialogHeader>
 
                     <Tabs defaultValue="team" className="w-full mt-4">
-                        <TabsList className="grid w-full grid-cols-2 bg-slate-100 dark:bg-slate-900 p-1.5 rounded-none h-12">
+                        <TabsList className="grid w-full grid-cols-2 bg-slate-100 dark:bg-slate-900 p-1.5 rounded-xl h-12">
                             <TabsTrigger value="team" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 h-9 font-bold text-xs">
                                 <Users className="w-3.5 h-3.5 mr-2" /> {tVault('shareModal.tabTeam')}
                             </TabsTrigger>
