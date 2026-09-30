@@ -8,7 +8,8 @@ import { doc, getDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { Building2, Settings, Moon, Sun, LogOut, ChevronDown, User } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { PlanAvatar, PlanBadge } from '@/components/plan-avatar';
+import { getBusinessPlanTone } from '@/lib/business-plan-tone';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -31,6 +32,7 @@ export default function B2BNavbar() {
     const { toast } = useToast();
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
+    const planTone = getBusinessPlanTone(profile?.plan, profile?.subscriptionStatus);
 
     useEffect(() => { setMounted(true); }, []);
 
@@ -96,12 +98,13 @@ export default function B2BNavbar() {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="relative flex items-center gap-2.5 h-auto py-2 px-3 rounded-full hover:bg-muted/60 transition-colors focus:ring-0 focus-visible:ring-0">
-                                <Avatar className="w-8 h-8 ring-1 ring-border shadow-sm">
-                                    <AvatarImage src={user.photoURL || ''} />
-                                    <AvatarFallback className="bg-[#002f4b] text-white text-xs font-bold">
-                                        {user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}
-                                    </AvatarFallback>
-                                </Avatar>
+                                <PlanAvatar
+                                    src={user.photoURL}
+                                    fallback={user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}
+                                    tone={planTone.tone}
+                                    label={planTone.label}
+                                    size="sm"
+                                />
                                 <div className="hidden md:flex flex-col items-start overflow-hidden">
                                     <p className="text-sm font-semibold truncate text-foreground max-w-[120px]">{user.displayName || 'User'}</p>
                                     <p className="text-[10px] truncate text-muted-foreground max-w-[120px]">{user.email}</p>
@@ -112,7 +115,10 @@ export default function B2BNavbar() {
                         <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-lg mt-1 p-2">
                             <DropdownMenuLabel className="font-normal mb-1">
                                 <div className="flex flex-col space-y-1">
-                                    <p className="text-sm font-medium leading-none text-foreground">{user.displayName || 'User'}</p>
+                                    <div className="flex items-center gap-2 min-w-0">
+                                        <p className="text-sm font-medium leading-none text-foreground truncate">{user.displayName || 'User'}</p>
+                                        <PlanBadge tone={planTone.tone} label={planTone.label} />
+                                    </div>
                                     <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                                 </div>
                             </DropdownMenuLabel>
