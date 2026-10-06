@@ -817,7 +817,7 @@
             "subtitle": "Contact Us",
             "email": {
                 "title": "电子邮件",
-                "value": "support@lawslane.com"
+                "value": "lawslanelawyer@gmail.com"
             },
             "phone": {
                 "title": "电话",
@@ -1463,8 +1463,8 @@
                 "paymentMethod": "付款方式",
                 "bankTransfer": "银行转账",
                 "bankName": "开泰银行 (Kasikorn Bank)",
-                "accountName": "Lawslane (Thailand) Co., Ltd.",
-                "accountNumber": "123-4-56789-0"
+                "accountName": "Lawlane (Mr. Wisarut Bungutum)",
+                "accountNumber": "240-1-25028-2"
             },
             "form": {
                 "back": "返回",
@@ -1698,7 +1698,7 @@
             },
             "support": {
                 "text": "对于过去的发票或财务咨询，请联系",
-                "email": "billing@lawslane.com"
+                "email": "lawslanelawyer@gmail.com"
             },
             "planLabels": {
                 "lite": "Lite — 990 泰铢/月",
